@@ -17,6 +17,7 @@ format:
 
     include-after-body:
       - ../classlib/classlib/quarto/slides/reveal-scale-var.html
+      - ../classlib/classlib/quarto/slides/reveal-nav-reset.html
 
     theme:
       - simple

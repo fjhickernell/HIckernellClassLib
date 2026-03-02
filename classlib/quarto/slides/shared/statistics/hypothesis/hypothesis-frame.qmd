@@ -442,9 +442,11 @@ flowchart LR
 
 ### Emphasis
 
-- Everything in the **Design Phase** defines the procedure  
-- $\alpha$ and power belong to the Design Phase  
-- The Data Phase only applies the pre-defined rule  
+- Everything in the *Design Phase* defines the procedure  
+
+  - $\alpha$ and power belong to the Design Phase  
+
+- The *Data Phase* only applies the pre-defined rule  
 
 ::: {.key-point}
 The power curve describes the procedure, not the observed dataset

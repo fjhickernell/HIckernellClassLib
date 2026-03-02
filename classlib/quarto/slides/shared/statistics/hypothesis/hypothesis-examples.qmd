@@ -6,12 +6,12 @@ Building on the established framework
 
 - [Two-sided large sample size CLT test for the mean](#twoclttest)
 
-- [One-sided $t$-test for the mean](#onesided_t_test)
+- [One-sided $t$-test for the mean under Normal data](#onesided_t_test)
 
-- [Chi-squared test for variance](#chisq_test)
+- [Chi-squared test for variance under Normal data](#chisq_test)
 
 
-## Translating words into $H_0$ and $H_A$
+## Translating words into $H_0$ and $H_A$ {#translating-words-into-hypotheses}
 
 - $H_0$ contains the status quo — often written with equality
 - $H_A$ reflects the research claim
@@ -48,7 +48,7 @@ Changing $\alpha$ after seeing the $p$-value is a form of [data snooping]{.alert
 
 :::
 
-## Two-sided test for a mean (CLT)
+## Two-sided CLT-enabled test for a mean assuming large sample size {#twoclttest}
 
 Suppose $X_1,\dots,X_n$ IID with $\Ex[X_i] = \mu$, $\var(X_i) = \sigma^2$ with large $n$
 
@@ -142,7 +142,7 @@ It is **not** $\Prob(\theta \mid \text{data})$
 Power describes the test design, not the evidence in this sample
 :::
 
-## One-sided test for a mean (Normal data) {#onesided_t_test}
+## One-sided test for a mean under Normal data {#onesided_t_test}
 
 Suppose $X_1,\dots,X_n$ IID with  $X_i \sim \Norm(\mu,\sigma^2)$
 
@@ -230,7 +230,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-## One-sided $\chi^2$ test for a variance (Normal model)
+## One-sided $\chi^2$ test for the variance under Normal data {#chisq_test}
 
 Suppose $X_1,\dots,X_n$ IID with $X_i \sim \Norm(\mu,\sigma^2)$.
 

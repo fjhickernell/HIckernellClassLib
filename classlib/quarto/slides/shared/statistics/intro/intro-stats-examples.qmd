@@ -219,3 +219,4 @@ For $K(t,x) = 2 - \lvert t - x\rvert$ this is the [trapezoidal rule]{.alert}.  <
   - You may construct Bayesian credible intervals, but they depend on your confidence in choosing a reasonable $K$
 - [Interpretation]{.alert}
   - Provides a statistical interpretation of computational mathematics
+
