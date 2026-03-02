@@ -39,7 +39,7 @@ $$
      {\sup_{\theta\in H_A} L(\theta \mid \vX)}
 $$
 
-## Neyman–Pearson lemma (simple vs simple) {.neymanpearson}
+## Neyman–Pearson lemma (simple vs simple) {#neymanpearson}
 
 Test
 
@@ -101,7 +101,16 @@ $$
 
 The LRT reproduces the classical $z$-test for the mean of a normal distribution with known variance
 
-$\exstar$ Show that the LRT for testing $H_0: \mu = \mu_0$ vs $H_A: \mu  = \mu_1$ with $\mu_1 > \mu_0$ and $\sigma$ unknown is the same as the $t$-test
+---
+
+::: {.exitem}
+<span class="exbullet">$\exstar$</span>
+<span>
+Show that the LRT for testing $H_0: \mu = \mu_0$ vs $H_A: \mu  = \mu_1$ with $\mu_1 > \mu_0$ and $\sigma$ unknown is the same as the $t$-test
+</span>
+:::
+
+
 
 
 ## From Neyman–Pearson to likelihood ratio tests
@@ -117,7 +126,13 @@ $$
 
 Reject for small $\Lambda$
 
-## Wilks' Theorem
+## Wilks' Theorem {#largesamplelikelihoodratio}
+$$
+\Lambda(\vX)
+= 
+\frac{\displaystyle \sup_{\theta\in \text{null model}} L(\theta \mid \vX)}
+     {\displaystyle \sup_{\theta\in \text{full model}} L(\theta \mid \vX)}
+$$
 
 Under regularity conditions,
 

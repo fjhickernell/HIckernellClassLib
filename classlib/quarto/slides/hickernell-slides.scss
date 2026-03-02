@@ -849,12 +849,34 @@ h1::before,
 }
 
 
-/* ==========================================================================
-   EXERCISE GRID BLOCK (.exitem)
-   --------------------------------------------------------------------------
+/* ============================================================
+   EXERCISE STAR BULLET (.exitem + \exstar)
+
    Two-column grid: [bullet] [content]
    Avoids Markdown list inconsistencies and MathJax vertical drift.
-   ========================================================================== */
+
+   Usage in Quarto slides:
+
+   ::: {.exitem}
+   <span class="exbullet">$\exstar$</span>
+   <span>
+   This is a full paragraph exercise description. It may wrap
+   naturally across lines.
+
+   <p>
+   Additional paragraph if needed.
+   </p>
+
+   <span class="exsub">Indented sub-line.</span>
+   </span>
+   :::
+
+   Notes:
+   - Do NOT use Markdown lists inside .exitem
+   - Use <p> for multiple paragraphs
+   - Use .exsub for indented follow-up lines
+   - First span = bullet, second span = content container
+   ============================================================ */
 
 .reveal .exitem {
   width: 100%;
