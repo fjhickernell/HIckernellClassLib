@@ -112,7 +112,6 @@ Show that the LRT for testing $H_0: \mu = \mu_0$ vs $H_A: \mu  = \mu_1$ with $\m
 
 
 
-
 ## From Neyman–Pearson to likelihood ratio tests
 
 For composite hypotheses,
@@ -125,6 +124,114 @@ $$
 $$
 
 Reject for small $\Lambda$
+
+
+## Example: LRT for a normal mean (unknown variance)
+
+Suppose $X_1,\dots,X_n \sim \Norm(\mu,\sigma^2)$
+
+Test $\quad 
+H_0:\mu=\mu_0
+\qquad \text{vs} \qquad
+H_A:\mu\ne\mu_0
+$
+
+Parameter vector: $\theta=(\mu,\sigma^2),
+\qquad
+\sigma^2 \text{ is nuisance parameter}
+$
+
+
+### Step 1: Unrestricted MLE
+
+Log-likelihood (up to constants):
+$$
+\ell(\mu,\sigma^2)
+=
+-\frac{n}{2}\log \sigma^2
+-
+\frac{1}{2\sigma^2}
+\sum_{i=1}^n (X_i-\mu)^2.
+$$
+
+Maximizing gives
+$$
+\mu_{\MLE} = \barX,
+\qquad
+\sigma_{\MLE}^2
+=
+\frac{1}{n}\sum_{i=1}^n (X_i-\bar X)^2.
+$$
+
+---
+
+### Step 2: MLE under $H_0$
+
+Under $\mu=\mu_0$,
+$$
+\sigma_{0,\MLE}^2
+=
+\frac{1}{n}\sum_{i=1}^n (X_i-\mu_0)^2
+$$
+
+### Step 3: Likelihood ratio
+
+$$
+\Lambda
+=
+\frac{
+\sup_{\mu=\mu_0,\sigma^2} L(\mu,\sigma^2)
+}{
+\sup_{\mu,\sigma^2} L(\mu,\sigma^2)
+}
+=
+\left(
+\frac{\sigma_{\MLE}^2}{\sigma_{0,\MLE}^2}
+\right)^{n/2}
+$$
+
+## Step 4: Where nuisance disappears
+
+Decomposition:
+$$
+\sum_{i=1}^n (X_i-\mu_0)^2
+=
+\sum_{i=1}^n (X_i-\barX)^2
++
+n(\barX-\mu_0)^2
+$$
+
+Therefore
+\begin{align*}
+\frac{\sigma_{0,\MLE}^2}{\sigma_{\MLE}^2}
+& =
+1
++
+\frac{n (\barX-\mu_0)^2}
+     {\displaystyle  \sum_{i=1}^n (X_i-\barX)^2} = 1
++
+\frac{n(\bar X-\mu_0)^2}
+     {(n-1)S^2} \\
+& = 1 + \frac{T^2}{n-1}
+\end{align*}
+
+where $\displaystyle T = \frac{\bar X-\mu_0}{S/\sqrt n}$ is the familiar $t$-statistic
+
+---
+
+### Final form
+
+$$
+\Lambda
+=
+\left(
+1 + \frac{T^2}{n-1}
+\right)^{-n/2}.
+$$
+
+Thus the likelihood ratio depends only on the $t$-statistic for testing $H_0: \mu = \mu_0$ vs $H_A: \mu \ne \mu_0$
+
+The nuisance parameter $\sigma^2$ has disappeared
 
 ## Wilks' Theorem {#largesamplelikelihoodratio}
 $$
