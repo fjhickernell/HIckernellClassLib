@@ -221,6 +221,7 @@
         dif: "{\\mathrm{d}}",
         IID: "{\\mathrm{IID}}",
         MLE: "{\\mathrm{MLE}}",
+        LRT: "{\\mathrm{LRT}}",
 
         exstar: "{\\mathop{\\mathchoice{\\color{gold}{\\Large\\star}}{\\color{gold}{\\Large\\star}}{\\color{gold}{\\large\\star}}{\\color{gold}{\\star}}}}",
         exeq: "{\\mathrel{\\,\\overset{\\exstar}{=}\\,}}",
