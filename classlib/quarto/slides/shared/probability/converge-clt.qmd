@@ -52,7 +52,7 @@ so  $X_n \ \, \nconvas X$
 
 ## Central Limit Theorem{#clt data-state="goldborder"}
 
-[({{< meta texts.cb.initials >}} §5.5; {{< meta texts.wms.initials >}} §§???)]{.small}
+[({{< meta texts.cb.initials >}} §5.5; {{< meta texts.wms.initials >}} §§7.3--7.5)]{.small}
 
 If $X_1, X_2, \ldots \IIDsim$ some distribution with finite moment generating function, $M(t) := \Ex\bigl(\exp(tX_1)\bigr)$, that exists for $t$ near $0$, and $\mu = \Ex(X_1)$ and $\sigma^2 = \var(X_1)$, and
 $$
@@ -112,7 +112,7 @@ $\square$
 
 ## Chebyshev (Markov) Inequality
 
-[({{< meta texts.cb.initials >}} §3.6, §3.8; {{< meta texts.wms.initials >}} §§???)]{.small}
+[({{< meta texts.cb.initials >}} §3.6, §3.8)]{.small}
 $$
 \Prob\bigl( f(X) \ge r \bigr) \le \frac{\Ex[f(X)]}{r} \qquad f \text{ is }\class{alert}{\text{non-negative}}
 $$

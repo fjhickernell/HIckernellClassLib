@@ -1,6 +1,6 @@
 ## Conditional probability{#conditional-prob}
 
-[({{< meta texts.cb.initials >}} §1.3, §4.2; {{< meta texts.wms.initials >}} ???)]{.small}
+[({{< meta texts.cb.initials >}} §1.3, §4.2; {{< meta texts.wms.initials >}} 2.7)]{.small}
 
 The [conditional probability]{.alert} means restricting attention to outcomes where $B$ occurs, then
 measure how often $A$ occurs within that restricted universe of $A$ given $B$ (with $\Prob(B)>0$):
