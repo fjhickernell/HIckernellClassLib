@@ -78,6 +78,7 @@
         dist:  "{\\operatorname{dist}}",
         spn:   "{\\operatorname{span}}",
         sgn:   "{\\operatorname{sgn}}",
+        releff: "{\\operatorname{rel-eff}}",
         mse:   "{\\operatorname{mse}}",
         rmse:  "{\\operatorname{rmse}}",
         rank:  "{\\operatorname{rank}}",
