@@ -12,7 +12,8 @@
 We have constructed tests, and we have computed their size and power, but 
 
 ::: {.key-point}
-Among all tests with size $\alpha$, which has the highest power (at a fixed alternative)?
+Among all tests with size $\alpha$, which test has the highest power
+against a fixed alternative?
 :::
 
 To compare two hypotheses
@@ -21,25 +22,20 @@ $$
 H_0: \theta = \theta_0 \qquad \text{vs} \qquad H_A: \theta = \theta_A
 $$
 
-Consider the [likelihood](02-estimator.html#maximum-likelihood-estimators) ratio statistic
-
+Consider the likelihood ratio statistic constructed from the
+ratio of the [likelihood](02-estimator.html#maximum-likelihood-estimators)
+values
 $$
 \Lambda(\vX)
 =
 \frac{L(\theta_0 \mid \vX)}
      {L(\theta_A \mid \vX)}
+= \frac{\varrho_{\vX}(\vX \mid \theta_0)}{\varrho_{\vX}(\vX \mid \theta_A)}
 $$
 
-[Small $\Lambda \implies$ evidence against $H_0$]{.alert}
+If the data are much more likely under $H_A$ than under $H_0$,
+the ratio $\Lambda(\vX)$ will be small, and this is [evidence against $H_0$]{.alert}
 
-Or for more general hypotheses, e.g., $H_0: \theta \in \ct_0$ vs $H_A: \theta \in \ct_A$:   
-
-$$
-\Lambda(\vX)
-=
-\frac{\sup_{\theta\in \ct_0} L(\theta \mid \vX)}
-     {\sup_{\theta\in \ct} L(\theta \mid \vX)}
-$$
 
 ## Neyman–Pearson lemma (simple vs simple) {#neymanpearson}
 
@@ -52,81 +48,109 @@ H_A:\theta=\theta_A
 $$
 
 ::: {.key-point}
-Among all tests with size $\alpha$, the likelihood ratio test is most powerful
+Among all tests with size $\alpha$, the test that rejects for
+sufficiently small likelihood ratio is most powerful
 :::
 
 Reject $H_0$ when
 
 $$
+\Lambda(\vX) 
+= 
 \frac{L(\theta_0 \mid \vX)}
      {L(\theta_A \mid \vX)}
-< k
+< 
+k
 $$
 
-where $k$ is chosen to make the test have size $\alpha$
+where $k$ is chosen so that
+
+$$
+\Prob(\text{reject }H_0 \mid \theta = \theta_0)= \Prob(\Lambda(\vX) < k \mid \theta = \theta_0) = \alpha
+$$
+
 
 ---
 
-### Example:  mean of Normal data with known $\sigma$
-
-Test
+### Example:  mean of IID Normal data with known $\sigma$
 
 $$
 H_0:\mu=\mu_0
 \qquad
-H_A:\mu=\mu_1 \quad \text{with } \mu_1 > \mu_0
+H_A:\mu=\mu_A \quad \text{with } \mu_A > \mu_0
 $$
 
-Assume $X_1,\dots,X_n \sim \Norm(\mu,\sigma^2)$.  We know that $\barX_n$ is the MLE of $\mu$, so the [likelihood ratio]{.alert} test statistic is
+Assume $X_1,\dots,X_n \sim \Norm(\mu,\sigma^2)$.  The [likelihood ratio]{.alert} test statistic is
 
 $$
 \Lambda
 =
-\frac{L(\mu_0)}{L(\barX_n)}
+\frac{L(\mu_0 \mid \vX)}{L(\mu_A \mid \vX)}
+$$
+
+
+Because the logarithm is increasing, it is convenient to work with
+
+\begin{multline*}
+\log \Lambda(\vX)
 =
-\exp\!\left(
--\frac{n}{2\sigma^2}
-(\barX_n - \mu_0)^2
-\right)
-$$
-
-
-[Reject]{.alert} when $\Lambda$ is small $\iff (\barX_n - \mu_0)^2 \iff \barX_n$  is large, because alternative is one-sided
-
-Equivalently,
-
-$$
-\frac{\barX_n - \mu_0}{\sigma/\sqrt n}
->
-z_\alpha, \qquad \text{which gives the cut-off in terms of $n$, $\sigma$, and $\alpha$}
-$$
-
-The LRT reproduces the classical $z$-test for the mean of a normal distribution with known variance
+\log \bigl(L(\mu_0 \mid \vX)\bigr)-\log L(\mu_A \mid \vX) \\
+= -\frac{1}{2\sigma^2}
+\sum_{i=1}^n (X_i-\mu_0)^2 + \frac{1}{2\sigma^2}
+\sum_{i=1}^n (X_i-\mu_A)^2 = \cdots \\
+= \frac{n(\mu_0-\mu_A)}{\sigma^2} \left(\barX_n - \frac{\mu_0+\mu_A}{2}\right)
+\end{multline*}
 
 ---
 
-::: {.exitem}
-<span class="exbullet">$\exstar$</span>
-<span>
-Show that the LRT for testing $H_0: \mu = \mu_0$ vs $H_A: \mu  = \mu_1$ with $\mu_1 > \mu_0$ and $\sigma$ unknown is the same as the $t$-test
-</span>
+\begin{equation*}
+\log \Lambda(\vX)
+= \frac{n(\mu_0-\mu_A)}{\sigma^2} \left(\barX_n - \frac{\mu_0+\mu_A}{2}\right)
+\end{equation*}
+
+[Reject]{.alert} when $\barX_n > c$ for some cut-off $c$, which is chosen so that
+
+$$
+\Prob(\barX_n>c \mid \mu=\mu_0)=\alpha, \qquad \text{i.e., }  c = \mu_0 + z_\alpha \frac{\sigma}{\sqrt n}
+$$
+
+Because the Type-I error is computed assuming $H_0$ is true,
+the cutoff does *not depend on* $\mu_A$
+
+::: {.key-point}
+The likelihood ratio test is most powerful among all tests with size $\alpha$ for testing $H_0: \mu = \mu_0$ vs $H_A: \mu = \mu_A$ with $\mu_A > \mu_0$ when $\sigma$ is known
 :::
 
+&nbsp;
+
+The likelihood ratio test therefore reproduces the classical $z$-test for the mean of a normal distribution with known variance
 
 
 ## From Neyman–Pearson to likelihood ratio tests
 
-For composite hypotheses,
+More generally, for hypotheses
+
+$$
+H_0:\theta \in \ct_0
+\qquad\text{vs}\qquad
+H_A:\theta \in \ct_A
+$$
+
+the likelihood ratio statistic is
 
 $$
 \Lambda(\vX)
-= 
-\frac{\displaystyle \sup_{\theta\in \text{null model}} L(\theta \mid \vX)}
-     {\displaystyle \sup_{\theta\in \text{full model}} L(\theta \mid \vX)}
+=
+\frac{\sup_{\theta\in \ct_0} L(\theta \mid \vX)} 
+     {\sup_{\theta\in \ct} L(\theta \mid \vX)}
+     =\frac{\text{best fit under }H_0}
+          {\text{best fit over the entire parameter space}}
 $$
 
-Reject for small $\Lambda$
+The numerator is the largest likelihood *under $H_0$*,  
+while the denominator is the largest likelihood **over the entire parameter space**
 
+Reject for small $\Lambda$
 
 ## Example: LRT for a normal mean (unknown variance)
 
@@ -234,6 +258,20 @@ $$
 Thus the likelihood ratio depends only on the $t$-statistic for testing $H_0: \mu = \mu_0$ vs $H_A: \mu \ne \mu_0$
 
 The nuisance parameter $\sigma^2$ has disappeared
+
+
+
+--
+
+::: {.exitem}
+<span class="exbullet">$\exstar$</span>
+<span>
+Show that the LRT for testing $H_0: \mu = \mu_0$ vs $H_A: \mu  = \mu_1$ with $\mu_1 > \mu_0$ and $\sigma$ unknown is the same as the $t$-test
+</span>
+:::
+
+---
+
 
 ## Wilks' Theorem {#largesamplelikelihoodratio}
 $$
