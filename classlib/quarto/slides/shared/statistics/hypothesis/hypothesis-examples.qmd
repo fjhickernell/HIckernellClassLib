@@ -321,3 +321,10 @@ plt.show()
 <span class="exbullet">$\exstar$</span><span>Construct small sample size one-sided  and two-sided tests for the mean of an exponential distribution and sketch the power curves</span>
 
 :::
+
+&nbsp;
+
+<a class="button" style="margin-left:2em;" href="../classlib/classlib/notebooks/matched_pairs_sleep_study.ipynb" download>
+⬇ Matched Pairs Sleep Study 📓
+</a>
+
