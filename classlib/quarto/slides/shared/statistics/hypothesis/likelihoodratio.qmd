@@ -11,12 +11,14 @@
 
 We have constructed tests, and we have computed their size and power, but 
 
-> Among all tests with size $\alpha$, which has the highest power (at a fixed alternative)?
+::: {.key-point}
+Among all tests with size $\alpha$, which has the highest power (at a fixed alternative)?
+:::
 
 To compare two hypotheses
 
 $$
-H_0: \theta = \theta_0 \text{ vs } H_A: \theta = \theta_1
+H_0: \theta = \theta_0 \qquad \text{vs} \qquad H_A: \theta = \theta_A
 $$
 
 Consider the [likelihood](02-estimator.html#maximum-likelihood-estimators) ratio statistic
@@ -25,18 +27,18 @@ $$
 \Lambda(\vX)
 =
 \frac{L(\theta_0 \mid \vX)}
-     {L(\theta_1 \mid \vX)}
+     {L(\theta_A \mid \vX)}
 $$
 
-Small $\Lambda \implies$ evidence against $H_0$
+[Small $\Lambda \implies$ evidence against $H_0$]{.alert}
 
-Or for more general hypotheses, e.g., $H_0: \theta \in \Theta_0$ vs $H_A: \theta \in \Theta_A$:   
+Or for more general hypotheses, e.g., $H_0: \theta \in \ct_0$ vs $H_A: \theta \in \ct_A$:   
 
 $$
 \Lambda(\vX)
 =
-\frac{\sup_{\theta\in H_0} L(\theta \mid \vX)}
-     {\sup_{\theta\in H_A} L(\theta \mid \vX)}
+\frac{\sup_{\theta\in \ct_0} L(\theta \mid \vX)}
+     {\sup_{\theta\in \ct} L(\theta \mid \vX)}
 $$
 
 ## Neyman–Pearson lemma (simple vs simple) {#neymanpearson}
@@ -45,20 +47,20 @@ Test
 
 $$
 H_0:\theta=\theta_0
-\qquad
-H_A:\theta=\theta_1
+\qquad\text{vs}\qquad
+H_A:\theta=\theta_A
 $$
 
-Among all tests with size $\alpha$,
-
-> The likelihood ratio test is most powerful
+::: {.key-point}
+Among all tests with size $\alpha$, the likelihood ratio test is most powerful
+:::
 
 Reject $H_0$ when
 
 $$
-\frac{L(\theta_1 \mid \vX)}
-     {L(\theta_0 \mid \vX)}
-> k
+\frac{L(\theta_0 \mid \vX)}
+     {L(\theta_A \mid \vX)}
+< k
 $$
 
 where $k$ is chosen to make the test have size $\alpha$

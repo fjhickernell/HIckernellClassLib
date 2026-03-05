@@ -99,7 +99,7 @@
         med:   "{\\operatorname{med}}",
         vol:   "{\\operatorname{vol}}",
         bias:  "{\\operatorname{bias}}",
-        RR:   "{\\mathrm{RR}}",
+        RR:   "{\\mathcal{R}}",
 
         Bern:  "{\\operatorname{Bern}}",
         Bin:   "{\\operatorname{Bin}}",

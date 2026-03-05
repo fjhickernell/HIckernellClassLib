@@ -50,22 +50,19 @@ Changing $\alpha$ after seeing the $p$-value is a form of [data snooping]{.alert
 
 ## Two-sided CLT-enabled test for a mean assuming large sample size {#twoclttest}
 
-Suppose $X_1,\dots,X_n$ IID with $\Ex[X_i] = \mu$, $\var(X_i) = \sigma^2$ with large $n$
+Suppose $X_1,\dots,X_n$ IID with $\Ex(X_i) = \mu$, $\var(X_i) = \sigma^2$ with large $n$
 
-Test
+Test $H_0: \mu = \mu_0$ against $H_A: \mu \ne \mu_0$
 
-$H_0: \mu = \mu_0$ against 
+- [Test statistic]{.alert} $\displaystyle Z_n(\vX) = \frac{\barX_n - \mu_0}{S_n/\sqrt{n}} \appxsim \Norm(0,1) \text{ for large } n \text{ under } H_0$
 
-$H_A: \mu \ne \mu_0$
+- [Rejection region]{.alert} $\RR = (-\infty, -z_{\alpha/2}) \cup (z_{\alpha/2}, \infty)$
 
-- [Test statistic]{.alert} $\displaystyle Z_n = \frac{\barX_n - \mu_0}{S/\sqrt{n}} \appxsim \Norm(0,1) \text{ for large } n \text{ under } H_0$
-
-- [Rejection region]{.alert} $\RR = \{Z_n: |Z_n| > z_{\alpha/2}\}$
-
-- [Power function]{.alert} — the probability of rejecting $H_0$ when the true mean is $\mu_1$
+- [Power function]{.alert} — the probability of rejecting $H_0$ when the true mean is $\mu_1$ 
+  - (approximate power, treating $S_n\approx \sigma$ for large $n$)
 
 $$
-\power(\mu_1)= \Prob(|Z_n|>z_{\alpha/2} \mid \mu = \mu_1) = 1 - \Phi\!\left(z_{\alpha/2} - \frac{\mu_1-\mu_0}{\sigma/\sqrt{n}}\right) + \Phi\!\left(-z_{\alpha/2} - \frac{\mu_1-\mu_0}{\sigma/\sqrt{n}}\right  )
+\power(\mu_1)= \Prob(|Z_n(\vX)|>z_{\alpha/2} \mid \mu = \mu_1) = 1 - \Phi\!\left(z_{\alpha/2} - \frac{\mu_1-\mu_0}{\sigma/\sqrt{n}}\right) + \Phi\!\left(-z_{\alpha/2} - \frac{\mu_1-\mu_0}{\sigma/\sqrt{n}}\right  )
 $$
 
 - [$p$-value]{.alert} for observed $z_{\text{obs}}$ is $p = 2\big(1 - \Phi(|z_{\text{obs}}|)\big)$
@@ -146,19 +143,17 @@ Power describes the test design, not the evidence in this sample
 
 Suppose $X_1,\dots,X_n$ IID with  $X_i \sim \Norm(\mu,\sigma^2)$
 
-Test  
-$H_0: \mu \le \mu_0$ against  
-$H_A: \mu > \mu_0$
+Test  $H_0: \mu \le \mu_0$ against  $H_A: \mu > \mu_0$
 
-- [Test statistic]{.alert} $\displaystyle T_n = \frac{\barX_n - \mu_0}{S/\sqrt{n}} \sim t_{n-1} \text{ under } \mu=\mu_0$
+- [Test statistic]{.alert} $\displaystyle T_n(\vX) = \frac{\barX_n - \mu_0}{S_n/\sqrt{n}} \sim t_{n-1} \text{ under } \mu=\mu_0$
 
-- [Rejection region]{.alert} $\RR = \{T_n: T_n > t_{\alpha,n-1}\}$
+- [Rejection region]{.alert} $\RR = (t_{n-1,\alpha}, \infty)$
 
 - [Power function]{.alert} — the probability of rejecting $H_0$ when the true mean is $\mu_1$
 
 \begin{multline*}
-T_n \sim t_{n-1}(\delta) \text{ for } \delta = \frac{\mu_1 - \mu_0}{\sigma/\sqrt{n}} \\
-\implies \power(\mu_1) = \Prob(T_n > t_{\alpha,n-1} \mid \mu=\mu_1) = 1 - F_{t_{n-1}(\delta)}\!\left(t_{\alpha,n-1}\right)
+T_n(\vX) \sim t_{n-1}(\delta) \text{ for } \delta = \frac{\mu_1 - \mu_0}{\sigma/\sqrt{n}} \\
+\implies \power(\mu_1) = \Prob(T_n(\vX) > t_{n-1,\alpha} \mid \mu=\mu_1) = 1 - F_{t_{n-1}(\delta)}\!\left(t_{n-1,\alpha}\right)
 \end{multline*}
 
 where $F_{t_{n-1}(\delta)}$ is the CDF of the noncentral t distribution with $n-1$ degrees of freedom and noncentrality parameter $\delta$
@@ -234,20 +229,19 @@ plt.show()
 
 Suppose $X_1,\dots,X_n$ IID with $X_i \sim \Norm(\mu,\sigma^2)$.
 
-Test  
-$H_0: \sigma^2 = \sigma_0^2$ against  
-$H_A: \sigma^2 > \sigma_0^2$
+Test   $H_0: \sigma^2 = \sigma_0^2$ against   $H_A: \sigma^2 > \sigma_0^2$
 
-- [Pivot / test statistic]{.alert}  $\displaystyle Q = \frac{(n-1)S^2}{\sigma_0^2} \sim \chi^2_{n-1} \text{ under } H_0$
+- [Pivot / test statistic]{.alert}  $\displaystyle T_n(\vX) = \frac{(n-1)S_n^2}{\sigma_0^2} \sim \chi^2_{n-1} \text{ under } H_0$
+  - where $S_n^2$ is the unbiased sample variance
 
-- [Rejection region]{.alert}  $\RR = \{Q: Q > \chi^2_{n-1,\alpha}\}$
+- [Rejection region]{.alert}  $\RR = (\chi^2_{n-1,\alpha}, \infty)$
 
 - [Power function]{.alert}  
 $$
 \power(\sigma_1)
 =
 \Prob\!\left(
-Q > \chi^2_{n-1,\alpha}\mid \sigma_1
+T_n(\vX) > \chi^2_{n-1,\alpha}\mid \sigma = \sigma_1
 \right)
 =
 \Prob\!\left(
@@ -255,7 +249,7 @@ Q > \chi^2_{n-1,\alpha}\mid \sigma_1
 \right)
 $$
 
-- [$p$-value]{.alert} for observed $q_{\text{obs}}$ is  $p = \Prob(\chi^2_{n-1} \ge q_{\text{obs}})$
+- [$p$-value]{.alert} for observed $q_{\text{obs}}$ is  $p = \Prob(\chi^2_{n-1} \ge t_{\text{obs}})$
 
 
 ---

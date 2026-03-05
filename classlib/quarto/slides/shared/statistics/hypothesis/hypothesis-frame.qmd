@@ -1,22 +1,29 @@
 # Hypothesis Testing Framework
 
-- [Null hypothesis]{.alert} $H_0$ — the default assumption, [innocence]{.alert}, often "no effect" or "status quo"
-- [Alternative hypothesis]{.alert} $H_A$ — [guilty]{.alert}, the claim requiring evidence
+- [Null hypothesis]{.alert} $H_0$ — the default assumption, often of the form $H_0: \theta = \theta_0$ or $H_0: \theta \in \ct_0$
+  - [innocence]{.alert}, "no effect" or "status quo"
+- [Alternative hypothesis]{.alert} $H_A$ — the alternative, often of the form $H_A: \theta = \theta_1$ or $H_A: \theta \in \ct_A$
+  - [guilt]{.alert}, "effect", or "change"
 
-- [Test statistic]{.alert} $T(\vX)$ — a function (summary) of the data, $\vX = (X_1, \ldots, X_n)$, used to assess $H_0$
-- [Rejection region]{.alert} $\RR$ — values of $T(\vX)$ for which we reject $H_0$
+- [Test statistic]{.alert} $T(\vX) \in \ct$ — a function/summary of the data, $\vX = (X_1, \ldots, X_n)$, used to assess $H_0$
+- [Rejection region]{.alert} $\RR \subseteq \ct$ — values of $T(\vX)$ for which we reject $H_0$
+- [Decision rule]{.alert} — reject $H_0$ if $T(\vX) \in \RR$
 
 - [Type I error]{.alert} $\alpha$ — [reasonable doubt]{.alert}, probability of falsely rejecting $H_0$
-- [$p$-value]{.alert} — (under $H_0$) probability of observing a result at least as extreme as the one observed
+  - $H_0$ gets protection via the bound on Type I error
+
+- [$p$-value]{.alert} — (under $H_0$) probability that the test statistic is at least as extreme as the observed value
 
 - [Type II error]{.alert} $\beta$ — probability of failing to reject $H_0$ when $H_A$ is true
 - [Power]{.alert} $1-\beta$ — probability of correctly rejecting $H_0$
+
+---
 
 ::: {.key-point}
 Hypothesis testing is a formal way of deciding whether the data provide enough evidence to overturn a protected default assumption
 :::
 
-We will use ideas from estimation, confidence intervals, and pivots to construct tests
+We will use ideas from estimation, confidence intervals, and pivots
 
 ---
 
@@ -33,6 +40,8 @@ from classlib.plots import (
     shade_under_curve,
     curve_color,
     reject_color,
+    annotate_xaxis_marks, 
+    annotate_yaxis_marks,
 )
 
 plt.rcParams["mathtext.fontset"] = "cm"
@@ -96,7 +105,7 @@ print(rf"- [Alternative hypothesis]{{.alert}} (guilty, change): $\qquad H_A:\ \m
 ```{python}
 #| echo: false
 #| output: asis
-print(rf"$$\text{{Use the pivot }} \frac{{2n\barX}}{{\mu}} \sim \chi^2_{{2n}}, \qquad \text{{so that under }} H_0: \mu = {mu0:g}, \quad T(\vX) = \frac{{2n\barX}}{{{mu0:g}}} \sim \chi^2_{{2n}}$$")
+print(rf"$$\text{{Use the pivot }} \frac{{2n\barX_n}}{{\mu}} \sim \chi^2_{{2n}}, \qquad \text{{so that under }} H_0: \mu = {mu0:g}, \quad T(\vX) = \frac{{2n\barX_n}}{{{mu0:g}}} \sim \chi^2_{{2n}}$$")
 ```
 
 :::{.fragment}
@@ -114,20 +123,18 @@ print(rf"Choose $\alpha = {alpha}$ as the maximum tolerable risk of falsely accu
 
 Left-tailed test:
 
-$$
-\RR
-=
-\left\{
-T < \chi^2_{2n,1-\alpha}
-\right\}
-$$
+```{python}
+#| echo: false
+#| output: asis
+print(rf"$$\RR = [0, \chi^2_{{2n,1-\alpha}}) = [0, {tcrit:.2f})$$")
+```
 
 Equivalently, reject when
 
 ```{python}
 #| echo: false
 #| output: asis
-print(rf"$$\barX < \frac{{{mu0}}}{{2n}}\,\chi^2_{{2n,1-\alpha}}$$")
+print(rf"$$\barX_n < \frac{{{mu0}}}{{2n}}\,\chi^2_{{2n,1-\alpha}}$$")
 ```
 
 &nbsp;
@@ -155,6 +162,8 @@ from classlib.plots import (
     shade_under_curve,
     curve_color,
     reject_color,
+    annotate_xaxis_marks, 
+    annotate_yaxis_marks
 )
 plt.rcParams["mathtext.fontset"] = "cm"
 
@@ -182,16 +191,20 @@ shade = shade_under_curve(
 # Critical value 
 ax.vlines(tcrit, 0, ycrit, linewidth=3.0)
 
-ax.set_title(rf"Left-tailed test under $H_0$: $n ={n}$, $T \sim \chi^2_{{{df}}}$", fontsize=18)
+ax.set_title(rf"Left-tailed test under $H_0$: $n ={n}$, $T(\boldsymbol{{X}}) \sim \chi^2_{{{df}}}$", fontsize=24)
 ax.set_xlabel(r"$t$", fontsize=24)
 ax.set_ylabel(r"$\varrho_{T}(t)$", fontsize=24)
 
 ax.set_ylim(0, max(pdf)*1.15)
 
+
+plt.xticks(fontsize=20)
+plt.yticks(fontsize=20)
+
 annotate_xaxis_marks(
     ax,
     [tcrit],
-    [rf"$\chi^2_{{{df},{1-alpha}}} = {tcrit:.2f}$"],
+    [rf"$\mathbb{{P}}[T(\boldsymbol{{X}}) < {tcrit:.2f} ] = {alpha}$"], text_offset_pts=-30,
     fontsize=24,
 )
 
@@ -247,7 +260,7 @@ print(r"<div style='height:40px;'></div>")
 if pval <= alpha:
   print(rf"So we REJECT $H_0$ at the $\alpha={alpha}$ level")
 else:
-  print(rf"So we do NOT reject $H_0$ at the $\alpha={alpha}$ level")
+  print(rf"So we do NOT reject $H_0$ at the $\alpha={alpha}$ level.  This is *not* the same as accepting $H_0$!")
 ```
 :::
 
@@ -296,23 +309,23 @@ From Step 3, we reject $H_0$ when
 ```{python}
 #| echo: false
 #| output: asis
-print(rf"$$T=\frac{{2n\barX}}{{{mu0}}} < \chi^2_{{2n,1-\alpha}}$$")
+print(rf"$$T(\boldsymbol{{X}})=\frac{{2n\barX_n}}{{{mu0}}} < \chi^2_{{2n,1-\alpha}}$$")
 print("")
 print(rf"If the true mean is actually $\mu_1$, then")
-print(rf"$$\frac{{{mu0} T }}{{\mu_1}} = \frac{{2n\barX}}{{\mu_1}} \sim\chi^2_{{2n}}$$")
+print(rf"$$\frac{{{mu0} T(\boldsymbol{{X}}) }}{{\mu_1}} = \frac{{2n\barX_n }}{{\mu_1}} \sim\chi^2_{{2n}}$$")
 print("")
 print(rf"Therefore the [power function]{{.alert}} is")
 print(r"\begin{align*}")
 print(r"\power(\mu_1)")
-print(r"&= \Prob\!\left(T < \chi^2_{2n,\,1-\alpha}\mid \mu=\mu_1\right)")
-print(rf"= \Prob\!\left(\frac{{{mu0}\,T}}{{\mu_1}} \sim \chi^2_{{2n}} < \frac{{{mu0}\,\chi^2_{{2n,\,1-\alpha}}}}{{\mu_1}} \,\middle|\, \mu=\mu_1\right)\\")
+print(r"&= \Prob\!\left(T(\boldsymbol{{X}}) < \chi^2_{2n,\,1-\alpha}\mid \mu=\mu_1\right)")
+print(rf"= \Prob\!\left(\frac{{{mu0}\,T(\boldsymbol{{X}})}}{{\mu_1}} \sim \chi^2_{{2n}} < \frac{{{mu0}\,\chi^2_{{2n,\,1-\alpha}}}}{{\mu_1}} \,\middle|\, \mu=\mu_1\right)\\")
 print(rf"&\qquad \qquad \text{{increases as $\mu_1$ decreases.}}")
 print(r"\end{align*}")
 ```
 
 ---
 
-### Power Curve
+### Power Curves
 
 ```{python}
 #| echo: false
@@ -329,7 +342,7 @@ dflarge = 2 * nlarge
 tcrit_large = st.chi2.ppf(alpha, dflarge)  # upper-quantile convention
 
 # --- grid ---
-mu = np.linspace(50, 300, 400)
+mu = np.linspace(10, 250, 400)
 
 # --- power curves ---
 power_base = st.chi2.cdf((mu0 / mu) * tcrit, df)
@@ -349,8 +362,14 @@ ax.hlines(alpha, mu.min(), mu.max(), linestyles="--", linewidth=2.0)
 
 ax.set_xlabel(r"True mean $\mu_1$", fontsize=20)
 ax.set_ylabel(r"$\mathrm{power}(\mu_1)$", fontsize=24)
+plt.xticks(fontsize=20)
+plt.yticks(fontsize=20)
 ax.set_ylim(-0.02, 1.02)
 ax.set_title(rf"$\alpha={alpha}$", fontsize=24)
+
+ax = plt.gca()
+annotate_xaxis_marks(ax, [mu0], [r"$\mu_0$"], colors=["black"], text_offset_pts=-25, fontsize=24)
+annotate_yaxis_marks(ax, [alpha], [r"$\alpha$"], colors=["black"], text_offset_pts = -40, fontsize=24)
 
 ax.legend(frameon=False, fontsize=18, loc="upper right")
 
@@ -377,7 +396,7 @@ $H_0$ and $H_A$ are mutually exclusive
 
 ### Truth vs Decision
 
-| Truth about $H_0$ | Reject $H_0$ | Do Not Reject $H_0$ |
+| | Reject $H_0$ | Do Not Reject $H_0$ |
 |-----------------|-------------------|-------------------|
 | $H_0$ true | **Type I error** <br> probability $\alpha$| Correct |
 | $H_0$ false | Correct <br> probability $\power(\theta)$| **Type II error** <br> probability $\beta(\theta)$ |
