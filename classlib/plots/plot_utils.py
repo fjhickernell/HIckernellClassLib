@@ -190,7 +190,7 @@ def annotate_yaxis_marks(
     )
 
 
-def shade_under_curve(ax, x, y, *, where=None, color=None, alpha=0.3, zorder=None):
+def shade_under_curve(ax, x, y, *, where=None, baseline=0.0, color=None, alpha=0.3, zorder=None):
     """
     Shade area between y(x) and 0 over a subset of x.
 
@@ -217,7 +217,7 @@ def shade_under_curve(ax, x, y, *, where=None, color=None, alpha=0.3, zorder=Non
 
     return ax.fill_between(
         x[mask],
-        0.0,
+        baseline,
         y[mask],
         alpha=alpha,
         color=color,
