@@ -7,6 +7,6 @@ format:
     incremental: false
     transition: none
     background-transition: none
-    css:
-      - classlib/quarto/slides/research/research-slides.scss
-      - classlib/quarto/slides/research/research-title.scss
+    theme:
+      - simple
+      - ../classlib/classlib/quarto/slides/research/research-slides.scss

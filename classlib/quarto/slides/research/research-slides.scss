@@ -1,22 +1,110 @@
-.reveal .slides section.title-slide.iit-skyline-title {
+/*-- scss:uses --*/
+@import "../hickernell-slides.scss";
+
+/*-- scss:rules --*/
+
+.reveal:not(.overview) .slides section.title-slide.slide.level1.iit-skyline-title:not(#title-slide) {
+  position: relative;
+  overflow: hidden;
   text-align: center;
+  padding-top: 0 !important;
+
+  width: 100% !important;
+  max-width: none !important;
+  left: 0 !important;
+  transform: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* white text */
+.reveal .slides section.title-slide.iit-skyline-title,
+.reveal .slides section.title-slide.iit-skyline-title h1,
+.reveal .slides section.title-slide.iit-skyline-title h2,
+.reveal .slides section.title-slide.iit-skyline-title h3,
+.reveal .slides section.title-slide.iit-skyline-title p,
+.reveal .slides section.title-slide.iit-skyline-title div,
+.reveal .slides section.title-slide.iit-skyline-title span,
+.reveal .slides section.title-slide.iit-skyline-title a,
+.reveal .slides section.title-slide.iit-skyline-title li {
+  color: white !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+/* kill Hickernell/course banner mechanics */
+.reveal .slides section.title-slide.iit-skyline-title::before,
+.reveal .slides section.title-slide.iit-skyline-title::after,
+.reveal .slides section.title-slide.iit-skyline-title h1::before,
+.reveal .slides section.title-slide.iit-skyline-title h2::before {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* center the visible stack */
+.reveal .slides section.title-slide.iit-skyline-title > h1,
+.reveal .slides section.title-slide.iit-skyline-title > div {
+  position: relative;
+  z-index: 2;
+  width: min(1400px, 90%) !important;
+  max-width: none !important;
+  text-align: center !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* remove inner paragraph rail limits */
+.reveal .slides section.title-slide.iit-skyline-title > div > p {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  text-align: center !important;
+}
+
+/* neutralize heading box styling */
+.reveal .slides section.title-slide.iit-skyline-title h1,
+.reveal .slides section.title-slide.iit-skyline-title h2 {
+  background: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: white !important;
+  margin: 0 0 0.40em 0 !important;
+  padding: 0.10em 0 0.15em 0 !important;
+}
+
+.reveal .slides section.title-slide.iit-skyline-title h1 {
+  font-size: 1.80em;
+  line-height: 1.10;
 }
 
 .reveal .slides section.title-slide.iit-skyline-title .author {
-  font-size: 1.05em;
-  font-weight: 600;
-  margin-top: 0.35em;
+  font-size: 0.88em;
+  margin-top: 0.30em;
 }
 
-.reveal .slides section.title-slide.iit-skyline-title .institute {
-  font-size: 0.95em;
-  margin-top: 0.35em;
+.reveal .slides section.title-slide.iit-skyline-title .speaker {
+  font-weight: 700;
+}
+
+.reveal .slides section.title-slide.iit-skyline-title .affiliation,
+.reveal .slides section.title-slide.iit-skyline-title .email {
+  font-weight: 400;
+}
+
+.reveal .slides section.title-slide.iit-skyline-title .email {
+  opacity: 0.9;
 }
 
 .reveal .slides section.title-slide.iit-skyline-title .collaborators,
 .reveal .slides section.title-slide.iit-skyline-title .funding,
 .reveal .slides section.title-slide.iit-skyline-title .slides-link {
-  font-size: 0.78em;
-  margin-top: 0.35em;
+  font-size: 0.76em;
+  margin-top: 0.24em;
 }
 
