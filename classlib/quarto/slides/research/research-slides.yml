@@ -1,0 +1,12 @@
+format:
+  revealjs:
+    center: false
+    slide-number: true
+    chalkboard: false
+    preview-links: auto
+    incremental: false
+    transition: none
+    background-transition: none
+    css:
+      - classlib/quarto/slides/research/research-slides.scss
+      - classlib/quarto/slides/research/research-title.scss
