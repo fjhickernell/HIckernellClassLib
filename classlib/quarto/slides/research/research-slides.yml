@@ -24,7 +24,7 @@ format:
     theme:
       - simple
       - ../classlib/classlib/quarto/slides/hickernell-slides.scss
-      - ../classlib/classlib/quarto/slides/research/research-slides-test.scss
+      - ../classlib/classlib/quarto/slides/research/research-slides.scss
 
 
     slide-number: c/t

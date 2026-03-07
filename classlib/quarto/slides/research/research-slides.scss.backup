@@ -28,7 +28,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: calc(90vw / var(--reveal-scale,1)) !important;
-  max-width: none !important;
+  max-width: 1400px !important;
   text-align: center !important;
 
   text-shadow:
@@ -36,25 +36,16 @@
     0 4px 22px rgba(0,0,0,0.55);
 
   background: none !important;
-  background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
 
   margin-top: 0 !important;
   margin-bottom: 0.40em !important;
-  padding: 1.40em 0 0.15em 0 !important;
+  padding: 0.10em 0 0.15em 0 !important;
 
-  font-size: 2.60em;
+  font-size: 1.80em;
   line-height: 1.10;
 }
-
-.reveal .slides section#research-title-slide > h1::before {
-  content: none !important;
-  display: none !important;
-  background: none !important;
-  box-shadow: none !important;
-}
-
 
 .reveal .slides section#research-title-slide > .title-stack {
   position: relative;
@@ -62,8 +53,8 @@
   left: 50%;
   transform: translateX(-50%);
   width: calc(90vw / var(--reveal-scale,1)) !important;
-  max-width: none !important;
-  margin-top: 5em !important;
+  max-width: 1400px !important;
+  margin-top: 3em !important;
   text-align: center !important;
 }
 
@@ -75,7 +66,7 @@
 }
 
 .reveal .slides section#research-title-slide .author {
-  font-size: 1.15em;
+  font-size: 0.88em;
   margin-top: 0.30em;
 }
 
@@ -96,7 +87,7 @@
 .reveal .slides section#research-title-slide .collaborators,
 .reveal .slides section#research-title-slide .funding,
 .reveal .slides section#research-title-slide .slides-link {
-  font-size: 0.95em;
+  font-size: 0.76em;
   margin-top: 0.24em;
 }
 
