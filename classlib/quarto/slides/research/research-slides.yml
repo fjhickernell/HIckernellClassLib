@@ -21,11 +21,15 @@ format:
     transition: none
     background-transition: none
 
+    title-slide-attributes:
+      data-background-image: /classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus.jpg
+      data-background-size: cover
+      data-background-position: center center
+
     theme:
       - simple
       - ../classlib/classlib/quarto/slides/hickernell-slides.scss
       - ../classlib/classlib/quarto/slides/research/research-slides.scss
-
 
     slide-number: c/t
     show-slide-number: all
@@ -34,3 +38,5 @@ format:
     margin: 0.00
     center: false
     slide-level: 2
+
+    
