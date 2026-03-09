@@ -5,6 +5,8 @@ format:
     reveal-options:
       disableLayout: true
 
+    embed-resources: true
+
     html-math-method:
       method: mathjax
       url: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg-full.js
@@ -22,7 +24,7 @@ format:
     background-transition: none
 
     title-slide-attributes:
-      data-background-image: https://fjhickernell.github.io/SIAMUQ26/classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus.jpg
+      data-background-image: ../classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_slide.jpg
       data-background-size: cover
       data-background-position: center center
 
