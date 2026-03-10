@@ -11,6 +11,10 @@ format:
 
     include-in-header:
       - ../classlib/classlib/quarto/slides/hickernell-latex-macros.js
+      - text: |
+          <link rel="preload"
+                href="../classlib/classlib/quarto/assets/images/campus/IllinoisTech_MiesCampus_slide.jpg"
+                as="image">
 
     include-after-body:
       - ../classlib/classlib/quarto/slides/reveal-scale-var.html
