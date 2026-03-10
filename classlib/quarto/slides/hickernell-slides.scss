@@ -994,5 +994,15 @@ h1::before,
 }
 
 
+.indent {
+  margin-left: 2em;
+}
+
+.hanging {
+  display: block;
+  padding-left: 2em;
+  text-indent: -2em;
+}
+
 /*-- end:scss --*/
 
