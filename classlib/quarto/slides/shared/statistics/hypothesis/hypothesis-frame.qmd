@@ -1,11 +1,13 @@
 # Hypothesis Testing Framework
 
+[({{< meta texts.cb.initials >}} §8.1–8.3; {{< meta texts.wms.initials >}} §10.1–10.2)]{.small}
+
 - [Null hypothesis]{.alert} $H_0$ — the default assumption, often of the form $H_0: \theta = \theta_0$ or $H_0: \theta \in \ct_0$
   - [innocence]{.alert}, "no effect" or "status quo"
 - [Alternative hypothesis]{.alert} $H_A$ — the alternative, often of the form $H_A: \theta = \theta_1$ or $H_A: \theta \in \ct_A$
   - [guilt]{.alert}, "effect", or "change"
 
-- [Test statistic]{.alert} $T(\vX) \in \ct$ — a function/summary of the data, $\vX = (X_1, \ldots, X_n)$, used to assess $H_0$
+- [Test statistic]{.alert} $T(\vX) = T_n(\vX) \in \ct$ — a function/summary of the data, $\vX = (X_1, \ldots, X_n)$, used to assess $H_0$
 - [Rejection region]{.alert} $\RR \subseteq \ct$ — values of $T(\vX)$ for which we reject $H_0$
 - [Decision rule]{.alert} — reject $H_0$ if $T(\vX) \in \RR$
 

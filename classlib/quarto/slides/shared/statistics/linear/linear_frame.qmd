@@ -1,0 +1,11 @@
+# Linear Models
+
+Now we move the situation where we have a
+
+- [Repsonse/Output/Dependent Variable]{.alert} $Y$
+
+- [Explained/Predicted]{.alert} by a vector of [Predictors/Explanatory Variables/Inputs/Indpendent Variables]{.alert} $\vx$, where the $x_j$ may be functions of other variables or each other
+
+Types of linear models
+
+- $Y = \vx^\top \vbeta + \varepsilon$

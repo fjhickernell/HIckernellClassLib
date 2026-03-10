@@ -1,5 +1,7 @@
 # Optimal Tests and Likelihood Methods
 
+[({{< meta texts.cb.initials >}} §8.2–8.3; {{< meta texts.wms.initials >}} §10.10-10.11)]{.small}
+
 - [Likelihood ratio tests (LRT)](#likelihoodratiotests_simple)
 
 - [Neyman–Pearson lemma](#neymanpearson)
@@ -26,7 +28,7 @@ $$
 
 Consider the likelihood ratio statistic constructed from the
 ratio of the [likelihood](02-estimator.html#maximum-likelihood-estimators)
-values
+values based on data $\vX = (X_1,\dots,X_n)$:
 $$
 \Lambda(\vX)
 =
@@ -86,7 +88,7 @@ H_0:\mu=\mu_0
 H_A:\mu=\mu_A \quad \text{with } \mu_A > \mu_0
 $$
 
-Assume $X_1,\dots,X_n \sim \Norm(\mu,\sigma^2)$.  The [likelihood ratio]{.alert} test statistic is
+Assume $X_1,\dots,X_n \sim \Norm(\mu,\sigma^2)$.  The [likelihood ratio]{.alert} test statistic based on this data, $\vX = (X_1,\dots,X_n)$, is
 
 $$
 \Lambda
@@ -142,7 +144,7 @@ H_0:\theta \in \ct_0
 H_A:\theta \in \ct_A
 $$
 
-the likelihood ratio statistic is
+the likelihood ratio statistic based on data $\vX = (X_1,\dots,X_n)$ is
 
 $$
 \Lambda(\vX)
@@ -153,8 +155,10 @@ $$
           {\text{best fit over the entire parameter space}}
 $$
 
-The numerator is the largest likelihood *under $H_0$*,  
-while the denominator is the largest likelihood **over the entire parameter space**
+- The numerator is the largest likelihood *under $H_0$*  
+- The denominator is the largest likelihood [over the entire parameter space]{.alert}
+
+&nbsp;
 
 Reject for small $\Lambda$
 
@@ -301,15 +305,15 @@ Therefore
 = 
 \frac{(\barX_n-\mu_0)^2}
      {(n-1) S_n^2/n} + 1
-= \frac{T^2}{n-1} + 1\\
+= \frac{T_n^2}{n-1} + 1\\
 \Lambda(\vX)
 & =
 \left(
-1 + \frac{T^2}{n-1}
+1 + \frac{T_n^2}{n-1}
 \right)^{-n/2}
 \end{align*}
 
-where $\displaystyle T = \frac{\barX_n-\mu_0}{S/\sqrt n}$ is the familiar $t$-statistic
+where $\displaystyle T_n = \frac{\barX_n-\mu_0}{S/\sqrt n}$ is the familiar $t$-statistic
 
 - The likelihood ratio depends only on the $t$-statistic for testing $H_0: \mu = \mu_0$ vs $H_A: \mu \ne \mu_0$
 

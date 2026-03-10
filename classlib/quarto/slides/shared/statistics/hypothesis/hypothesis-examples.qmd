@@ -1,5 +1,7 @@
 # Examples of hypothesis testing
 
+[({{< meta texts.cb.initials >}} §8.1–8.3; {{< meta texts.wms.initials >}} §10.3-10.9)]{.small}
+
 Building on the established framework
 
 - [Translating words into hypotheses](#translating-words-into-hypotheses)
@@ -249,7 +251,7 @@ T_n(\vX) > \chi^2_{n-1,\alpha}\mid \sigma = \sigma_1
 \right)
 $$
 
-- [$p$-value]{.alert} for observed $q_{\text{obs}}$ is  $p = \Prob(\chi^2_{n-1} \ge t_{\text{obs}})$
+- [$p$-value]{.alert} for observed $t_{\text{obs}}$ is  $p = \Prob(\chi^2_{n-1} \ge t_{\text{obs}})$
 
 
 ---
