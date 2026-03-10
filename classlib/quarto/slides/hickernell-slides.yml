@@ -18,7 +18,9 @@ format:
     include-after-body:
       - ../classlib/classlib/quarto/slides/reveal-scale-var.html
       - ../classlib/classlib/quarto/slides/reveal-nav-reset.html
-
+      - ../classlib/classlib/quarto/slides/deck-nav-arrows.html
+      - text: |
+          <script src="../classlib/classlib/quarto/slides/deck-nav-arrows.js"></script>
     theme:
       - simple
       - ../classlib/classlib/quarto/slides/hickernell-slides.scss

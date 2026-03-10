@@ -88,7 +88,7 @@ H_0:\mu=\mu_0
 H_A:\mu=\mu_A \quad \text{with } \mu_A > \mu_0
 $$
 
-Assume $X_1,\dots,X_n \sim \Norm(\mu,\sigma^2)$.  The [likelihood ratio]{.alert} test statistic based on this data, $\vX = (X_1,\dots,X_n)$, is
+Suppose $X_1,\dots,X_n \IIDsim \Norm(\mu,\sigma^2)$.  The [likelihood ratio]{.alert} test statistic based on this data, $\vX = (X_1,\dots,X_n)$, is
 
 $$
 \Lambda
@@ -172,7 +172,7 @@ H_0:\mu=\mu_0
 H_A:\mu\ne \mu_0
 $$
 
-Assume $X_1,\dots,X_n \IIDsim \Norm(\mu,\sigma^2)$.  The [likelihood ratio]{.alert} test statistic is
+Suppose $X_1,\dots,X_n \IIDsim \Norm(\mu,\sigma^2)$.  The [likelihood ratio]{.alert} test statistic is
 
 $$
 \Lambda(\vX)
@@ -234,13 +234,12 @@ H_0:\mu=\mu_0
 H_A:\mu\ne\mu_0
 $$
 
-Suppose $X_1,\dots,X_n \sim \Norm(\mu,\sigma^2)$
+Suppose $X_1,\dots,X_n \IIDsim \Norm(\mu,\sigma^2)$
 
 
 Parameter vector: $\theta=(\mu,\sigma^2),
 \qquad
-\sigma^2 \text{ is a [nuisance parameter]{.alert}}$
-$
+\sigma^2$  is a [nuisance parameter]{.alert}
 
 
 ### Step 1: Unrestricted MLE
