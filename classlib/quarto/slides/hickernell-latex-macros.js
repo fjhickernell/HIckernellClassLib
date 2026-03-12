@@ -196,8 +196,8 @@
         mX: "{\\mathsf{X}}",
         mP: "{\\mathsf{P}}",
         mI: "{\\mathsf{I}}",
-        m0: "{\\mathsf{0}}",
-        m1: "{\\mathsf{1}}",
+        mzero: "{\\mathsf{0}}",
+        mone: "{\\mathsf{1}}",
 
         htheta: "{\\widehat{\\theta}}",
         hTheta: "{\\widehat{\\Theta}}",

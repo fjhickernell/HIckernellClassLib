@@ -22,4 +22,4 @@ Types of linear models
 | Model with data | $Y_i = \vx_i^\top \vbeta + \varepsilon_i$ <br> $\underbrace{\vY}_{n \times 1} = \underbrace{\mX}_{n \times d}\, \underbrace{\vbeta}_{d \times 1} + \underbrace{\vveps}_{n \times 1}$ | $Y_i \sim \Bern(p)$, $Y_i \sim \Exp(\lambda)$, $Y_i \sim \Norm(\mu,\sigma^2)$, ...  |
 | Not observable | $\varepsilon_1,\dots,\varepsilon_n$ |  |
 | Point estimators | $\hbeta = (\mX^\top \mX)^{-1} \mX^\top \vY$, $\hvY = \mX \hbeta$ | $\barY$, $S^2$, $\hlambda_{\MLE}$, $\hp_{\MLE}$, ... |
-| Confidence/prediction regions for | $\vbeta$, $\Ex[Y(x)]$, $Y(x)$ | $\mu$, $\sigma^2$, $p$, $\lambda$, $Y$ |
+| Confidence/prediction regions for | $\vbeta$, $\Ex(Y \mid \vx)$, $Y \mid \vx$ | $\mu$, $\sigma^2$, $p$, $\lambda$, $Y$ |
