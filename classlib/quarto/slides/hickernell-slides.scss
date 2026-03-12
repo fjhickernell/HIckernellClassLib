@@ -1004,5 +1004,27 @@ h1::before,
   text-indent: -2em;
 }
 
+.reveal mjx-container[jax="CHTML"] a {
+  color: var(--math-link-color) !important;
+}
+
+.reveal mjx-container[jax="SVG"] a g,
+.reveal mjx-container[jax="SVG"] a path,
+.reveal mjx-container[jax="SVG"] a use {
+  fill: var(--math-link-color) !important;
+  stroke: none !important;
+}
+
+.reveal mjx-container[jax="CHTML"] a:hover {
+  color: var(--link-hover) !important;
+}
+
+.reveal mjx-container[jax="SVG"] a:hover g,
+.reveal mjx-container[jax="SVG"] a:hover path,
+.reveal mjx-container[jax="SVG"] a:hover use {
+  fill: var(--link-hover) !important;
+  stroke: none !important;
+}
+
 /*-- end:scss --*/
 
