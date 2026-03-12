@@ -8,7 +8,13 @@ Now we move the situation where we have a
 
 Types of linear models
 
-- $Y = \vx^\top \vbeta + \varepsilon$ with $\varepsilon \sim (0,\sigma^2)$
+- [Ordinary least squares (OLX)]{.alert} $Y = \vx^\top \vbeta + \varepsilon$ with $\varepsilon \sim (0,\sigma^2)$
+
+- ANOVA
+
+- Logistic regression and other generalized linear models
+
+- Gaussian process regression
 
 ## Comparison of inference for linear models and population parameters
 
