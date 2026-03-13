@@ -2,15 +2,15 @@
 
 Now we move the situation where we have a
 
-- [Repsonse/Output/Dependent Variable]{.alert} $Y$
+- [Response/Output/Dependent Variable]{.alert} $Y$
 
 - [Explained/Predicted]{.alert} by a vector of [Predictors/Explanatory Variables/Inputs/Indpendent Variables]{.alert} $\vx$, where the $x_j$ may be functions of other variables or each other
 
 Types of linear models
 
-- [Ordinary least squares (OLX)]{.alert} $Y = \vx^\top \vbeta + \varepsilon$ with $\varepsilon \sim (0,\sigma^2)$
+- [Ordinary least squares (OLS)]{#lsqregress} $Y = \vx^\top \vbeta + \varepsilon$ with $\varepsilon \sim (0,\sigma^2)$
 
-- ANOVA
+- [Analysis of variance (ANOVA)]{.alert} $Y = \vx^\top \vbeta + \varepsilon$ with $\varepsilon \sim (0,\sigma^2)$
 
 - Logistic regression and other generalized linear models
 
