@@ -14,6 +14,7 @@ format:
     include-in-header:
       - ../classlib/classlib/quarto/slides/hickernell-latex-macros.js
       - ../classlib/classlib/quarto/slides/title-course-website.html
+      - ../classlib/classlib/quarto/slides/ipad-webapp-meta.html
 
     include-after-body:
       - ../classlib/classlib/quarto/slides/reveal-scale-var.html
