@@ -249,6 +249,14 @@ body,
   padding: 0 !important;
 }
 
+.reveal .backgrounds {
+  background: white !important;
+}
+
+.reveal-viewport {
+  background: var(--header-blue) !important;
+}
+
 /* Base text color */
 .reveal,
 .reveal p,
@@ -519,6 +527,15 @@ h1::before,
   opacity: 0.7;
 }
 
+/* iPad / narrow viewport footer safety */
+.reveal .footer {
+  box-sizing: border-box !important;
+  left: 2.2em !important;
+  right: 5.2em !important;
+  width: auto !important;
+  padding-right: 0.8em !important;
+}
+
 /* Reveal wraps footer HTML in <p> (sometimes with extra wrappers); neutralize */
 .reveal .footer p {
   margin: 0 !important;
@@ -538,7 +555,7 @@ h1::before,
 
 /* Optional separator styling (· or |) */
 .reveal .footer .fh-footer-sep {
-  margin: 0 1.5em;
+  margin: 0 0.4em;
   opacity: 0.6;
 }
 

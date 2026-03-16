@@ -28,7 +28,7 @@ format:
     footer: |
       <div class="fh-footer">
         <span class="fh-footer-main">
-          © 2026 Fred J. Hickernell · Illinois Institute of Technology
+          © 2026 Fred J. Hickernell · Illinois Tech
           <span class="fh-footer-sep">·</span>
           <span class="fh-footer-deck">
             {{< meta deck_short_title >}}
@@ -41,10 +41,10 @@ format:
             rel="noopener"
             onmouseenter="(function(a){var el=document.getElementById('course-website-meta'); if(!el) return; var url=(JSON.parse(el.textContent||'{}').course_website||'').trim(); if(url) a.setAttribute('href',url);})(this)"
             onfocus="(function(a){var el=document.getElementById('course-website-meta'); if(!el) return; var url=(JSON.parse(el.textContent||'{}').course_website||'').trim(); if(url) a.setAttribute('href',url);})(this)"
-          >{{< meta course_title >}} Course Website</a>
+          >{{< meta course_title >}} Website</a>
           <span class="fh-footer-sep">·</span>
           <span class="fh-footer-ex">
-            $\exstar$ = exercise for the reader
+            $\exstar$ = exercise
           </span>
         </span>
       </div>
