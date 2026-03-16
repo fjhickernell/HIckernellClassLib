@@ -348,10 +348,20 @@ section.slide:not(
 /* Quarto wrapper should not create a second rail */
 .reveal .slides section.slide:not(#title-slide) .quarto-slide-content,
 .reveal .slides section.slide:not(#title-slide) .slide-content {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
+}
+
+.reveal .slides section.slide:not(#title-slide) .quarto-slide-content > :first-child,
+.reveal .slides section.slide:not(#title-slide) .slide-content > :first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
 
 /* Zero horizontal margins for common elements (rail controls it) */
