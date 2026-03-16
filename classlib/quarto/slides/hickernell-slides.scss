@@ -249,13 +249,12 @@ body,
   padding: 0 !important;
 }
 
-.reveal-viewport {
-  padding-top: env(safe-area-inset-top);
-  box-sizing: border-box;
-}
-
 .reveal .backgrounds {
   background: white !important;
+}
+
+.reveal-viewport {
+  background: var(--header-blue) !important;
 }
 
 .reveal-viewport {
