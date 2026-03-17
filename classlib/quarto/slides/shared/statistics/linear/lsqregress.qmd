@@ -1,4 +1,4 @@
-# Least Squares Linear Regression
+# Least Squares Linear Regression {#lsqregress}
 
 - Model: $Y = \vx^\top \vbeta + \varepsilon \qquad$ with $\Ex(\varepsilon)=0,
 \quad \var(\varepsilon)=\sigma^2$
