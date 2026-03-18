@@ -12,9 +12,9 @@ Types of linear models
 
 - [Analysis of variance (ANOVA)]{.alert} $Y = \vx^\top \vbeta + \varepsilon$ with $\varepsilon \sim (0,\sigma^2)$
 
-- Logistic regression and other generalized linear models
+- [Logistic regression]{.alert} and other generalized linear models
 
-- Gaussian process regression
+- [Gaussian process regression]{.alert}
 
 ## Comparison of inference for linear models and population parameters
 
@@ -29,3 +29,5 @@ Types of linear models
 | Not observable | $\varepsilon_1,\dots,\varepsilon_n$ |  |
 | Point estimators | $\hbeta = (\mX^\top \mX)^{-1} \mX^\top \vY$, $\hvY = \mX \hbeta$ | $\barY$, $S^2$, $\hlambda_{\MLE}$, $\hp_{\MLE}$, ... |
 | Confidence/prediction regions for | $\vbeta$, $\Ex(Y \mid \vx)$, $Y \mid \vx$ | $\mu$, $\sigma^2$, $p$, $\lambda$, $Y$ |
+
+---
