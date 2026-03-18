@@ -8,7 +8,7 @@ Now we move the situation where we have a
 
 Types of linear models
 
-- [Ordinary least squares (OLS)]{#lsqregress} $Y = \vx^\top \vbeta + \varepsilon$ with $\varepsilon \sim (0,\sigma^2)$
+- [Ordinary least squares (OLS)](lsqregress) $Y = \vx^\top \vbeta + \varepsilon$ with $\varepsilon \sim (0,\sigma^2)$
 
 - [Analysis of variance (ANOVA)]{.alert} $Y = \vx^\top \vbeta + \varepsilon$ with $\varepsilon \sim (0,\sigma^2)$
 
