@@ -1053,5 +1053,24 @@ h1::before,
   stroke: none !important;
 }
 
+
+.reveal .mjx-container {
+  overflow: visible !important;
+}
+
+.reveal .mjx-container svg {
+  overflow: visible !important;
+}
+
+.reveal .math.display {
+  overflow: visible !important;
+}
+
+.reveal .columns,
+.reveal .column {
+  overflow: visible !important;
+}
+
+
 /*-- end:scss --*/
 

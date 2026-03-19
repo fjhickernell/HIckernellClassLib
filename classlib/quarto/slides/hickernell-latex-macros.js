@@ -77,6 +77,8 @@
 
 
         dist:  "{\\operatorname{dist}}",
+        Dsc:  "{\\operatorname{D}}",
+        Vtn:   "{\\operatorname{V}}",
         spn:   "{\\operatorname{span}}",
         sgn:   "{\\operatorname{sgn}}",
         releff: "{\\operatorname{rel-eff}}",
