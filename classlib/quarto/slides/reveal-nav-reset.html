@@ -61,6 +61,19 @@
 
     window.addEventListener("hashchange", function () { snapTopIfNeeded("hashchange"); });
 
+    // Safari/WebKit occasionally fails to repaint Reveal slides after focus returns.
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isSafari) {
+      window.addEventListener("focus", function () {
+        const slides = document.querySelector(".reveal .slides");
+        if (!slides) return;
+        slides.style.opacity = "0.999";
+        void slides.offsetHeight;
+        slides.style.opacity = "";
+        if (window.Reveal && Reveal.layout) Reveal.layout();
+      });
+    }
+
     return true;
   }
 
