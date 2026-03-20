@@ -19,6 +19,7 @@ format:
     include-after-body:
       - ../classlib/classlib/quarto/slides/reveal-scale-var.html
       - ../classlib/classlib/quarto/slides/reveal-nav-reset.html
+      - ../classlib/classlib/quarto/slides/qmcpy-pypi-impact.html
 
     preview-links: auto
     incremental: false

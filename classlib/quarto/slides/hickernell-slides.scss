@@ -1071,6 +1071,16 @@ h1::before,
   overflow: visible !important;
 }
 
+/* Fix inline code visibility in headers */
+.reveal h1 code,
+.reveal h2 code,
+.reveal h3 code {
+  color: white !important;
+  background-color: rgba(255,255,255,0.15);
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+}
+
 
 /*-- end:scss --*/
 

@@ -20,6 +20,7 @@ format:
       - ../classlib/classlib/quarto/slides/reveal-scale-var.html
       - ../classlib/classlib/quarto/slides/reveal-nav-reset.html
       - ../classlib/classlib/quarto/slides/deck-nav-arrows.html
+      - ../classlib/classlib/quarto/slides/qmcpy-pypi-impact.html
       - text: |
           <script src="../classlib/classlib/quarto/slides/deck-nav-arrows.js"></script>
     theme:
