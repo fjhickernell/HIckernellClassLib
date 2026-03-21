@@ -40,7 +40,7 @@ papers:
     doi: "10.1214/aos/1069362380"
     doi_url: "https://doi.org/10.1214/aos/1069362380"
 
-  hickritkuonuy_2012_weighted_integration:
+  hickrikuonuy_2012_weighted_integration:
     cite: "HKKN12"
     short: "Hickernell, Kritzer, Kuo, Nuyens (2012)"
     full: "F. J. Hickernell, P. Kritzer, P. Kuo, & D. Nuyens (2012). Weighted compound integration rules with higher order convergence for all $N$. _Numer. Algor._ **59**, 161–183 (2012)."
