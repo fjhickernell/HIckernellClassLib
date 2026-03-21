@@ -218,6 +218,7 @@
         hvveps: "{\\widehat{\\boldsymbol{\\varepsilon}}}",
 
         ct: "{\\mathcal{T}}",
+        cf: "{\\mathcal{F}}",
         cc: "{\\mathcal{C}}",
         cx: "{\\mathcal{X}}",
 
