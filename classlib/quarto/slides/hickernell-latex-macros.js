@@ -78,6 +78,8 @@
 
         dist:  "{\\operatorname{dist}}",
         Dsc:  "{\\operatorname{D}}",
+        ESD:  "{\\operatorname{ESD}}",
+        WESD:  "{\\operatorname{WESD}}",
         Vtn:   "{\\operatorname{V}}",
         spn:   "{\\operatorname{span}}",
         sgn:   "{\\operatorname{sgn}}",
@@ -182,6 +184,7 @@
         vbeta:  "{\\boldsymbol{\\beta}}",
         vgamma: "{\\boldsymbol{\\gamma}}",
         vdelta: "{\\boldsymbol{\\delta}}",
+        vDelta: "{\\boldsymbol{\\Delta}}",
         vepsilon: "{\\boldsymbol{\\epsilon}}",
         vveps: "{\\boldsymbol{\\varepsilon}}",
         vlambda:  "{\\boldsymbol{\\lambda}}",
@@ -194,6 +197,7 @@
         vPhi:     "{\\boldsymbol{\\Phi}}",
         vmu:      "{\\boldsymbol{\\mu}}",
         vnu:     "{\\boldsymbol{\\nu}}",
+        vzeta:   "{\\boldsymbol{\\zeta}}",
 
         mX: "{\\mathsf{X}}",
         mP: "{\\mathsf{P}}",

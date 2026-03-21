@@ -1062,6 +1062,33 @@ h1::before,
   overflow: visible !important;
 }
 
+.reveal mjx-container,
+.reveal mjx-container * {
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0 !important;
+  font-kerning: none !important;
+}
+
+.reveal mjx-mi,
+.reveal mjx-mo,
+.reveal mjx-mn,
+.reveal mjx-mtext,
+.reveal mjx-texatom {
+  text-rendering: auto !important;
+}
+
+.reveal mjx-container[jax="CHTML"] {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.reveal mjx-container,
+.reveal mjx-container * {
+  font-variant-ligatures: none !important;
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0 !important;
+  font-kerning: none !important;
+}
+
 .reveal .math.display {
   overflow: visible !important;
 }
@@ -1086,27 +1113,6 @@ h1::before,
   margin-top: 1em;
 }
 
-.ref-item {
-  display: grid;
-  grid-template-columns: 6em 1fr;
-  column-gap: 0.75em;
-  align-items: start;
-  margin-bottom: 0.5em;
-}
-
-.ref-label {
-  font-weight: 600;
-  white-space: nowrap;
-  text-align: right;
-}
-
-.ref-text {
-  margin: 0;
-}
-
-.ref-text p {
-  margin: 0;
-}
 
 .refs > p {
   margin: 0 0 0.45em 0;

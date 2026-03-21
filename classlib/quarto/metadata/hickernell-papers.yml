@@ -13,10 +13,10 @@
 #     type:        article | book | inproceedings | preprint | software | thesis
 #     tags:        list of keywords (e.g., [qmc, sobol, discrepancy])
 #
-#     doi:         DOI string (e.g., "10.1214/aos/...")
+#     doi:         "10.1214/aos/..."
 #     doi_url:     https://doi.org/...
 #
-#     arxiv:       arXiv identifier (e.g., "arXiv:1234.56789")
+#     arxiv:       "arXiv:1234.56789"
 #     arxiv_url:   https://arxiv.org/abs/...
 #
 #     publisher_url: journal landing page (optional)
@@ -29,6 +29,7 @@
 # - Do NOT alphabetize; rely on search/autocomplete
 #
 # =============================================================================
+
 
 papers:
   owen_1997_scrambled_net_variance:
@@ -43,7 +44,7 @@ papers:
   hickrikuonuy_2012_weighted_integration:
     cite: "HKKN12"
     short: "Hickernell, Kritzer, Kuo, Nuyens (2012)"
-    full: "F. J. Hickernell, P. Kritzer, P. Kuo, & D. Nuyens (2012). Weighted compound integration rules with higher order convergence for all $N$. _Numer. Algor._ **59**, 161–183 (2012)."
+    full: "F. J. Hickernell, P. Kritzer, P. Kuo, & D. Nuyens, Weighted compound integration rules with higher order convergence for all $N$. _Numer. Algor._ **59**, 161–183 (2012)."
     type: article
     tags: [qmc, weighted-integration]
     doi: "10.1007/s11075-011-9482-5"
@@ -51,3 +52,18 @@ papers:
     arxiv_url: null
     publisher_url: "https://link.springer.com/article/10.1007/s11075-011-9482-5"
     project_url: null
+
+
+  dickripil_2022_lattice_rules_book:
+    cite: "DKP22"
+    short: "Dick, Kritzer, Pillichshammer (2022)"
+    full: "J. Dick, P. Kritzer, & F. Pillichshammer, Lattice Rules: Numerical Integration, Approximation, and Discrepancy. Springer Series in Computational Mathematics. Springer Cham (2022)."
+    type: book
+    tags: [qmc, lattice-rules]
+    doi: "10.1007/978-3-031-09951-9"
+    doi_url: "https://doi.org/10.1007/978-3-031-09951-9"
+    arxiv_url: null
+    publisher_url: "https://link.springer.com/book/10.1007/978-3-031-09951-9"
+    project_url: null
+
+
