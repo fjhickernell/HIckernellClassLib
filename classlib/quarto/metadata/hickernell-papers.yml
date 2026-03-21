@@ -32,6 +32,24 @@
 
 
 papers:
+
+  dicgodlarpilsuz_2025_quasi-uniformity:
+    cite: "DGLPS25"
+    short: "Dick, Goda, Pillichshammer, Suzuki (2025)"
+    full: "J. Dick, T. Goda, G Larcher, F. Pillichshammer, & K. Suzuki, On the quasi-uniformity properties of quasi-Monte Carlo point sets and sequences -- Part I: Lattices and Kronecker sequences, preprint (2025)."
+    type: preprint
+    tags: [qmc, covering distance, discrepancy]
+    arxiv: "10.48550/arXiv.2502.06202"
+    arxiv_url: "https://doi.org/10.48550/arXiv.2502.06202"
+
+  richtmyer_1951_sequences:
+    cite: "R51"
+    short: "Richtmyer (1951)"
+    full: "R. D. Richtmyer, The Evaluation of Definite Integrals, and a Quasi-Monte-Carlo Method Based on the Properties of Algebraic Numbers, Los Alamos Scientific Laboratory, LA-1342 (1951)."
+    type: techreport
+    tags: [qmc, sequences]
+    project_url: "https://scispace.com/pdf/the-evaluation-of-definite-integrals-and-a-quasi-monte-carlo-50ru8ixs80.pdf"
+
   owen_1997_scrambled_net_variance:
     cite: "O97"
     short: "Owen (1997)"
@@ -66,4 +84,11 @@ papers:
     publisher_url: "https://link.springer.com/book/10.1007/978-3-031-09951-9"
     project_url: null
 
-
+  cookuonuy_2006_constructing_embedded:
+    cite: "CKN06"
+    short: "Cools, Kuo, Nuyens (2006)"
+    full: "R. Cools, F. Y. Kuo, & D. Nuyens, Constructing embedded lattice rules for multivariate integration, _SIAM J. Sci. Comput._, 28, 2162-2188 (2006)."
+    type: article
+    tags: [qmc, lattice-rules, cbc]
+    doi: "10.1137/06065074X"
+    doi_url: "https://doi.org/10.1137/06065074X"
