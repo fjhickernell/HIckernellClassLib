@@ -92,3 +92,13 @@ papers:
     tags: [qmc, lattice-rules, cbc]
     doi: "10.1137/06065074X"
     doi_url: "https://doi.org/10.1137/06065074X"
+    publisher_url: "https://epubs.siam.org/doi/10.1137/06065074X"
+
+  dicpil_2010_digital_nets_sequences:
+    cite: "DP10"
+    short: "Dick, Pillichshammer (2010)"
+    full: "J. Dick & F. Pillichshammer, Digital Nets and Sequences: Discrepancy Theory and Quasi-Monte Carlo Integration, Cambridge University Press (2010)."
+    type: book
+    tags: [qmc, digital-nets, discrepancy]
+    publisher_url: "https://www.cambridge.org/core/books/digital-nets-and-sequences/9780521154566"
+

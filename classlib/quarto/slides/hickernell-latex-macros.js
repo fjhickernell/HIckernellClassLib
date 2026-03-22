@@ -178,7 +178,10 @@
         
 
         tg:  "{\\widetilde{g}}",
-        th:  "{\\widetilde{h}}",
+        tK:  "{\\widetilde{K}}",
+        tX:  "{\\widetilde{X}}",
+        tY:  "{\\widetilde{Y}}",
+        tZ:  "{\\widetilde{Z}}",
 
         valpha: "{\\boldsymbol{\\alpha}}",
         vbeta:  "{\\boldsymbol{\\beta}}",
