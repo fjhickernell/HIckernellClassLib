@@ -34,7 +34,7 @@ Let $\hvbeta$ be defined as above, and let $\vb$ be any other vector in $\reals^
 
 Furthermore
 
-- $\hmu(\vx) := \vx^\top \hvbeta$ is an estimator of $\mu(\vx) := \Ex(Y \mid \vx)$
+- $\hmu(\vx) := \vx^\top \hvbeta$ is an estimator of $\mu(\vx) := \Ex(Y \mid \vx) = \vx^\top \vbeta$
 
 - $\hvY : = \mX \hvbeta = \underbrace{\mX (\mX^\top \mX)^{-1} \mX^\top}_{\href{https://en.wikipedia.org/wiki/Projection_matrix}{\text{projection matrix }} \mP} \vY$ is an estimator of $\mu(\vX) = \Ex(\vY)$
 
@@ -168,15 +168,20 @@ Recall that $Y = \mX \vbeta + \vveps$, with $\Ex(\vveps)=0, \ \cov(\vveps)=\sigm
 ### Unbiasedness of $\hvbeta$ and $\hmu(\vx)$
 
 \begin{align*}
-\hvbeta = (\mX^\top \mX)^{-1} \mX^\top \vY \implies
+\hvbeta = & (\mX^\top \mX)^{-1} \mX^\top \vY = (\mX^\top \mX)^{-1} \mX^\top \left(\mX \vbeta + \vveps\right) = \vbeta + (\mX^\top \mX)^{-1} \mX^\top \vveps \\
+\implies
 \Ex(\hvbeta)
-&= (\mX^\top \mX)^{-1} \mX^\top \Ex(\vY) \\
-&= (\mX^\top \mX)^{-1} \mX^\top \mX \vbeta \\
-&= \vbeta \qquad \text{so $\hvbeta$ is \class{alert}{unbiased}} \\
-\hmu(\vx) = \vx^\top \hvbeta \implies
+&= \vbeta \qquad \text{so $\hvbeta$ is \class{alert}{unbiased}} \\[12pt]
+\hmu(\vx) & = \vx^\top \hvbeta =  \vx^\top \vbeta + \vx^\top (\mX^\top \mX)^{-1} \mX^\top \vveps \\
+\implies
 \Ex(\hmu(\vx))
-&= \vx^\top \Ex(\hvbeta) \\
-&= \vx^\top \vbeta = \mu(\vx) \qquad \text{so $\hmu(\vx)$ is \class{alert}{unbiased}}
+&= \vx^\top \vbeta = \mu(\vx) \qquad \text{so $\hmu(\vx)$ is \class{alert}{unbiased}} \\[12pt]
+\hvveps &= \vY - \hvY = (\mI-\mP)\vY,
+\qquad
+\mP := \mX(\mX^\top \mX)^{-1}\mX^\top \\
+& = (\mI-\mP)(\mX \vbeta + \vveps) \\
+& = (\mI-\mP)\vveps \qquad \text{since $(\mI-\mP)\mX = \mzero$} \\
+\implies \Ex(\vzero) & = \vzero
 \end{align*}
 
 ---
@@ -217,22 +222,15 @@ $$
 
 ## Confidence regions for $\vbeta$ and $\mu(\vx)$ assuming $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$
 
-### Distribution of $\hvbeta$
+Now we assume that $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$.  Since a [linear combination of normal random variables is normal]{.alert}, the following [data-based]{.alert} quantities are all normally distributed:
 
-Assume $\vveps \sim \Norm(\vzero,\sigma^2\mI)
-$ and recall that
-$\hvbeta = (\mX^\top\mX)^{-1}\mX^\top\vY$.  Since $\vY = \mX\vbeta + \vveps$,
+- $\vY = \mX \vbeta + \vveps \sim \Norm(\mX\vbeta,\sigma^2 \mI)$
 
-$$
-\hvbeta
-= (\mX^\top\mX)^{-1}\mX^\top(\mX\vbeta+\vveps)
-= \vbeta + (\mX^\top\mX)^{-1}\mX^\top\vveps \sim
-\Norm\!\left(
-\vbeta,\;
-\sigma^2(\mX^\top\mX)^{-1}
-\right) 
-$$
-because a [linear combination of normal random variables is normal]{.alert}
+- $\hvbeta = (\mX^\top \mX)^{-1} \mX^\top \vY = (\mX^\top\mX)^{-1}\mX^\top (\mX \vbeta + \vveps) = \vbeta + (\mX^\top\mX)^{-1}\mX^\top\vveps \sim \Norm\!\left(\vbeta,\sigma^2 (\mX^\top \mX)^{-1}\right)$
+
+- $\hvveps = (\mI-\mP)\vveps \sim \Norm(\vzero,\sigma^2 (\mI-\mP))$
+
+- $\hmu(\vx) = \vx^\top \hvbeta  = \mu(\vx) + \vx^\top (\mX^\top\mX)^{-1}\mX^\top\vveps \sim \Norm\!\left(\mu(\vx),\sigma^2 \vx^\top (\mX^\top \mX)^{-1} \vx\right)$
 
 ---
 
@@ -256,7 +254,7 @@ $$
 \sim F_{d,n-d}
 $$
 
-Therefore
+Therefore 
 
 $$
 (\hvbeta-\vbeta)^\top

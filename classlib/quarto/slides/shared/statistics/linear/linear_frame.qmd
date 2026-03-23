@@ -30,4 +30,3 @@ Types of linear models
 | Point estimators | $\hbeta = (\mX^\top \mX)^{-1} \mX^\top \vY$, $\hvY = \mX \hbeta$ | $\barY$, $S^2$, $\hlambda_{\MLE}$, $\hp_{\MLE}$, ... |
 | Confidence/prediction regions for | $\vbeta$, $\Ex(Y \mid \vx)$, $Y \mid \vx$ | $\mu$, $\sigma^2$, $p$, $\lambda$, $Y$ |
 
----
