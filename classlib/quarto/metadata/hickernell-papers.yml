@@ -33,6 +33,16 @@
 
 papers:
 
+  halton_1960_sequences:
+    cite: H60
+    short: Halton (1960)
+    full: J. Halton, On the Efficiency of Certain Quasi-Random Sequences of Points in Evaluating Multi-Dimensional Integrals, _Numer. Math._, **2**, 84-90, (1960).
+    type: article
+    tags: [qmc, sequences]
+    doi: null
+    doi_url: null
+
+
   dicgodlarpilsuz_2025_quasi-uniformity:
     cite: "DGLPS25"
     short: "Dick, Goda, Pillichshammer, Suzuki (2025)"

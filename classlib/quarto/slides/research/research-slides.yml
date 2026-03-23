@@ -6,8 +6,10 @@ format:
       disableLayout: true
 
     embed-resources: true
+    self-contained-math: true
 
     html-math-method: mathjax
+
 
     include-in-header:
       - ../classlib/classlib/quarto/slides/hickernell-latex-macros.js
