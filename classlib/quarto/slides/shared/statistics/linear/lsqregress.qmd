@@ -181,23 +181,14 @@ Recall that $Y = \mX \vbeta + \vveps$, with $\Ex(\vveps)=0, \ \cov(\vveps)=\sigm
 \mP := \mX(\mX^\top \mX)^{-1}\mX^\top \\
 & = (\mI-\mP)(\mX \vbeta + \vveps) \\
 & = (\mI-\mP)\vveps \qquad \text{since $(\mI-\mP)\mX = \mzero$} \\
-\implies \Ex(\vzero) & = \vzero
+\implies \Ex(\vveps) & = \vzero
 \end{align*}
 
 ---
 
 ### Residual sum of squares and unbiased estimation of $\sigma^2$
 
-Recall that
-\begin{align*}
-\hvveps &= \vY - \hvY = (\mI-\mP)\vY,
-\qquad
-\mP := \mX(\mX^\top \mX)^{-1}\mX^\top \\
-& = (\mI-\mP)(\mX \vbeta + \vveps) \\
-& = (\mI-\mP)\vveps \qquad \text{since $(\mI-\mP)\mX = \mzero$}
-\end{align*}
-
-Hence
+Recall that $\hvveps = (\mI-\mP)\vveps$.  Hence
 \begin{equation*}
 \Ex\bigl(\lVert \hvveps \rVert^2\bigr)
 = \Ex\bigl(\vveps^\top (\mI-\mP)\vveps\bigr) \\
@@ -234,7 +225,7 @@ Now we assume that $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$.  Since a [linear co
 
 ---
 
-### Confidence ellipsoid for $\vbeta$
+### Confidence ellipsoid for $\vbeta$ assuming $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$
 
 From the normal distribution of $\hvbeta$, it follows that
 $$\frac{
@@ -269,7 +260,7 @@ defines a $\class{alert}{(1-\alpha)\text{ confidence ellipsoid for }\vbeta}$ cen
 
 ---
 
-### Individual confidence intervals for the $\beta_j$
+### Individual confidence intervals for the $\beta_j$ assuming $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$
 
 Since $\hvbeta \sim
 \Norm\!\left(
@@ -301,13 +292,14 @@ $$
 
 Therefore
 
-$$
+\begin{multline*}
 \hbeta_j
 \pm
 t_{n-d,1-\alpha/2}
 \;
-S\sqrt{\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}} \qquad{\text{is an }\class{alert}{(1-\alpha)\text{ confidence interval for }\beta_j} \text{ for each } j=1,\dots,d}
-$$
+S\sqrt{\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}} \\
+\text{is an }\class{alert}{(1-\alpha)\text{ confidence interval for }\beta_j} \text{ for each } j=1,\dots,d
+\end{multline*}
 
 --- 
 ### Joint vs individual confidence statements
@@ -344,33 +336,9 @@ So:
 - the confidence ellipsoid controls $\vbeta$ jointly
 
 
-------------------------------------------------------------------------
+## Confidence interval for $\mu(\vx)$ assuming $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$
 
-# Confidence interval for $\mu(\vx)$
-
-Recall
-
-$$
-\mu(\vx)=\vx^\top\vbeta
-\qquad
-\hmu(\vx)=\vx^\top\hvbeta
-$$
-
-Since $\hvbeta$ is normal,
-
-$$
-\hmu(\vx)
-\sim
-\Norm\!\left(
-\mu(\vx),\;
-\sigma^2
-\vx^\top(\mX^\top\mX)^{-1}\vx
-\right)
-$$
-
-------------------------------------------------------------------------
-
-## Standardized statistic
+Recall $\mu(\vx)=\vx^\top\vbeta$, $\hmu(\vx)= \mu(\vx) + \vx^\top (\mX^\top\mX)^{-1}\mX^\top\vveps \sim \Norm\!\left(\mu(\vx),\sigma^2 \vx^\top (\mX^\top \mX)^{-1} \vx\right)$
 
 Replacing $\sigma^2$ by $S^2$ gives
 
@@ -385,9 +353,6 @@ S
 $$
 
 
-------------------------------------------------------------------------
-
-## $(1-\alpha)$ confidence interval
 
 Therefore
 
@@ -400,17 +365,10 @@ S
 \sqrt{\vx^\top(\mX^\top\mX)^{-1}\vx}
 $$
 
-is a
+is a [$(1-\alpha)$ confidence interval for $\mu(\vx)$]{.alert}
 
-$$
-\class{alert}{(1-\alpha)\text{ confidence interval for }\mu(\vx)}
-$$
 
-------------------------------------------------------------------------
-
-# Prediction interval for $Y\mid \vx$
-
-## Future observation
+## Prediction interval for $Y\mid \vx$
 
 For a new observation
 
