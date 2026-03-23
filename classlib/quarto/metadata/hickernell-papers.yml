@@ -33,6 +33,17 @@
 
 papers:
 
+  hickirsor_2026_qmc_tutorial:
+    cite: "HKS26"
+    short: "Hickernell, Kirk, Sorokin (2026)"
+    full: "F. J. Hickernell, N. Kirk, & A. G. Sorokin, Quasi-Monte Carlo Methods: What, Why, and How?, in Monte Carlo and Quasi-Monte Carlo Methods: MCQMC, Waterloo, Canada, August 2024, (eds. C. Lemieux and B. Feng), 2026, to appear."
+    type: inproceedings
+    tags: [qmc, tutorial]
+    doi: "10.48550/arXiv.2502.03644"
+    doi_url: "https://doi.org/10.48550/arXiv.2502.03644"
+    arxiv_url: "https://arxiv.org/abs/2502.03644"
+
+
   halton_1960_sequences:
     cite: H60
     short: Halton (1960)
