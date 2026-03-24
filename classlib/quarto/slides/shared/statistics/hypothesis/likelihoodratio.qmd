@@ -353,8 +353,8 @@ $$
 
 ### Example: Normal data with unknown $\sigma$
 
-- Full model for $\Norm(\mu,\sigma^2)$ has $\dim(\Theta) = 2$
-- Null model for $H_0: \mu = \mu_0$ has $\dim(\Theta_0) = 1$
+- Full model for $\Norm(\mu,\sigma^2)$ has $\dim(\ct) = 2$
+- Null model for $H_0: \mu = \mu_0$ has $\dim(\ct_0) = 1$
 - $\df = 2 - 1 = 1$
 
 
@@ -388,3 +388,9 @@ However, the LRT
 - Has large-sample theory (Wilks)
 
 &nbsp;
+
+---
+
+$\exstar$ {{< meta texts.wms.initials >}} 10.105, 10.106, 10.112
+
+$\exstar$ {{< meta texts.cb.initials >}} 8.29, 8.40, 8.41
