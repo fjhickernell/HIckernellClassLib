@@ -1,0 +1,221 @@
+# Regression diagnostics and model selection
+
+Up to this point, we have assumed that the chosen linear model is appropriate
+
+&nbsp;
+
+In practice, we should also check whether 
+
+- The model assumptions are reasonable 
+
+- The chosen set of predictors is adequate
+
+- Our assumptions about the errors are justified
+
+## Regression diagnostics
+
+The main questions are:
+
+- Is the mean response approximately linear in the chosen predictors, which themselves may be nonlinear transformations of underlying variables?
+- Does the variability of the errors stay roughly constant with respect to the $\vx$ and $\Ex(Y \mid \vx)$?
+- Are the errors approximately normally distributed?
+- Are there unusual or influential observations that strongly affect the fit?
+
+---
+
+### Residuals versus fitted values
+
+- [Fitted values]{.alert} $\hvY = \mX \hvbeta = \mP \vY$ are the predicted mean responses 
+
+- [Residuals]{.alert} $\hvveps = \vY - \hvY = (\mI - \mP) \vY$ are the differences between observed and fitted values
+
+and these should be independent under the model assumptions.  A good first diagnostic is a plot of residuals versus fitted values.
+
+If the linear model is appropriate, then the residual plot should show
+
+- Points scattered around $0$
+- No strong curve or pattern
+- Roughly constant vertical spread across the range of fitted values
+
+:::{.key-point}
+A residual plot should look like random noise around zero, not like a pattern
+:::
+
+---
+
+### Normal Q-Q plot
+
+Many inference procedures for regression assume that the errors are normally distributed.
+
+A normal Q-Q plot compares the residuals to what we would expect under normality.
+
+- If the residuals are approximately normal, the points should lie roughly on a straight line.
+- Strong bending or heavy tails suggest departures from normality.
+
+This matters most for small samples.  
+For large samples, moderate nonnormality is often less serious for estimation, though it may still affect inference.
+
+---
+
+### Hat matrix and leverage
+
+The fitted values satisfy
+
+$$
+\hvY = \mH \vY,
+\qquad
+\mH := \mX(\mX^\top \mX)^{-1}\mX^\top
+$$
+
+The matrix $\mH$ is called the [hat matrix]{.alert} because it puts a “hat” on $\vY$.
+
+Its diagonal entries $h_{ii}$ are called the [leverages]{.alert}.
+
+- A large value of $h_{ii}$ means that observation $i$ has an unusual predictor vector $\vx_i$.
+- Such observations can have a large effect on the fitted regression line or surface.
+
+---
+
+### Standardized residuals
+
+Since the variability of $\hat\varepsilon_i$ depends on $h_{ii}$, it is useful to scale residuals.
+
+A standardized residual is
+
+$$
+r_i
+=
+\frac{\hat\varepsilon_i}{S\sqrt{1-h_{ii}}}
+$$
+
+Large values of $|r_i|$ indicate observations whose responses are unusual relative to the fitted model.
+
+As a rough rule of thumb, values with $|r_i|>2$ deserve attention, and values with $|r_i|>3$ deserve serious attention.
+
+---
+
+### Summary of common diagnostic plots
+
+Common diagnostic plots include:
+
+- residuals versus fitted values  
+  checks linearity and constant variance
+
+- normal Q-Q plot  
+  checks approximate normality of residuals
+
+- scale-location plot  
+  checks whether residual spread is roughly constant
+
+- residuals versus leverage, often with Cook's distance shown  
+  checks for influential observations
+
+### What to do if diagnostics look bad
+
+If diagnostics reveal problems, possible responses include:
+
+- transforming the response or some predictors
+- adding nonlinear terms such as $x^2$
+- adding interaction terms
+- using weighted least squares if variance is not constant
+- checking for data-entry errors or unusual observations
+- reconsidering whether a different model is more appropriate
+
+:::{.key-point}
+Diagnostics do not automatically tell us the right fix, but they do tell us where the model may be going wrong.
+:::
+
+## Model selection
+
+In regression, adding more predictors almost always improves the fit to the observed data.  
+However, a more complicated model is not always better.
+
+Model selection aims to balance
+
+- goodness of fit
+- model simplicity
+- interpretability
+- predictive performance
+
+### Comparing nested models
+
+Suppose we compare two [nested]{.alert} models:
+
+- a reduced model with $d_0$ parameters and residual sum of squares $\text{RSS}_0$
+- a full model with $d_1>d_0$ parameters and residual sum of squares $\text{RSS}_1$
+
+Since the full model has more predictors, we always have
+
+$$
+\text{RSS}_1 \le \text{RSS}_0
+$$
+
+The question is whether the reduction in RSS is large enough to justify the extra parameters.
+
+### F-test for nested models
+
+To test whether the additional predictors in the full model are needed, use
+
+$$
+F
+=
+\frac{(\text{RSS}_0-\text{RSS}_1)/(d_1-d_0)}{\text{RSS}_1/(n-d_1)}
+$$
+
+Under the null hypothesis that the extra coefficients are all zero,
+
+$$
+F \sim F_{d_1-d_0,\;n-d_1}
+$$
+
+A large value of $F$ gives evidence that the extra predictors improve the model.
+
+### Measures of model quality
+
+Several criteria are commonly used to compare models.
+
+#### Adjusted $R^2$
+
+Ordinary $R^2$ never decreases when more predictors are added.  
+Adjusted $R^2$ corrects for this by penalizing model complexity:
+
+$$
+R^2_{\text{adj}}
+=
+1-\frac{\text{RSS}/(n-d)}{\text{TSS}/(n-1)}
+$$
+
+Larger values of adjusted $R^2$ are better.
+
+#### AIC and BIC
+
+Two widely used criteria are:
+
+- AIC = Akaike information criterion
+- BIC = Bayesian information criterion
+
+Both reward good fit but penalize overly complicated models.
+
+- AIC usually favors somewhat larger models
+- BIC usually favors simpler models more strongly
+
+### Training fit versus prediction
+
+A model that fits the observed data extremely well may still predict poorly on new data.
+
+This is called [overfitting]{.alert}.
+
+So in practice, we should not judge a model only by how small its RSS is on the training data.
+
+### Practical principles for model selection
+
+When comparing regression models:
+
+- prefer simpler models if they explain the data nearly as well
+- use subject-matter knowledge, not just automatic procedures
+- check diagnostics again after selecting a model
+- remember that the “best” model for explanation may differ from the “best” model for prediction
+
+:::{.key-point}
+A good regression model should fit well, make scientific sense, and pass basic diagnostic checks.
+:::
