@@ -1,4 +1,4 @@
-# Inference for regression parameters and predictions assuming $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$
+# Inference for regression parameters and predictions assuming $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$ {#ols_inference}
 
 So far, we have only used the assumptions that 
 

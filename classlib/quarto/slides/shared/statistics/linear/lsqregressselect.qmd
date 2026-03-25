@@ -1,4 +1,4 @@
-# Regression diagnostics and model selection
+# Regression diagnostics and model selection {#ols_diagnostics}
 
 Up to this point, we have assumed that the chosen linear model is appropriate
 
