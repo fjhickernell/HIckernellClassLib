@@ -2,6 +2,7 @@
 
 - Model: $Y = \vx^\top \vbeta + \varepsilon \qquad$ with $\Ex(\varepsilon)=0,
 \quad \var(\varepsilon)=\sigma^2$
+
   - $x_j$ may be a variable or a function of variables
 
 - Model with data: 
@@ -38,7 +39,11 @@ Furthermore
 
 - $\hvY : = \mX \hvbeta = \underbrace{\mX (\mX^\top \mX)^{-1} \mX^\top}_{\href{https://en.wikipedia.org/wiki/Projection_matrix}{\text{projection matrix }} \mP} \vY$ is an estimator of $\mu(\vX) = \Ex(\vY)$
 
-- $\mP$ is the projection matrix onto $\cc(\mX)$, the column space of $\mX$, which means the set of all linear combinations of the columns of $\mX$.  This means that
+- $\mP$ is the projection matrix onto 
+$$
+\cc(\mX):= \text{ the column space of } \mX = \text{ the set of all linear combinations of the columns of } \mX = \{ \mX \vb : \vb \in \reals^d \}
+$$
+This means that
   - $\mP^2 = \mP$ (idempotent), and so $\mP$ has eigenvalues of $0$ and $1$ only
   - $\mP^\top = \mP$ (symmetric) 
   - $\mP \mX = \mX$ (projection onto $\cc(\mX)$)   
@@ -46,7 +51,6 @@ Furthermore
 
 - $\hvveps : = \vY - \hvY = (\mI - \mP) \vY$ is the vector of [residuals]{.alert}, 
   - Orthogonal to all columns of $\mX$, i.e., orthogonal to $\cc(\mX)$
-  - $\cc(\mX)$ is the set of all linear combinations of the columns of $\mX$
 
 ---
 
@@ -178,19 +182,18 @@ Recall that $Y = \mX \vbeta + \vveps$, with $\Ex(\vveps)=0, \ \cov(\vveps)=\sigm
 ### Unbiasedness of $\hvbeta$ and $\hmu(\vx)$
 
 \begin{align*}
-\hvbeta & = (\mX^\top \mX)^{-1} \mX^\top \vY = (\mX^\top \mX)^{-1} \mX^\top \left(\mX \vbeta + \vveps\right) = \vbeta + (\mX^\top \mX)^{-1} \mX^\top \vveps \\
+\hvbeta & := (\mX^\top \mX)^{-1} \mX^\top \vY = (\mX^\top \mX)^{-1} \mX^\top \left(\mX \vbeta + \vveps\right) = \vbeta + (\mX^\top \mX)^{-1} \mX^\top \vveps \\
 \implies
 \Ex(\hvbeta)
 & = \vbeta \qquad \text{so $\hvbeta$ is \class{alert}{unbiased}} \\[12pt]
-\hmu(\vx) & = \vx^\top \hvbeta =  \vx^\top \vbeta + \vx^\top (\mX^\top \mX)^{-1} \mX^\top \vveps \\
+\hmu(\vx) & := \vx^\top \hvbeta =  \vx^\top \vbeta + \vx^\top (\mX^\top \mX)^{-1} \mX^\top \vveps \\
 \implies
 \Ex(\hmu(\vx))
 &= \vx^\top \vbeta = \mu(\vx) \qquad \text{so $\hmu(\vx)$ is \class{alert}{unbiased}} \\[12pt]
-\hvveps &= \vY - \hvY = (\mI-\mP)\vY,
+\hvveps &: = \underbrace{\vY}_{\text{data}} - \underbrace{\hvY}_{\text{fit}} = (\mI-\mP)\vY,
 \qquad
 \mP := \mX(\mX^\top \mX)^{-1}\mX^\top \\
-& = (\mI-\mP)(\mX \vbeta + \vveps) \\
-& = (\mI-\mP)\vveps \qquad \text{since $(\mI-\mP)\mX = \mzero$} \\
+& = (\mI-\mP)(\mX \vbeta + \vveps)  = (\mI-\mP)\vveps \qquad \text{since $(\mI-\mP)\mX = \mzero$} \\
 \implies \Ex(\hvveps) & = \vzero
 \end{align*}
 
@@ -207,7 +210,7 @@ Since $\hvveps = (\mI-\mP)\vveps$, it follows that
 
 Now $\mP$ is a projection matrix onto $\cc(\mX)$, it has eigenvalues of $0$ and $1$ only, so
 $$
-\trace(\mP)=\rank(\mP)=\rank(\mX)=d
+\trace(\mP)= \text{ sum of the eigenvalues of } \mP = \rank(\mP)=\rank(\mX)=d
 $$
 
 Therefore $\Ex\bigl(\lVert \hvveps \rVert^2\bigr)

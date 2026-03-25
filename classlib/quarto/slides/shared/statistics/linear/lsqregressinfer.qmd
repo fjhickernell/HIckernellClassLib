@@ -5,7 +5,7 @@ So far, we have only used the assumptions that
   - $\mX$ is fixed and of full column rank
   - $\Ex(\vveps)=\vzero$ and $\cov(\vveps)=\sigma^2 \mI$
 
-Going forward, we will assume that $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$.  This allows us to
+Going forward, we assume that $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$.  This allows us to
 
 - Make probabilistic statements about the estimators $\hvbeta$ and $\hmu(\vx)$
 - Construct confidence intervals for $\vbeta$, $\mu(\vx)$, and $\sigma^2$
@@ -21,9 +21,244 @@ Since a [linear combination of normal random variables is normal]{.alert}, the f
 
 - $\hvbeta = (\mX^\top \mX)^{-1} \mX^\top \vY = (\mX^\top\mX)^{-1}\mX^\top (\mX \vbeta + \vveps) = \vbeta + (\mX^\top\mX)^{-1}\mX^\top\vveps \sim \Norm\!\left(\vbeta,\sigma^2 (\mX^\top \mX)^{-1}\right)$
 
+- $\hmu(\vx) = \vx^\top \hvbeta  = \mu(\vx) + \vx^\top (\mX^\top\mX)^{-1}\mX^\top\vveps \sim \Norm\!\left(\mu(\vx),\sigma^2 \vx^\top (\mX^\top \mX)^{-1} \vx\right)$
+
 - $\hvveps = (\mI-\mP)\vveps \sim \Norm(\vzero,\sigma^2 (\mI-\mP))$
 
-- $\hmu(\vx) = \vx^\top \hvbeta  = \mu(\vx) + \vx^\top (\mX^\top\mX)^{-1}\mX^\top\vveps \sim \Norm\!\left(\mu(\vx),\sigma^2 \vx^\top (\mX^\top \mX)^{-1} \vx\right)$
+```{python}
+#| label: lr-imports-and-data
+#| echo: false
+
+# code to display the regression example
+import numpy as np
+import matplotlib.pyplot as plt
+
+from matplotlib.patches import Ellipse, Rectangle
+from scipy.stats import t, f
+
+from classlib.plots.colors import (
+    TOL_BRIGHT,
+    curve_color,
+    accent_color,
+    neutral_color,
+    set_tol_bright_cycle,
+)
+
+plt.rcParams.update({
+
+    # --- FONT FAMILY (serif + LaTeX-style math) ---
+    "font.family": "serif",
+    "mathtext.fontset": "stix",
+    "font.serif": ["STIXGeneral"],
+
+    # --- FONT SIZES (tuned for slides) ---
+    "font.size": 18,
+    "axes.titlesize": 22,
+    "axes.labelsize": 20,
+    "xtick.labelsize": 16,
+    "ytick.labelsize": 16,
+    "legend.fontsize": 22,
+    "figure.titlesize": 22,
+
+    # --- LINE / MARKER STYLE ---
+    "lines.linewidth": 2.5,
+    "lines.markersize": 7,
+
+    # --- AXES STYLE ---
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "axes.titlepad": 12,
+
+    # --- GRID ---
+    "axes.grid": True,
+    "grid.alpha": 0.3,
+
+    # --- LEGEND ---
+    "legend.frameon": False,
+})
+
+def generate_regression_example(
+    n=30,
+    beta_true=np.array([0.10, 0.90]),
+    sigma=1.0,
+    alpha=0.05,
+    seed_start=1,
+    seed_stop=500,
+):
+    """
+    Model: Y = beta_1 + beta_2 x^2 + eps
+
+    Finds a seed where CI for beta_1 contains 0.
+    """
+
+    d = 2
+
+    for seed in range(seed_start, seed_stop + 1):
+        rng = np.random.default_rng(seed)
+
+        x = np.linspace(0.0, 3.0, n)
+        eps = rng.normal(0.0, sigma, size=n)
+
+        y = beta_true[0] + beta_true[1] * x**2 + eps
+
+        X = np.column_stack([np.ones(n), x**2])
+
+        XtX = X.T @ X
+        XtX_inv = np.linalg.inv(XtX)
+
+        beta_hat = XtX_inv @ X.T @ y
+        y_hat = X @ beta_hat
+
+        resid = y - y_hat
+
+        s2 = (resid @ resid) / (n - d)
+        s = np.sqrt(s2)
+
+        tcrit = t.ppf(1 - alpha / 2, df=n - d)
+        se_beta = np.sqrt(np.diag(s2 * XtX_inv))
+
+        beta_ci = np.column_stack([
+            beta_hat - tcrit * se_beta,
+            beta_hat + tcrit * se_beta,
+        ])
+
+        if beta_ci[0, 0] <= 0 <= beta_ci[0, 1]:
+            return {
+                "seed": seed,
+                "n": n,
+                "d": d,
+                "alpha": alpha,
+                "beta_true": beta_true,
+                "x": x,
+                "y": y,
+                "X": X,
+                "XtX": XtX,
+                "XtX_inv": XtX_inv,
+                "beta_hat": beta_hat,
+                "y_hat": y_hat,
+                "resid": resid,
+                "s2": s2,
+                "s": s,
+                "tcrit": tcrit,
+                "se_beta": se_beta,
+                "beta_ci": beta_ci,
+            }
+
+    raise RuntimeError("No suitable seed found.")
+
+
+EX = generate_regression_example()
+```
+
+```{python}
+#| echo: false
+#| fig-align: center
+#| fig-width: 6.5
+#| fig-height: 3.2
+
+x = EX["x"]
+y = EX["y"]
+beta_true = EX["beta_true"]
+beta_hat = EX["beta_hat"]
+
+xg = np.linspace(0, 3, 300)
+mu_true = beta_true[0] + beta_true[1] * xg**2
+mu_hat  = beta_hat[0]  + beta_hat[1]  * xg**2
+
+# Compute true eps and residuals
+mu_vals = beta_true[0] + beta_true[1] * x**2
+muhat_vals = beta_hat[0] + beta_hat[1] * x**2
+
+eps = y - mu_vals
+ehat = y - muhat_vals
+
+# Pick a nice positive epsilon_i
+i = np.argmax(eps)
+
+# Pick a nice negative residual ehat_j
+j = np.argmin(ehat)
+
+xi, yi = x[i], y[i]
+xj, yj = x[j], y[j]
+
+mu_i = mu_vals[i]
+muhat_j = muhat_vals[j]
+
+fig, ax = plt.subplots()
+set_tol_bright_cycle(ax)
+
+data_color = TOL_BRIGHT["blue"]
+true_color = TOL_BRIGHT["green"]
+fit_color = TOL_BRIGHT["red"]
+guide_color = neutral_color
+annot_color = accent_color
+
+# Data and curves
+ax.scatter(x, y, s=28, color=data_color)
+ax.plot(xg, mu_true, linewidth=2.5, color=true_color,
+        label=r"$\mu(x) = \beta_1 + \beta_2 x^2$")
+ax.plot(xg, mu_hat, linestyle="--", linewidth=2.5, color=fit_color,
+        label=r"$\hat{\mu}(x) = \widehat{\beta}_1 + \widehat{\beta}_2 x^2$")
+
+# Highlight chosen data points in the same color as the data
+ax.scatter([xi], [yi], s=90, color=data_color, zorder=5)
+ax.scatter([xj], [yj], s=90, color=data_color, zorder=5)
+
+# Vertical guide lines
+ax.axvline(xi, linestyle=":", linewidth=1.5, color=guide_color)
+ax.axvline(xj, linestyle=":", linewidth=1.5, color=guide_color)
+
+# epsilon_i arrow
+ax.annotate(
+    "",
+    xy=(xi, yi),
+    xytext=(xi, mu_i),
+    arrowprops=dict(arrowstyle="-|>", lw=2, color=annot_color),
+)
+
+ax.text(
+    xi + 0.05,
+    0.5 * (yi + mu_i),
+    rf"$\epsilon_{{{i}}}$",
+    va="center",
+    color=annot_color,
+)
+
+# residual arrow
+ax.annotate(
+    "",
+    xy=(xj, yj),
+    xytext=(xj, muhat_j),
+    arrowprops=dict(arrowstyle="-|>", lw=2, color=annot_color),
+)
+
+ax.text(
+    xj + 0.05,
+    0.5 * (yj + muhat_j),
+    rf"$\widehat{{\epsilon}}_{{{j}}}$",
+    va="center",
+    color=annot_color,
+)
+
+from classlib.plots.plot_utils import annotate_xaxis_marks
+
+annotate_xaxis_marks(
+    ax,
+    [xi, xj],
+    [rf"$x_{{{i}}}$", rf"$x_{{{j}}}$"],
+    colors=[accent_color, accent_color],
+)
+
+ax.set_xlabel(r"$x$")
+ax.set_ylabel(r"$y$")
+ax.set_title(
+    rf"Data, $\mu(x)$, $\hat{{\mu}}(x)$, $\epsilon_{{{i}}}$, and $\widehat{{\epsilon}}_{{{j}}}$"
+)
+ax.legend()
+
+plt.tight_layout()
+plt.show()
+```
 
 ---
 
@@ -104,7 +339,8 @@ S\sqrt{\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}} \\
 \text{is an }\class{alert}{(1-\alpha)\text{ confidence interval for }\beta_j} \text{ for each } j=1,\dots,d
 \end{multline*}
 
---- 
+---
+
 ### Joint vs individual confidence statements
 
 \begin{gather*}
