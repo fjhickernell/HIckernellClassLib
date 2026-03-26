@@ -163,6 +163,7 @@
         vf:  "{\\boldsymbol{f}}",
         tvf: "{\\widetilde{\\boldsymbol{f}}}",
         vk:  "{\\boldsymbol{k}}",
+        vQ:  "{\\boldsymbol{Q}}",
         vt:  "{\\boldsymbol{t}}",
         vT:  "{\\boldsymbol{T}}",
         vx:  "{\\boldsymbol{x}}",
@@ -204,6 +205,8 @@
 
         mX: "{\\mathsf{X}}",
         mP: "{\\mathsf{P}}",
+        mQ: "{\\mathsf{Q}}",
+        mR: "{\\mathsf{R}}",
         mI: "{\\mathsf{I}}",
         mzero: "{\\mathsf{0}}",
         mone: "{\\mathsf{1}}",

@@ -1,23 +1,21 @@
 # Regression diagnostics and model selection {#ols_diagnostics}
 
-Up to this point, we have assumed that the chosen linear model is appropriate
+Up to this point, we have assumed that the chosen linear model is appropriate.
 
 &nbsp;
 
-In practice, we should also check whether 
+In practice, we should also check whether
 
-- The model assumptions are reasonable 
-
-- The chosen set of predictors is adequate
-
-- Our assumptions about the errors are justified
+- the model assumptions are reasonable
+- the chosen set of predictors is adequate
+- our assumptions about the errors are justified
 
 ## Regression diagnostics
 
 The main questions are:
 
 - Is the mean response approximately linear in the chosen predictors, which themselves may be nonlinear transformations of underlying variables?
-- Does the variability of the errors stay roughly constant with respect to the $\vx$ and $\Ex(Y \mid \vx)$?
+- Does the variability of the errors stay roughly constant with respect to $\vx$ and $\Ex(Y \mid \vx)$?
 - Are the errors approximately normally distributed?
 - Are there unusual or influential observations that strongly affect the fit?
 
@@ -25,20 +23,20 @@ The main questions are:
 
 ### Residuals versus fitted values
 
-- [Fitted values]{.alert} $\hvY = \mX \hvbeta = \mP \vY$ are the predicted mean responses 
+- [Fitted values]{.alert} $\hvY = \mX \hvbeta = \mP \vY$ are the predicted mean responses
 
-- [Residuals]{.alert} $\hvveps = \vY - \hvY = (\mI - \mP) \vY$ are the differences between observed and fitted values
+- [Residuals]{.alert} $\hvveps = \vY - \hvY = (\mI - \mP)\vY$ are the differences between observed and fitted values
 
-Under the normal linear model, the fitted values and residuals are independent; more generally, they are uncorrelated.  A good first diagnostic is a plot of residuals versus fitted values.
+Under the normal linear model, the fitted values and residuals are independent; more generally, they are uncorrelated. A good first diagnostic is a plot of residuals versus fitted values.
 
 If the linear model is appropriate, then the residual plot should show
 
-- Points scattered around $0$
-- No strong curve or pattern
-- Roughly constant vertical spread across the range of fitted values
+- points scattered around $0$
+- no strong curve or pattern
+- roughly constant vertical spread across the range of fitted values
 
 :::{.key-point}
-A residual plot should look like random noise around zero, not like a pattern
+A residual plot should look like random noise around zero, not like a pattern.
 :::
 
 ---
@@ -48,18 +46,20 @@ A residual plot should look like random noise around zero, not like a pattern
 Because the variability of $\hat\varepsilon_i$ depends on the leverage of observation $i$, it is useful to scale residuals.
 
 A standardized residual is
+
 $$
 r_i
 =
-\frac{\hat\varepsilon_i}{S\sqrt{1-p_{ii}}}
+\frac{\hat\varepsilon_i}{S\sqrt{1-p_{ii}}},
 $$
-where $p_{ii}$ is the $i$-th diagonal entry of the projection (hat) matrix $\mP$.
+
+where $p_{ii}$ is the $i$th diagonal entry of the projection (hat) matrix $\mP$.
 
 Large values of $|r_i|$ indicate observations whose responses are unusual relative to the fitted model.
 
 As a rough rule of thumb:
 
-- $|r_i| > 2$: worth attention  
+- $|r_i| > 2$: worth attention
 - $|r_i| > 3$: potentially serious
 
 ---
@@ -73,102 +73,7 @@ A normal Q-Q plot compares the residuals to what we would expect under normality
 - If the residuals are approximately normal, the points should lie roughly on a straight line.
 - Strong bending or heavy tails suggest departures from normality.
 
-This matters most for small samples.  
-For large samples, moderate nonnormality is often less serious for estimation, though it may still affect inference.
-
----
-
-### Scale-location plot
-
-A scale-location plot graphs
-$$
-\sqrt{|r_i|}
-\quad \text{versus} \quad
-\widehat{\mu}(x_i).
-$$
-
-This is another way to assess whether the error variance is roughly constant.
-
-- If the variance is approximately constant, the spread should be fairly even.
-- A clear trend (e.g., increasing spread) suggests heteroscedasticity.
-
----
-
-### Our example
-
-```{python}
-#| echo: false
-#| fig-align: center
-#| fig-width: 10
-#| fig-height: 7.5
-
-from scipy.stats import norm
-from classlib.plots.colors import TOL_BRIGHT
-
-x = EX["x"]
-X = EX["X"]
-y = EX["y"]
-beta_hat = EX["beta_hat"]
-y_hat = EX["y_hat"]
-resid = EX["resid"]
-s = EX["s"]
-n = EX["n"]
-d = EX["d"]
-XtX_inv = EX["XtX_inv"]
-
-data_color = TOL_BRIGHT["blue"]
-ref_color = TOL_BRIGHT["red"]
-guide_color = "#666666"
-
-# leverage values h_ii = diag(H), where H = X (X'X)^{-1} X'
-h = np.sum((X @ XtX_inv) * X, axis=1)
-
-# internally studentized residuals
-rstud = resid / (s * np.sqrt(1 - h))
-
-# scale-location values
-sqrt_abs_r = np.sqrt(np.abs(rstud))
-
-# normal Q-Q data
-r_sorted = np.sort(rstud)
-p = (np.arange(1, n + 1) - 0.5) / n
-z_theory = norm.ppf(p)
-
-fig, axs = plt.subplots(1,3, figsize=(17,4))
-fig.subplots_adjust(wspace=0.35, hspace=0.40)
-
-axs = axs.flatten()
-
-# 1. Residuals vs fitted
-ax = axs[0]
-ax.scatter(y_hat, rstud, s=35, color=data_color)
-ax.axhline(0, color=guide_color, linestyle=":", linewidth=1.5)
-ax.set_xlabel(r"Fitted values $\widehat{\mu}(x_i)$")
-ax.set_ylabel(r"Studentized residuals")
-ax.set_title("Residuals vs fitted")
-
-# 2. Normal Q-Q
-ax = axs[1]
-ax.scatter(z_theory, r_sorted, s=35, color=data_color)
-
-qmin = min(z_theory.min(), r_sorted.min())
-qmax = max(z_theory.max(), r_sorted.max())
-ax.plot([qmin, qmax], [qmin, qmax], color=ref_color, linewidth=2)
-
-ax.set_xlabel("Theoretical normal quantiles")
-ax.set_ylabel("Ordered residuals")
-ax.set_title("Normal Q-Q")
-
-# 3. Scale-location
-ax = axs[2]
-ax.scatter(y_hat, sqrt_abs_r, s=35, color=data_color)
-ax.set_xlabel(r"Fitted values $\widehat{\mu}(x_i)$")
-ax.set_ylabel(r"$\sqrt{|r_i|}$")
-ax.set_title("Scale-location")
-
-plt.show()
-```
-
+This matters most for small samples. For large samples, moderate nonnormality is often less serious for estimation, though it may still affect inference.
 
 ---
 
@@ -179,15 +84,324 @@ The fitted values satisfy
 $$
 \hvY = \mP \vY,
 \qquad
-\mP := \mX(\mX^\top \mX)^{-1}\mX^\top.
+\mP := \mX(\mX^\top \mX)^{-1}\mX^\top
 $$
 
-The matrix $\mP$ is sometimes called the [hat matrix]{.alert} because it puts a “hat” on $\vY$.
+The matrix $\mP$ is sometimes called the [hat matrix]{.alert} because it puts a “hat” on $\vY$
 
-Its diagonal entries $p_{ii}$ are called the [leverages]{.alert}.
+Its diagonal entries $p_{ii} = (\mP)_{ii} = \|\vQ_{i,\cdot}\|^2$, where $\mX = \mQ \mR$ is the QR decomposition of $\mX$, are clled the [leverages]{.alert}.
 
 - A large value of $p_{ii}$ means that observation $i$ has an unusual predictor vector $\vx_i$.
 - Such observations can have a large effect on the fitted regression.
+- High leverage by itself is not necessarily bad, but it does mean that the observation deserves attention.
+
+---
+
+### Our example
+
+```{python}
+#| echo: false
+#| fig-align: center
+#| fig-width: 18
+#| fig-height: 4.2
+
+from regression_helpers import normal_qq_data
+
+from classlib.plots.colors import TOL_BRIGHT
+
+x = EX["x"]
+y_hat = EX["y_hat"]
+resid = EX["resid"]
+h = EX["h"]
+r = EX["r_standardized"]
+
+data_color = TOL_BRIGHT["blue"]
+ref_color = TOL_BRIGHT["red"]
+guide_color = "#666666"
+
+z_theory, r_sorted = normal_qq_data(r)
+
+fig, axs = plt.subplots(1, 4, figsize=(18, 4.2))
+fig.subplots_adjust(wspace=0.40)
+
+# 1. Residuals vs fitted
+ax = axs[0]
+ax.scatter(y_hat, r, s=35, color=data_color)
+ax.axhline(0, color=guide_color, linestyle=":", linewidth=1.5)
+ax.set_xlabel(r"Fitted values $\widehat{\mu}(x_i)$")
+ax.set_ylabel(r"Standardized residuals")
+ax.set_title("Residuals vs fitted")
+
+# 2. Residuals vs x
+ax = axs[1]
+ax.scatter(x, r, s=35, color=data_color)
+ax.axhline(0, color=guide_color, linestyle=":", linewidth=1.5)
+ax.set_xlabel(r"$x_i$")
+ax.set_ylabel(r"Standardized residuals")
+ax.set_title(r"Residuals vs $x$")
+
+# 3. Normal Q-Q
+ax = axs[2]
+ax.scatter(z_theory, r_sorted, s=35, color=data_color)
+
+qmin = min(z_theory.min(), r_sorted.min())
+qmax = max(z_theory.max(), r_sorted.max())
+ax.plot([qmin, qmax], [qmin, qmax], color=ref_color, linewidth=2)
+
+ax.set_xlabel("Theoretical normal quantiles")
+ax.set_ylabel("Ordered standardized residuals")
+ax.set_title("Normal Q-Q")
+
+# 4. Leverage
+ax = axs[3]
+ax.scatter(x, h, s=35, color=data_color)
+ax.set_xlabel(r"$x_i$")
+ax.set_ylabel(r"Leverage $p_{ii}$")
+ax.set_title("Leverage")
+
+plt.show()
+```
+
+Here the diagnostics look pretty good:
+
+* The residuals show no strong pattern and roughly constant spread across fitted values and $x$
+
+* The normal Q-Q plot shows only mild departures from normality
+
+* The leverage plot shows that no observations have unusually high leverage
+
+---
+
+### When things go wrong: heteroscedasticity
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+Suppose the mean model is still correct,
+
+$$
+Y_i = \beta_1 + \beta_2 x_i^2 + \varepsilon_i,
+$$
+
+but the error variance is no longer constant:
+
+$$
+\varepsilon_i \sim \Norm(0,\sigma_i^2),
+\qquad
+\sigma_i = 0.25 + 0.35 x_i
+$$
+
+So:
+
+- $\Ex(Y_i \mid x_i) = \beta_1 + \beta_2 x_i^2$ is still correct
+- but $\var(Y_i \mid x_i)$ increases with $x_i$
+
+This violates the constant-variance assumption
+
+:::
+
+::: {.column width="50%"}
+
+```{python}
+#| echo: false
+#| fig-align: center
+#| fig-width: 8
+#| fig-height: 8
+
+from regression_helpers import fit_ols, standardized_residuals
+
+rng = np.random.default_rng(2026)
+
+beta_true_bad = np.array([0.10, 0.90])
+
+x_bad = np.linspace(0.0, 3.0, 30)
+sigma_bad = 0.25 + 0.35 * x_bad
+
+eps_bad = rng.normal(0.0, sigma_bad)
+y_bad = beta_true_bad[0] + beta_true_bad[1] * x_bad**2 + eps_bad
+
+X_bad = np.column_stack([np.ones_like(x_bad), x_bad**2])
+
+fit_bad = fit_ols(X_bad, y_bad)
+r_bad = standardized_residuals(fit_bad["resid"], fit_bad["s"], fit_bad["h"])
+
+# grid for true mean
+xg = np.linspace(0, 3, nlinspc)
+Xg = np.column_stack([np.ones_like(xg), xg**2])
+mu_true_g = Xg @ beta_true_bad
+
+fig, axs = plt.subplots(2, 1, figsize=(8, 8))
+fig.subplots_adjust(wspace=0.35)
+
+# --- Left: data + true mean ---
+ax = axs[0]
+ax.scatter(x_bad, y_bad, s=35, color=TOL_BRIGHT["blue"])
+
+ax.plot(
+    xg, mu_true_g,
+    linewidth=2.5,
+    color=TOL_BRIGHT["green"],
+    label=r"$\mu(x) = \beta_1 + \beta_2 x^2$"
+)
+
+ax.set_xlabel(r"$x$")
+ax.set_ylabel(r"$y$")
+ax.set_title("Mean is correct, variance changes")
+ax.legend()
+
+# --- Right: residuals vs fitted ---
+ax = axs[1]
+ax.scatter(fit_bad["y_hat"], r_bad, s=35, color=TOL_BRIGHT["blue"])
+ax.axhline(0, color="#666666", linestyle=":", linewidth=1.5)
+
+ax.set_xlabel(r"Fitted values $\widehat{\mu}(x_i)$")
+ax.set_ylabel(r"Standardized residuals")
+ax.set_title("Residuals fan out")
+
+plt.tight_layout()
+plt.show()
+```
+
+:::
+
+:::
+
+---
+
+:::{.key-point}
+A funnel shape in the residual plot suggests that the variance is changing with the mean or with $x$.
+Possible responses include transforming the response, modeling the variance, or using weighted least squares.
+:::
+
+### What might help?
+
+- transform the response (for example, $\log Y$ when appropriate)
+- use weighted least squares if the variance changes systematically
+- reconsider the mean model, since a bad mean model can also create patterns
+- for inference, use heteroscedasticity-robust standard errors
+
+---
+
+### When things go wrong: a high-leverage point
+
+::: {.columns}
+
+::: {.column width="42%"}
+
+Suppose the mean model is still
+
+$$
+Y_i = \beta_1 + \beta_2 x_i^2 + \varepsilon_i,
+\qquad
+\varepsilon_i \sim \Norm(0,\sigma^2),
+$$
+
+but now one observation has a predictor value far from the rest.
+
+For example, most of the data may have $0 \le x_i \le 3$, but one point might have $x_i = 4.5$.
+
+Then:
+
+- the point may not have a large residual
+- but it can still have [high leverage]{.alert}
+- and it can strongly affect the fitted regression
+
+:::
+
+::: {.column width="58%"}
+
+```{python}
+#| echo: false
+#| fig-align: center
+#| fig-width: 7.2
+#| fig-height: 3.8
+
+#| echo: false
+#| fig-align: center
+#| fig-width: 8
+#| fig-height: 8
+
+from regression_helpers import fit_ols
+
+rng = np.random.default_rng(476)
+
+beta_true_bad = np.array([0.10, 0.90])
+sigma_bad = 1.0
+
+# regular data
+x_bad = np.linspace(0.0, 3.0, 29)
+eps_bad = rng.normal(0.0, sigma_bad, size=x_bad.shape[0])
+y_bad = beta_true_bad[0] + beta_true_bad[1] * x_bad**2 + eps_bad
+
+# add one high-leverage point
+x_extra = 4.5
+y_extra = beta_true_bad[0] + beta_true_bad[1] * x_extra**2 + rng.normal(0.0, sigma_bad)
+
+x_bad = np.append(x_bad, x_extra)
+y_bad = np.append(y_bad, y_extra)
+
+X_bad = np.column_stack([np.ones_like(x_bad), x_bad**2])
+
+fit_bad = fit_ols(X_bad, y_bad)
+h_bad = fit_bad["h"]
+
+# grid for true mean
+xg = np.linspace(0, 4.7, nlinspc)
+Xg = np.column_stack([np.ones_like(xg), xg**2])
+mu_true_g = Xg @ beta_true_bad
+
+fig, axs = plt.subplots(2, 1, figsize=(8, 8))
+fig.subplots_adjust(hspace=0.4)
+
+# --- Top: data + true mean ---
+ax = axs[0]
+ax.scatter(x_bad[:-1], y_bad[:-1], s=35, color=TOL_BRIGHT["blue"])
+ax.scatter([x_extra], [y_extra], s=70, color=TOL_BRIGHT["red"], zorder=5)
+
+ax.plot(
+    xg, mu_true_g,
+    linewidth=2.5,
+    color=TOL_BRIGHT["green"],
+    label=r"$\mu(x) = \beta_1 + \beta_2 x^2$"
+)
+
+ax.set_xlabel(r"$x$")
+ax.set_ylabel(r"$y$")
+ax.set_title("One point has an unusual predictor value")
+ax.legend()
+
+# --- Bottom: leverage vs x ---
+ax = axs[1]
+ax.scatter(x_bad[:-1], h_bad[:-1], s=35, color=TOL_BRIGHT["blue"])
+ax.scatter([x_extra], [h_bad[-1]], s=70, color=TOL_BRIGHT["red"], zorder=5)
+
+ax.set_xlabel(r"$x_i$")
+ax.set_ylabel(r"Leverage $p_{ii}$")
+ax.set_title("That point has high leverage")
+
+plt.tight_layout()
+plt.show()
+```
+
+:::
+
+:::
+
+---
+
+:::{.key-point}
+A point can have a large effect on the fitted model because its predictor value is unusual, even if its residual is not especially large.
+:::
+
+And if you want a short “what might help?” line for this slide, use:
+
+### What might help?
+
+- check whether the unusual predictor value is a data-entry error
+- determine whether the point belongs to the same population as the others
+- compare fits with and without the point
+- collect more data in that region of predictor space if possible
 
 ---
 
@@ -198,16 +412,21 @@ Common diagnostic plots include:
 - residuals versus fitted values  
   checks linearity and constant variance
 
+- residuals versus a predictor  
+  can reveal patterns that are easier to see when there is one main predictor
+
 - normal Q-Q plot  
   checks approximate normality of residuals
 
-- scale-location plot  
-  checks whether residual spread is roughly constant
+- leverage plot  
+  checks which observations have unusual predictor values
 
 - residuals versus leverage, often with Cook's distance shown  
   checks for influential observations
 
-In problems with one main predictor, it is also useful to examine residuals versus that predictor directly, which can sometimes make patterns easier to see.
+In problems with one main predictor, it is often especially helpful to examine residuals versus that predictor directly.
+
+---
 
 ### What to do if diagnostics look bad
 
@@ -236,6 +455,8 @@ Model selection aims to balance
 - interpretability
 - predictive performance
 
+---
+
 ### Comparing nested models
 
 Suppose we compare two [nested]{.alert} models:
@@ -250,6 +471,8 @@ $$
 $$
 
 The question is whether the reduction in RSS is large enough to justify the extra parameters.
+
+---
 
 ### F-test for nested models
 
@@ -269,6 +492,8 @@ $$
 
 A large value of $F$ gives evidence that the extra predictors improve the model.
 
+---
+
 ### Measures of model quality
 
 Several criteria are commonly used to compare models.
@@ -285,6 +510,9 @@ R^2_{\text{adj}}
 $$
 
 Larger values of adjusted $R^2$ are better.
+
+
+---
 
 #### AIC and BIC
 

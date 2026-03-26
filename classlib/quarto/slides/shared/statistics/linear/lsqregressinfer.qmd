@@ -32,6 +32,8 @@ Since a [linear combination of normal random variables is normal]{.alert}, the f
 # code to display the regression example
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+from pathlib import Path
 
 from matplotlib.patches import Ellipse, Rectangle
 from scipy.stats import t, f
@@ -43,6 +45,9 @@ from classlib.plots.colors import (
     neutral_color,
     set_tol_bright_cycle,
 )
+
+sys.path.insert(0, str(Path("../classlib/classlib/model_fit").resolve()))
+from regression_helpers import generate_quadratic_regression_example
 
 plt.rcParams.update({
 
@@ -77,81 +82,12 @@ plt.rcParams.update({
     "legend.frameon": False,
 })
 
-nlinspc = 400 
+nlinspc = 400
 
-def generate_regression_example(
-    n=30,
-    beta_true=np.array([0.10, 0.90]),
-    sigma=1.0,
-    alpha=0.05,
-    seed_start=1,
-    seed_stop=500,
-):
-    """
-    Model: Y = beta_1 + beta_2 x^2 + eps
-
-    Finds a seed where CI for beta_1 contains 0.
-    """
-
-    d = 2
-
-    for seed in range(seed_start, seed_stop + 1):
-        rng = np.random.default_rng(seed)
-
-        x = np.linspace(0.0, 3.0, n)
-        eps = rng.normal(0.0, sigma, size=n)
-
-        y = beta_true[0] + beta_true[1] * x**2 + eps
-
-        X = np.column_stack([np.ones(n), x**2])
-
-        Q, R = np.linalg.qr(X, mode="reduced")
-
-        beta_hat = np.linalg.solve(R, Q.T @ y)
-        y_hat = X @ beta_hat
-
-        resid = y - y_hat
-
-        s2 = (resid @ resid) / (n - d)
-        s = np.sqrt(s2)
-
-        tcrit = t.ppf(1 - alpha / 2, df=n - d)
-
-        # Solve R Z = I, so Z = R^{-1}
-        Z = np.linalg.solve(R, np.eye(d))
-        XtX_inv = Z @ Z.T
-        se_beta = np.sqrt(s2 * np.diag(XtX_inv))
-
-        beta_ci = np.column_stack([
-            beta_hat - tcrit * se_beta,
-            beta_hat + tcrit * se_beta,
-        ])
-
-        if beta_ci[0, 0] <= 0 <= beta_ci[0, 1]:
-            return {
-                "seed": seed,
-                "n": n,
-                "d": d,
-                "alpha": alpha,
-                "beta_true": beta_true,
-                "x": x,
-                "y": y,
-                "X": X,
-                "XtX_inv": XtX_inv,
-                "beta_hat": beta_hat,
-                "y_hat": y_hat,
-                "resid": resid,
-                "s2": s2,
-                "s": s,
-                "tcrit": tcrit,
-                "se_beta": se_beta,
-                "beta_ci": beta_ci,
-            }
-
-    raise RuntimeError("No suitable seed found.")
-
-
-EX = generate_regression_example()
+EX = generate_quadratic_regression_example(
+    seed_start=47,
+    seed_stop=47
+)
 ```
 
 ```{python}
@@ -159,12 +95,11 @@ EX = generate_regression_example()
 #| fig-align: center
 #| fig-width: 6.5
 #| fig-height: 3.2
-
 x = EX["x"]
 y = EX["y"]
+X = EX["X"]
 beta_true = EX["beta_true"]
 beta_hat = EX["beta_hat"]
-
 
 xg = np.linspace(0, 3, nlinspc)
 Xg = np.column_stack([np.ones_like(xg), xg**2])
@@ -172,13 +107,12 @@ Xg = np.column_stack([np.ones_like(xg), xg**2])
 mu_true_g = Xg @ beta_true
 mu_hat_g = Xg @ beta_hat
 
-# Compute true eps and residuals
-X = EX["X"]
+# True errors and residuals
 mu_vals = X @ beta_true
 muhat_vals = X @ beta_hat
 
-eps = y - mu_vals
-ehat = y - muhat_vals
+eps = EX["eps"]
+ehat = EX["resid"]
 
 # Pick a nice positive epsilon_i
 i = np.argmax(eps)
@@ -203,10 +137,18 @@ annot_color = accent_color
 
 # Data and curves
 ax.scatter(x, y, s=28, color=data_color)
-ax.plot(xg, mu_true_g, linewidth=2.5, color=true_color,
-        label=r"$\mu(x) = \beta_1 + \beta_2 x^2$")
-ax.plot(xg, mu_hat_g, linewidth=2.5, color=fit_color,
-        label=r"$\widehat{\mu}(x) = \widehat{\beta}_1 + \widehat{\beta}_2 x^2$")
+ax.plot(
+    xg, mu_true_g,
+    linewidth=2.5,
+    color=true_color,
+    label=r"$\mu(x) = \beta_1 + \beta_2 x^2$"
+)
+ax.plot(
+    xg, mu_hat_g,
+    linewidth=2.5,
+    color=fit_color,
+    label=r"$\widehat{\mu}(x) = \widehat{\beta}_1 + \widehat{\beta}_2 x^2$"
+)
 
 # Highlight chosen data points in the same color as the data
 ax.scatter([xi], [yi], s=90, color=data_color, zorder=5)
@@ -371,6 +313,7 @@ S\sqrt{\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}},
 #| fig-height: 4.6
 
 from classlib.plots.colors import TOL_BRIGHT, accent_color
+from regression_helpers import confidence_ellipse_shape
 
 beta_hat = EX["beta_hat"]
 beta_true = EX["beta_true"]
@@ -388,17 +331,10 @@ ci_color = accent_color
 truth_color = TOL_BRIGHT["green"]
 
 # Joint confidence ellipse
-c2 = d * s2 * f.ppf(1 - alpha, dfn=d, dfd=n - d)
-Sigma = c2 * XtX_inv
-
-eigvals, eigvecs = np.linalg.eigh(Sigma)
-order = np.argsort(eigvals)[::-1]
-eigvals = eigvals[order]
-eigvecs = eigvecs[:, order]
-
-angle = np.degrees(np.arctan2(eigvecs[1, 0], eigvecs[0, 0]))
-width = 2 * np.sqrt(eigvals[0])
-height = 2 * np.sqrt(eigvals[1])
+ell = confidence_ellipse_shape(XtX_inv, s2, alpha, n, d)
+width = ell["width"]
+height = ell["height"]
+angle = ell["angle"]
 
 ellipse = Ellipse(
     xy=beta_hat,
@@ -451,7 +387,7 @@ ax.scatter(
 
 # Labels for marginal intervals
 ax.text(
-    0.7 * (beta_ci[0, 0] + 0.3 * beta_ci[0, 1]),
+    0.7 * beta_ci[0, 0] + 0.3 * beta_ci[0, 1],
     beta_hat[1],
     r" CI for $\beta_1$",
     color=ci_color,
@@ -625,13 +561,14 @@ $$
 #| fig-height: 4.2
 
 from classlib.plots.colors import TOL_BRIGHT, accent_color, neutral_color
+from regression_helpers import mean_and_prediction_bands
 
 x = EX["x"]
 y = EX["y"]
+beta_true = EX["beta_true"]
 beta_hat = EX["beta_hat"]
 XtX_inv = EX["XtX_inv"]
 s2 = EX["s2"]
-s = EX["s"]
 n = EX["n"]
 d = EX["d"]
 alpha = EX["alpha"]
@@ -640,29 +577,28 @@ fig, ax = plt.subplots(figsize=(11, 4.2))
 set_tol_bright_cycle(ax)
 
 data_color = TOL_BRIGHT["blue"]
-fit_color = TOL_BRIGHT["green"]
+true_color = TOL_BRIGHT["green"]
+fit_color = TOL_BRIGHT["red"]
 ci_color = accent_color
-pi_color = TOL_BRIGHT["red"]
+pi_color = TOL_BRIGHT["orange"] if "orange" in TOL_BRIGHT else TOL_BRIGHT["red"]
 
 # grid for plotting
 xg = np.linspace(0, 3, nlinspc)
 Xg = np.column_stack([np.ones_like(xg), xg**2])
 
+mu_true_g = Xg @ beta_true
 
-# standard errors
-tcrit = t.ppf(1 - alpha / 2, df=n - d)
+bands = mean_and_prediction_bands(
+    Xg, beta_hat, XtX_inv, s2, alpha, df=n - d
+)
 
-se_mean = np.sqrt(np.sum((Xg @ XtX_inv) * Xg, axis=1) * s2)
-se_pred = np.sqrt((1.0 + np.sum((Xg @ XtX_inv) * Xg, axis=1)) * s2)
+mu_hat_g = bands["mu_hat"]
+ci_lo = bands["ci"][:, 0]
+ci_hi = bands["ci"][:, 1]
+pi_lo = bands["pi"][:, 0]
+pi_hi = bands["pi"][:, 1]
 
-# pointwise intervals
-ci_lo = mu_hat_g - tcrit * se_mean
-ci_hi = mu_hat_g + tcrit * se_mean
-
-pi_lo = mu_hat_g - tcrit * se_pred
-pi_hi = mu_hat_g + tcrit * se_pred
-
-# Data and curves (consistent with Figure 1)
+# Data and curves
 ax.scatter(x, y, s=28, color=data_color)
 
 ax.plot(
@@ -684,14 +620,14 @@ ax.plot(
     xg, ci_lo,
     linestyle="--",
     linewidth=2.2,
-    color=accent_color,
+    color=ci_color,
     label=r"95% CI for $\mu(x)$"
 )
 ax.plot(
     xg, ci_hi,
     linestyle="--",
     linewidth=2.2,
-    color=accent_color
+    color=ci_color
 )
 
 # Prediction interval (dotted)
@@ -699,19 +635,20 @@ ax.plot(
     xg, pi_lo,
     linestyle=":",
     linewidth=2.4,
-    color=TOL_BRIGHT["orange"] if "orange" in TOL_BRIGHT else TOL_BRIGHT["red"],
+    color=pi_color,
     label=r"95% PI for $Y \mid x$"
 )
 ax.plot(
     xg, pi_hi,
     linestyle=":",
     linewidth=2.4,
-    color=TOL_BRIGHT["orange"] if "orange" in TOL_BRIGHT else TOL_BRIGHT["red"]
+    color=pi_color
 )
 
 ax.set_xlabel(r"$x$")
 ax.set_ylabel(r"$y$")
 ax.set_title(r"Fitted mean with 95% pointwise confidence and prediction intervals")
+
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width * 0.78, box.height])
 
@@ -727,3 +664,48 @@ Prediction intervals are wider than confidence intervals
 
 :::
 
+## Computing regression quantities via QR decomposition
+
+Let $\mX \in \mathbb{R}^{n \times d}$ have full column rank, and write its QR decomposition as
+
+$$
+\mX = \mQ \mR,
+$$
+
+- $\mQ \in \mathbb{R}^{n \times d}$ has orthonormal columns ($\mQ^\top \mQ = \mI_d$)
+- $\mR \in \mathbb{R}^{d \times d}$ is upper triangular
+
+Then it follows that
+
+- [Least squares estimate]{.alert}: $\hvbeta = \mR^{-1} \mQ^\top \vY$
+
+- [Fitted values]{.alert} $\hvY = \mQ (\mQ^\top \vY)$
+
+- [Residuals]{.alert}: $\hvveps = \vY  - \hvY$
+
+- [Covariance of $\hvbeta$]{.alert}: $\cov(\hvbeta) = \sigma^2 \mR^{-1} \mR^{-\top}$
+
+  - [Variance of $\hbeta_j$]{.alert}: $\sigma^2 \bigl[(\mR^{-1} \mR^{-\top})\bigr]_{jj}$, where $\bigl[(\mR^{-1} \mR^{-\top})\bigr]_{jj}$ denotes the $j$th diagonal entry of $\mR^{-1} \mR^{-\top}$
+
+- [Variance of $\hmu(\vx)$]{.alert}: $\cov(\hmu(\vx)) = \sigma^2 \lVert (\mR^{-\top} \vx)\rVert^2$
+
+
+
+---
+
+### Leverage
+
+The leverage values are
+
+$$
+p_{ii} = \|\vQ_{i,\cdot}\|^2,
+$$
+
+i.e., the squared length of the $i$th row of $\mQ$.
+
+---
+
+:::{.key-point}
+QR decomposition provides a stable and efficient way to compute
+$\hvbeta$, $\hvY$, residuals, leverage, and variances without explicitly forming $(\mX^\top \mX)^{-1}$.
+:::
