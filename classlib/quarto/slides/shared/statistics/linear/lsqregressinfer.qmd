@@ -77,6 +77,8 @@ plt.rcParams.update({
     "legend.frameon": False,
 })
 
+nlinspc = 400 
+
 def generate_regression_example(
     n=30,
     beta_true=np.array([0.10, 0.90]),
@@ -103,10 +105,9 @@ def generate_regression_example(
 
         X = np.column_stack([np.ones(n), x**2])
 
-        XtX = X.T @ X
-        XtX_inv = np.linalg.inv(XtX)
+        Q, R = np.linalg.qr(X, mode="reduced")
 
-        beta_hat = XtX_inv @ X.T @ y
+        beta_hat = np.linalg.solve(R, Q.T @ y)
         y_hat = X @ beta_hat
 
         resid = y - y_hat
@@ -115,7 +116,11 @@ def generate_regression_example(
         s = np.sqrt(s2)
 
         tcrit = t.ppf(1 - alpha / 2, df=n - d)
-        se_beta = np.sqrt(np.diag(s2 * XtX_inv))
+
+        # Solve R Z = I, so Z = R^{-1}
+        Z = np.linalg.solve(R, np.eye(d))
+        XtX_inv = Z @ Z.T
+        se_beta = np.sqrt(s2 * np.diag(XtX_inv))
 
         beta_ci = np.column_stack([
             beta_hat - tcrit * se_beta,
@@ -132,7 +137,6 @@ def generate_regression_example(
                 "x": x,
                 "y": y,
                 "X": X,
-                "XtX": XtX,
                 "XtX_inv": XtX_inv,
                 "beta_hat": beta_hat,
                 "y_hat": y_hat,
@@ -161,13 +165,17 @@ y = EX["y"]
 beta_true = EX["beta_true"]
 beta_hat = EX["beta_hat"]
 
-xg = np.linspace(0, 3, 300)
-mu_true = beta_true[0] + beta_true[1] * xg**2
-mu_hat  = beta_hat[0]  + beta_hat[1]  * xg**2
+
+xg = np.linspace(0, 3, nlinspc)
+Xg = np.column_stack([np.ones_like(xg), xg**2])
+
+mu_true_g = Xg @ beta_true
+mu_hat_g = Xg @ beta_hat
 
 # Compute true eps and residuals
-mu_vals = beta_true[0] + beta_true[1] * x**2
-muhat_vals = beta_hat[0] + beta_hat[1] * x**2
+X = EX["X"]
+mu_vals = X @ beta_true
+muhat_vals = X @ beta_hat
 
 eps = y - mu_vals
 ehat = y - muhat_vals
@@ -195,10 +203,10 @@ annot_color = accent_color
 
 # Data and curves
 ax.scatter(x, y, s=28, color=data_color)
-ax.plot(xg, mu_true, linewidth=2.5, color=true_color,
+ax.plot(xg, mu_true_g, linewidth=2.5, color=true_color,
         label=r"$\mu(x) = \beta_1 + \beta_2 x^2$")
-ax.plot(xg, mu_hat, linestyle="--", linewidth=2.5, color=fit_color,
-        label=r"$\hat{\mu}(x) = \widehat{\beta}_1 + \widehat{\beta}_2 x^2$")
+ax.plot(xg, mu_hat_g, linewidth=2.5, color=fit_color,
+        label=r"$\widehat{\mu}(x) = \widehat{\beta}_1 + \widehat{\beta}_2 x^2$")
 
 # Highlight chosen data points in the same color as the data
 ax.scatter([xi], [yi], s=90, color=data_color, zorder=5)
@@ -252,7 +260,7 @@ annotate_xaxis_marks(
 ax.set_xlabel(r"$x$")
 ax.set_ylabel(r"$y$")
 ax.set_title(
-    rf"Data, $\mu(x)$, $\hat{{\mu}}(x)$, $\epsilon_{{{i}}}$, and $\widehat{{\epsilon}}_{{{j}}}$"
+    rf"Data, $\mu(x)$, $\widehat{{\mu}}(x)$, $\epsilon_{{{i}}}$, and $\widehat{{\epsilon}}_{{{j}}}$"
 )
 ax.legend()
 
@@ -300,6 +308,10 @@ defines a $\class{alert}{(1-\alpha)\text{ confidence ellipsoid for }\vbeta}$ cen
 
 ### Individual confidence intervals for the $\beta_j$ assuming $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$
 
+::: {.exitem}
+<span class="exbullet">$\exstar$</span><span>Show that the variance of $\hbeta_j$ is $\sigma^2\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}$, where $\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}$ denotes the $j$th diagonal entry of $(\mX^\top\mX)^{-1}$ </span>
+:::
+
 Since $\hvbeta \sim
 \Norm\!\left(
 \vbeta,\;
@@ -314,30 +326,23 @@ $$
 \right)
 $$
 
-where $\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}$ denotes the $j$th diagonal entry of $(\mX^\top\mX)^{-1}$.
+where $\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}$ denotes the $j$th diagonal entry of $(\mX^\top\mX)^{-1}$. Replacing $\sigma^2$ by $S^2$ gives
 
-Replacing $\sigma^2$ by $S^2$ gives
-
-$$
+\begin{gather*}
 \frac{
 \hbeta_j-\beta_j
 }{
-S\sqrt{\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}}
+S\sqrt{\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}} 
 }
 \sim t_{n-d}
-$$
-
-
-Therefore
-
-\begin{multline*}
+\\
 \hbeta_j
 \pm
 t_{n-d,\alpha/2}
 \;
-S\sqrt{\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}} \\
-\text{is an }\class{alert}{(1-\alpha)\text{ confidence interval for }\beta_j} \text{ for each } j=1,\dots,d
-\end{multline*}
+S\sqrt{\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}} \;
+\text{ is an }\class{alert}{(1-\alpha)\text{ confidence interval for }\beta_j} \text{ for each } j=1,\dots,d
+\end{gather*}
 
 ---
 
@@ -358,11 +363,145 @@ S\sqrt{\bigl[(\mX^\top\mX)^{-1}\bigr]_{jj}},
 \; j=1,\dots,d, \quad \text{are \class{alert}{individual confidence intervals for each $\beta_j$}}
 \end{gather*}
 
+
+```{python}
+#| echo: false
+#| fig-align: center
+#| fig-width: 5.8
+#| fig-height: 4.6
+
+from classlib.plots.colors import TOL_BRIGHT, accent_color
+
+beta_hat = EX["beta_hat"]
+beta_true = EX["beta_true"]
+beta_ci = EX["beta_ci"]
+XtX_inv = EX["XtX_inv"]
+s2 = EX["s2"]
+n = EX["n"]
+d = EX["d"]
+alpha = EX["alpha"]
+
+fig, ax = plt.subplots()
+
+ellipse_color = TOL_BRIGHT["blue"]
+ci_color = accent_color
+truth_color = TOL_BRIGHT["green"]
+
+# Joint confidence ellipse
+c2 = d * s2 * f.ppf(1 - alpha, dfn=d, dfd=n - d)
+Sigma = c2 * XtX_inv
+
+eigvals, eigvecs = np.linalg.eigh(Sigma)
+order = np.argsort(eigvals)[::-1]
+eigvals = eigvals[order]
+eigvecs = eigvecs[:, order]
+
+angle = np.degrees(np.arctan2(eigvecs[1, 0], eigvecs[0, 0]))
+width = 2 * np.sqrt(eigvals[0])
+height = 2 * np.sqrt(eigvals[1])
+
+ellipse = Ellipse(
+    xy=beta_hat,
+    width=width,
+    height=height,
+    angle=angle,
+    fill=False,
+    linewidth=2.5,
+    color=ellipse_color,
+)
+ax.add_patch(ellipse)
+
+# Marginal confidence-interval cross
+ax.hlines(
+    beta_hat[1],
+    beta_ci[0, 0],
+    beta_ci[0, 1],
+    linewidth=2.5,
+    color=ci_color,
+)
+
+ax.vlines(
+    beta_hat[0],
+    beta_ci[1, 0],
+    beta_ci[1, 1],
+    linewidth=2.5,
+    color=ci_color,
+)
+
+# Points
+ax.scatter(
+    [beta_hat[0]],
+    [beta_hat[1]],
+    s=90,
+    color=ellipse_color,
+    zorder=5,
+    label=r"$\widehat{\boldsymbol{\beta}}$",
+)
+
+ax.scatter(
+    [beta_true[0]],
+    [beta_true[1]],
+    s=110,
+    marker="x",
+    linewidths=2.5,
+    color=truth_color,
+    zorder=6,
+    label=r"$\boldsymbol{\beta}$",
+)
+
+# Labels for marginal intervals
+ax.text(
+    0.7 * (beta_ci[0, 0] + 0.3 * beta_ci[0, 1]),
+    beta_hat[1],
+    r" CI for $\beta_1$",
+    color=ci_color,
+    va="bottom",
+    ha="center",
+)
+
+ax.text(
+    beta_hat[0],
+    0.5 * (beta_ci[1, 0] + beta_ci[1, 1]),
+    r" CI for $\beta_2$ ",
+    color=ci_color,
+    rotation=90,
+    va="center",
+    ha="left",
+)
+
+ax.set_xlabel(r"$\beta_1$")
+ax.set_ylabel(r"$\beta_2$")
+ax.set_title(r"Joint confidence ellipse and individual confidence intervals")
+
+# Tighter limits
+pad_x = 0.08
+pad_y = 0.05
+
+x_min = min(beta_ci[0, 0], beta_hat[0] - width / 2)
+x_max = max(beta_ci[0, 1], beta_hat[0] + width / 2)
+
+y_min = min(beta_ci[1, 0], beta_hat[1] - height / 2)
+y_max = max(beta_ci[1, 1], beta_hat[1] + height / 2)
+
+ax.set_xlim(x_min - pad_x, x_max + pad_x)
+ax.set_ylim(y_min - pad_y, y_max + pad_y)
+
+ax.set_aspect("equal", adjustable="box")
+ax.legend()
+
+plt.tight_layout()
+plt.show()
+```
+
 :::{.key-point}
 
-Joint confidence for $\vbeta$ is not the same as simultaneous confidence for all $\beta_j$
+* Joint confidence for $\vbeta$ is not the same as simultaneous confidence for all $\beta_j$
+
+* The confidence elliposoid for $\vbeta$ and the individual confidence interval for $\beta_1$ both include $\beta_1 = 0$ so one might question whether there should be a constant term in the model
 
 :::
+
+---
 
 ### Caution about many intervals
 
@@ -445,7 +584,7 @@ $$
 
 ::: {.column width="49%"}
 
-Confidence interval for mean response:
+[Confidence]{.alert} interval for mean response:
 
 $$
 \hmu(\vx)
@@ -463,7 +602,7 @@ $$
 
 ::: {.column width="49%"}
 
-Prediction interval for a new observation:
+[Prediction]{.alert} interval for a new observation:
 
 $$
 \hmu(\vx)
@@ -479,9 +618,112 @@ $$
 
 :::
 
+```{python}
+#| echo: false
+#| fig-align: center
+#| fig-width: 11
+#| fig-height: 4.2
+
+from classlib.plots.colors import TOL_BRIGHT, accent_color, neutral_color
+
+x = EX["x"]
+y = EX["y"]
+beta_hat = EX["beta_hat"]
+XtX_inv = EX["XtX_inv"]
+s2 = EX["s2"]
+s = EX["s"]
+n = EX["n"]
+d = EX["d"]
+alpha = EX["alpha"]
+
+fig, ax = plt.subplots(figsize=(11, 4.2))
+set_tol_bright_cycle(ax)
+
+data_color = TOL_BRIGHT["blue"]
+fit_color = TOL_BRIGHT["green"]
+ci_color = accent_color
+pi_color = TOL_BRIGHT["red"]
+
+# grid for plotting
+xg = np.linspace(0, 3, nlinspc)
+Xg = np.column_stack([np.ones_like(xg), xg**2])
+
+
+# standard errors
+tcrit = t.ppf(1 - alpha / 2, df=n - d)
+
+se_mean = np.sqrt(np.sum((Xg @ XtX_inv) * Xg, axis=1) * s2)
+se_pred = np.sqrt((1.0 + np.sum((Xg @ XtX_inv) * Xg, axis=1)) * s2)
+
+# pointwise intervals
+ci_lo = mu_hat_g - tcrit * se_mean
+ci_hi = mu_hat_g + tcrit * se_mean
+
+pi_lo = mu_hat_g - tcrit * se_pred
+pi_hi = mu_hat_g + tcrit * se_pred
+
+# Data and curves (consistent with Figure 1)
+ax.scatter(x, y, s=28, color=data_color)
+
+ax.plot(
+    xg, mu_true_g,
+    linewidth=2.5,
+    color=true_color,
+    label=r"$\mu(x) = \beta_1 + \beta_2 x^2$"
+)
+
+ax.plot(
+    xg, mu_hat_g,
+    linewidth=2.5,
+    color=fit_color,
+    label=r"$\widehat{\mu}(x) = \widehat{\beta}_1 + \widehat{\beta}_2 x^2$"
+)
+
+# Confidence interval (dashed)
+ax.plot(
+    xg, ci_lo,
+    linestyle="--",
+    linewidth=2.2,
+    color=accent_color,
+    label=r"95% CI for $\mu(x)$"
+)
+ax.plot(
+    xg, ci_hi,
+    linestyle="--",
+    linewidth=2.2,
+    color=accent_color
+)
+
+# Prediction interval (dotted)
+ax.plot(
+    xg, pi_lo,
+    linestyle=":",
+    linewidth=2.4,
+    color=TOL_BRIGHT["orange"] if "orange" in TOL_BRIGHT else TOL_BRIGHT["red"],
+    label=r"95% PI for $Y \mid x$"
+)
+ax.plot(
+    xg, pi_hi,
+    linestyle=":",
+    linewidth=2.4,
+    color=TOL_BRIGHT["orange"] if "orange" in TOL_BRIGHT else TOL_BRIGHT["red"]
+)
+
+ax.set_xlabel(r"$x$")
+ax.set_ylabel(r"$y$")
+ax.set_title(r"Fitted mean with 95% pointwise confidence and prediction intervals")
+box = ax.get_position()
+ax.set_position([box.x0, box.y0, box.width * 0.78, box.height])
+
+ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5))
+
+plt.tight_layout()
+plt.show()
+```
+
 ::: {.key-point}
 
-Prediction intervals are wider
+Prediction intervals are wider than confidence intervals
 
 :::
 

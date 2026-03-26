@@ -39,7 +39,7 @@ Furthermore
 
 - $\hvY : = \mX \hvbeta = \underbrace{\mX (\mX^\top \mX)^{-1} \mX^\top}_{\href{https://en.wikipedia.org/wiki/Projection_matrix}{\text{projection matrix }} \mP} \vY$ is an estimator of $\mu(\vX) = \Ex(\vY)$
 
-- $\mP$ is the projection matrix onto 
+- $\mP$ is the projection matrix (also called the hat matrix) onto 
 $$
 \cc(\mX):= \text{ the column space of } \mX = \text{ the set of all linear combinations of the columns of } \mX = \{ \mX \vb : \vb \in \reals^d \}
 $$

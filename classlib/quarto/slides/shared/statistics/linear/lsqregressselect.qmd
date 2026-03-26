@@ -29,7 +29,7 @@ The main questions are:
 
 - [Residuals]{.alert} $\hvveps = \vY - \hvY = (\mI - \mP) \vY$ are the differences between observed and fitted values
 
-and these should be independent under the model assumptions.  A good first diagnostic is a plot of residuals versus fitted values.
+Under the normal linear model, the fitted values and residuals are independent; more generally, they are uncorrelated.  A good first diagnostic is a plot of residuals versus fitted values.
 
 If the linear model is appropriate, then the residual plot should show
 
@@ -40,6 +40,27 @@ If the linear model is appropriate, then the residual plot should show
 :::{.key-point}
 A residual plot should look like random noise around zero, not like a pattern
 :::
+
+---
+
+### Standardized residuals
+
+Because the variability of $\hat\varepsilon_i$ depends on the leverage of observation $i$, it is useful to scale residuals.
+
+A standardized residual is
+$$
+r_i
+=
+\frac{\hat\varepsilon_i}{S\sqrt{1-p_{ii}}}
+$$
+where $p_{ii}$ is the $i$-th diagonal entry of the projection (hat) matrix $\mP$.
+
+Large values of $|r_i|$ indicate observations whose responses are unusual relative to the fitted model.
+
+As a rough rule of thumb:
+
+- $|r_i| > 2$: worth attention  
+- $|r_i| > 3$: potentially serious
 
 ---
 
@@ -57,40 +78,116 @@ For large samples, moderate nonnormality is often less serious for estimation, t
 
 ---
 
+### Scale-location plot
+
+A scale-location plot graphs
+$$
+\sqrt{|r_i|}
+\quad \text{versus} \quad
+\widehat{\mu}(x_i).
+$$
+
+This is another way to assess whether the error variance is roughly constant.
+
+- If the variance is approximately constant, the spread should be fairly even.
+- A clear trend (e.g., increasing spread) suggests heteroscedasticity.
+
+---
+
+### Our example
+
+```{python}
+#| echo: false
+#| fig-align: center
+#| fig-width: 10
+#| fig-height: 7.5
+
+from scipy.stats import norm
+from classlib.plots.colors import TOL_BRIGHT
+
+x = EX["x"]
+X = EX["X"]
+y = EX["y"]
+beta_hat = EX["beta_hat"]
+y_hat = EX["y_hat"]
+resid = EX["resid"]
+s = EX["s"]
+n = EX["n"]
+d = EX["d"]
+XtX_inv = EX["XtX_inv"]
+
+data_color = TOL_BRIGHT["blue"]
+ref_color = TOL_BRIGHT["red"]
+guide_color = "#666666"
+
+# leverage values h_ii = diag(H), where H = X (X'X)^{-1} X'
+h = np.sum((X @ XtX_inv) * X, axis=1)
+
+# internally studentized residuals
+rstud = resid / (s * np.sqrt(1 - h))
+
+# scale-location values
+sqrt_abs_r = np.sqrt(np.abs(rstud))
+
+# normal Q-Q data
+r_sorted = np.sort(rstud)
+p = (np.arange(1, n + 1) - 0.5) / n
+z_theory = norm.ppf(p)
+
+fig, axs = plt.subplots(1,3, figsize=(17,4))
+fig.subplots_adjust(wspace=0.35, hspace=0.40)
+
+axs = axs.flatten()
+
+# 1. Residuals vs fitted
+ax = axs[0]
+ax.scatter(y_hat, rstud, s=35, color=data_color)
+ax.axhline(0, color=guide_color, linestyle=":", linewidth=1.5)
+ax.set_xlabel(r"Fitted values $\widehat{\mu}(x_i)$")
+ax.set_ylabel(r"Studentized residuals")
+ax.set_title("Residuals vs fitted")
+
+# 2. Normal Q-Q
+ax = axs[1]
+ax.scatter(z_theory, r_sorted, s=35, color=data_color)
+
+qmin = min(z_theory.min(), r_sorted.min())
+qmax = max(z_theory.max(), r_sorted.max())
+ax.plot([qmin, qmax], [qmin, qmax], color=ref_color, linewidth=2)
+
+ax.set_xlabel("Theoretical normal quantiles")
+ax.set_ylabel("Ordered residuals")
+ax.set_title("Normal Q-Q")
+
+# 3. Scale-location
+ax = axs[2]
+ax.scatter(y_hat, sqrt_abs_r, s=35, color=data_color)
+ax.set_xlabel(r"Fitted values $\widehat{\mu}(x_i)$")
+ax.set_ylabel(r"$\sqrt{|r_i|}$")
+ax.set_title("Scale-location")
+
+plt.show()
+```
+
+
+---
+
 ### Hat matrix and leverage
 
 The fitted values satisfy
 
 $$
-\hvY = \mH \vY,
+\hvY = \mP \vY,
 \qquad
-\mH := \mX(\mX^\top \mX)^{-1}\mX^\top
+\mP := \mX(\mX^\top \mX)^{-1}\mX^\top.
 $$
 
-The matrix $\mH$ is called the [hat matrix]{.alert} because it puts a “hat” on $\vY$.
+The matrix $\mP$ is sometimes called the [hat matrix]{.alert} because it puts a “hat” on $\vY$.
 
-Its diagonal entries $h_{ii}$ are called the [leverages]{.alert}.
+Its diagonal entries $p_{ii}$ are called the [leverages]{.alert}.
 
-- A large value of $h_{ii}$ means that observation $i$ has an unusual predictor vector $\vx_i$.
-- Such observations can have a large effect on the fitted regression line or surface.
-
----
-
-### Standardized residuals
-
-Since the variability of $\hat\varepsilon_i$ depends on $h_{ii}$, it is useful to scale residuals.
-
-A standardized residual is
-
-$$
-r_i
-=
-\frac{\hat\varepsilon_i}{S\sqrt{1-h_{ii}}}
-$$
-
-Large values of $|r_i|$ indicate observations whose responses are unusual relative to the fitted model.
-
-As a rough rule of thumb, values with $|r_i|>2$ deserve attention, and values with $|r_i|>3$ deserve serious attention.
+- A large value of $p_{ii}$ means that observation $i$ has an unusual predictor vector $\vx_i$.
+- Such observations can have a large effect on the fitted regression.
 
 ---
 
@@ -109,6 +206,8 @@ Common diagnostic plots include:
 
 - residuals versus leverage, often with Cook's distance shown  
   checks for influential observations
+
+In problems with one main predictor, it is also useful to examine residuals versus that predictor directly, which can sometimes make patterns easier to see.
 
 ### What to do if diagnostics look bad
 
