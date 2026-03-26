@@ -394,8 +394,6 @@ plt.show()
 A point can have a large effect on the fitted model because its predictor value is unusual, even if its residual is not especially large.
 :::
 
-And if you want a short “what might help?” line for this slide, use:
-
 ### What might help?
 
 - check whether the unusual predictor value is a data-entry error
