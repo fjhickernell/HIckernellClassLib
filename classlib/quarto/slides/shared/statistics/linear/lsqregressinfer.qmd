@@ -668,16 +668,72 @@ Prediction intervals are wider than confidence intervals
 
 Let $\mX \in \mathbb{R}^{n \times d}$ have full column rank, and write its QR decomposition as
 
-$$
-\mX = \mQ \mR,
-$$
+```{=html}
+<div style="display:flex; justify-content:center; margin-top:1.5rem;">
+
+<svg width="900" height="400" viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- X -->
+  <rect x="60" y="40" width="140" height="320"
+        fill="#dceaf7" stroke="black" stroke-width="3"/>
+  <text x="130" y="80" text-anchor="middle" font-size="42" font-family="sans-serif">X</text>
+  <text x="130" y="350" text-anchor="middle" font-size="28" font-family="serif">
+    <tspan font-style="italic">n</tspan>
+    <tspan font-style="normal"> × </tspan>
+    <tspan font-style="italic">d</tspan>
+  </text>
+
+  <!-- equals -->
+  <text x="250" y="160" text-anchor="middle" font-size="48" font-family="serif">=</text>
+
+  <!-- Q -->
+  <rect x="300" y="40" width="140" height="320"
+        fill="#dceaf7" stroke="black" stroke-width="3"/>
+  <text x="370" y="80" text-anchor="middle" font-size="42" font-family="sans-serif">Q</text>
+  <text x="370" y="350" text-anchor="middle" font-size="28" font-family="serif">
+    <tspan font-style="italic">n</tspan>
+    <tspan font-style="normal"> × </tspan>
+    <tspan font-style="italic">d</tspan>
+  </text>
+
+<!-- R background -->
+<rect x="490" y="40" width="140" height="140"
+      fill="#f7f7f7"/>
+
+<!-- upper triangle -->
+<polygon points="490,40 630,40 630,180"
+         fill="#dceaf7"/>
+
+<!-- border (draw LAST) -->
+<rect x="490" y="40" width="140" height="140"
+      fill="none" stroke="black" stroke-width="3"/>
+
+  <!-- diagonal -->
+  <line x1="490" y1="40" x2="630" y2="180" stroke="black" stroke-width="3"/>
+
+  <!-- R label -->
+  <text x="560" y="80" text-anchor="middle" font-size="42" font-family="sans-serif">R</text>
+  <text x="525" y="145" text-anchor="middle" font-size="42" font-family="sans-serif">0</text>
+  <text x="560" y="170" text-anchor="middle" font-size="28" font-family="serif">
+    <tspan font-style="italic">d</tspan>
+    <tspan font-style="normal"> × </tspan>
+    <tspan font-style="italic">d</tspan>
+  </text>
+
+</svg>
+
+</div>
+```
 
 - $\mQ \in \mathbb{R}^{n \times d}$ has orthonormal columns ($\mQ^\top \mQ = \mI_d$)
 - $\mR \in \mathbb{R}^{d \times d}$ is upper triangular
 
+---
+
+
 Then it follows that
 
-- [Least squares estimate]{.alert}: $\hvbeta = \mR^{-1} \mQ^\top \vY$
+- [Least squares estimate]{.alert}: $\hvbeta = \mR^{-1} (\mQ^\top \vY)$
 
 - [Fitted values]{.alert} $\hvY = \mQ (\mQ^\top \vY)$
 
@@ -687,7 +743,7 @@ Then it follows that
 
   - [Variance of $\hbeta_j$]{.alert}: $\sigma^2 \bigl[(\mR^{-1} \mR^{-\top})\bigr]_{jj}$, where $\bigl[(\mR^{-1} \mR^{-\top})\bigr]_{jj}$ denotes the $j$th diagonal entry of $\mR^{-1} \mR^{-\top}$
 
-- [Variance of $\hmu(\vx)$]{.alert}: $\cov(\hmu(\vx)) = \sigma^2 \lVert (\mR^{-\top} \vx)\rVert^2$
+- [Variance of $\hmu(\vx)$]{.alert}: $\var(\hmu(\vx)) = \sigma^2 \lVert (\mR^{-\top} \vx)\rVert^2$
 
 
 
