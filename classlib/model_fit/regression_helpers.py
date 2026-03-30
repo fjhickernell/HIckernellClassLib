@@ -229,3 +229,75 @@ def generate_quadratic_regression_example(
             return fit
 
     raise RuntimeError("No suitable seed found.")
+
+
+import numpy as np
+from scipy.stats import t, f
+
+
+def mean_prediction_and_simultaneous_bands(Xg, beta_hat, XtX_inv, s2, alpha, df):
+    """
+    Compute fitted mean together with pointwise and simultaneous
+    confidence/prediction bands for a linear model.
+
+    Parameters
+    ----------
+    Xg : ndarray, shape (m, d)
+        Design matrix for the grid of x-values where the bands are evaluated.
+    beta_hat : ndarray, shape (d,)
+        Least-squares estimate of beta.
+    XtX_inv : ndarray, shape (d, d)
+        Inverse of X^T X.
+    s2 : float
+        Residual variance estimate S^2.
+    alpha : float
+        Significance level.
+    df : int
+        Residual degrees of freedom, typically n - d.
+
+    Returns
+    -------
+    dict
+        Dictionary with entries:
+        - "mu_hat": fitted mean on the grid
+        - "pointwise_ci": pointwise confidence intervals for mu(x)
+        - "pointwise_pi": pointwise prediction intervals for Y | x
+        - "simul_ci": simultaneous confidence band for mu(x)
+        - "simul_pi": simultaneous prediction band for Y | x
+        - "t_mult": pointwise t multiplier
+        - "band_mult": simultaneous band multiplier sqrt(d F_{d,df,alpha}),
+          where P(F_{d,df} > F_{d,df,alpha}) = alpha
+    """
+    Xg = np.asarray(Xg)
+    beta_hat = np.asarray(beta_hat)
+    XtX_inv = np.asarray(XtX_inv)
+
+    m, d = Xg.shape
+    s = np.sqrt(s2)
+
+    mu_hat = Xg @ beta_hat
+
+    # leverage-like quantity x^T (X^T X)^{-1} x for each row x in Xg
+    h = np.einsum("ij,jk,ik->i", Xg, XtX_inv, Xg)
+
+    t_mult = t.ppf(1 - alpha / 2, df)
+    band_mult = np.sqrt(d * f.ppf(1 - alpha, d, df))
+
+    se_mean = s * np.sqrt(h)
+    se_pred = s * np.sqrt(1 + h)
+
+    pointwise_ci_half = t_mult * se_mean
+    pointwise_pi_half = t_mult * se_pred
+
+    simul_ci_half = band_mult * se_mean
+    simul_pi_half = band_mult * se_pred
+
+    return {
+        "mu_hat": mu_hat,
+        "pointwise_ci": np.column_stack([mu_hat - pointwise_ci_half, mu_hat + pointwise_ci_half]),
+        "pointwise_pi": np.column_stack([mu_hat - pointwise_pi_half, mu_hat + pointwise_pi_half]),
+        "simul_ci": np.column_stack([mu_hat - simul_ci_half, mu_hat + simul_ci_half]),
+        "simul_pi": np.column_stack([mu_hat - simul_pi_half, mu_hat + simul_pi_half]),
+        "t_mult": t_mult,
+        "band_mult": band_mult,
+    }

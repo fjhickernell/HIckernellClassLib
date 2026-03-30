@@ -660,7 +660,208 @@ plt.show()
 
 ::: {.key-point}
 
-Prediction intervals are wider than confidence intervals
+* Prediction intervals are wider than confidence intervals
+
+* These pointwise intervals exhibit uncertainty at each fixed $\vx$, [not simultaneously]{.alert} for all $\vx$ at once
+
+:::
+
+## Simultaneous confidence and prediction bands
+
+Pointwise intervals control uncertainty at one fixed $\vx$.
+A [band]{.alert} controls uncertainty [simultaneously]{.alert} for all $\vx$.  Since
+$$
+(\hvbeta-\vbeta)^\top(\mX^\top\mX)(\hvbeta-\vbeta)
+\le dS^2F_{d,n-d,\alpha},
+\qquad \Prob(F_{d,n-d}>F_{d,n-d,\alpha})=\alpha,
+$$
+then for every $\vx$,
+$$
+\bigl|\hmu(\vx)-\mu(\vx)\bigr|
+=
+\bigl|\vx^\top(\hvbeta-\vbeta)\bigr|
+\le
+\sqrt{\vx^\top(\mX^\top\mX)^{-1}\vx}
+\sqrt{(\hvbeta-\vbeta)^\top(\mX^\top\mX)(\hvbeta-\vbeta)}
+$$
+
+by Cauchy--Schwarz, so
+
+$$
+\mu(\vx)
+\in
+\hmu(\vx)
+\pm
+\sqrt{dF_{d,n-d,\alpha}}\;
+S\sqrt{\vx^\top(\mX^\top\mX)^{-1}\vx}
+\qquad \text{simultaneously for all }\vx
+$$
+
+Similarly, a simultaneous prediction band is
+
+$$
+Y_{\text{new}}
+\in
+\hmu(\vx)
+\pm
+\sqrt{dF_{d,n-d,\alpha}}\;
+S\sqrt{1+\vx^\top(\mX^\top\mX)^{-1}\vx}
+\qquad \text{simultaneously for all }\vx
+$$
+
+---
+
+:::{.key-point}
+* Pointwise intervals use the $t$ multiplier because they control one fixed $\vx$.
+
+* Simultaneous bands use the larger $\sqrt{dF_{d,n-d,\alpha}}$ multiplier because they must work for all $\vx$ at once.
+:::
+
+```{python}
+#| echo: false
+#| fig-align: center
+#| fig-width: 11
+#| fig-height: 4.4
+
+from classlib.plots.colors import TOL_BRIGHT, accent_color
+from regression_helpers import mean_prediction_and_simultaneous_bands
+
+x = EX["x"]
+y = EX["y"]
+beta_true = EX["beta_true"]
+beta_hat = EX["beta_hat"]
+XtX_inv = EX["XtX_inv"]
+s2 = EX["s2"]
+n = EX["n"]
+d = EX["d"]
+alpha = EX["alpha"]
+
+fig, ax = plt.subplots(figsize=(11, 4.4))
+set_tol_bright_cycle(ax)
+
+data_color = TOL_BRIGHT["blue"]
+true_color = TOL_BRIGHT["green"]
+fit_color = TOL_BRIGHT["red"]
+ci_color = accent_color
+pi_color = TOL_BRIGHT["orange"] if "orange" in TOL_BRIGHT else TOL_BRIGHT["red"]
+
+# grid for plotting
+xg = np.linspace(0, 3, nlinspc)
+Xg = np.column_stack([np.ones_like(xg), xg**2])
+
+mu_true_g = Xg @ beta_true
+
+bands = mean_prediction_and_simultaneous_bands(
+    Xg, beta_hat, XtX_inv, s2, alpha, df=n - d
+)
+
+mu_hat_g = bands["mu_hat"]
+
+ci_lo = bands["pointwise_ci"][:, 0]
+ci_hi = bands["pointwise_ci"][:, 1]
+
+pi_lo = bands["pointwise_pi"][:, 0]
+pi_hi = bands["pointwise_pi"][:, 1]
+
+sci_lo = bands["simul_ci"][:, 0]
+sci_hi = bands["simul_ci"][:, 1]
+
+spi_lo = bands["simul_pi"][:, 0]
+spi_hi = bands["simul_pi"][:, 1]
+
+# data and curves
+ax.scatter(x, y, s=28, color=data_color)
+
+ax.plot(
+    xg, mu_true_g,
+    linewidth=2.5,
+    color=true_color,
+    label=r"$\mu(x) = \beta_1 + \beta_2 x^2$"
+)
+
+ax.plot(
+    xg, mu_hat_g,
+    linewidth=2.5,
+    color=fit_color,
+    label=r"$\widehat{\mu}(x) = \widehat{\beta}_1 + \widehat{\beta}_2 x^2$"
+)
+
+# pointwise confidence interval
+ax.plot(
+    xg, ci_lo,
+    linestyle="--",
+    linewidth=2.0,
+    color=ci_color,
+    label=r"95% pointwise CI for $\mu(x)$"
+)
+ax.plot(
+    xg, ci_hi,
+    linestyle="--",
+    linewidth=2.0,
+    color=ci_color
+)
+
+# simultaneous confidence band
+ax.plot(
+    xg, sci_lo,
+    linestyle="-.",
+    linewidth=2.2,
+    color=ci_color,
+    label=r"95% simultaneous confidence band"
+)
+ax.plot(
+    xg, sci_hi,
+    linestyle="-.",
+    linewidth=2.2,
+    color=ci_color
+)
+
+# pointwise prediction interval
+ax.plot(
+    xg, pi_lo,
+    linestyle=":",
+    linewidth=2.2,
+    color=pi_color,
+    label=r"95% pointwise PI for $Y \mid x$"
+)
+ax.plot(
+    xg, pi_hi,
+    linestyle=":",
+    linewidth=2.2,
+    color=pi_color
+)
+
+# simultaneous prediction band
+ax.plot(
+    xg, spi_lo,
+    linestyle=(0, (6, 2)),
+    linewidth=2.0,
+    color=pi_color,
+    label=r"95% simultaneous prediction band"
+)
+ax.plot(
+    xg, spi_hi,
+    linestyle=(0, (6, 2)),
+    linewidth=2.0,
+    color=pi_color
+)
+
+ax.set_xlabel(r"$x$")
+ax.set_ylabel(r"$y$")
+ax.set_title(r"Pointwise intervals and simultaneous bands")
+
+box = ax.get_position()
+ax.set_position([box.x0, box.y0, box.width * 0.75, box.height])
+
+ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5))
+
+plt.tight_layout()
+plt.show()
+```
+::: {.key-point}
+
+Simultaneous bands are wider than pointwise intervals because they must cover
+\class{alert}{all} $\vx$ values at once, not just one fixed $\vx$
 
 :::
 
@@ -745,23 +946,3 @@ Then it follows that
 
 - [Variance of $\hmu(\vx)$]{.alert}: $\var(\hmu(\vx)) = \sigma^2 \lVert (\mR^{-\top} \vx)\rVert^2$
 
-
-
----
-
-### Leverage
-
-The leverage values are
-
-$$
-p_{ii} = \|\vQ_{i,\cdot}\|^2,
-$$
-
-i.e., the squared length of the $i$th row of $\mQ$.
-
----
-
-:::{.key-point}
-QR decomposition provides a stable and efficient way to compute
-$\hvbeta$, $\hvY$, residuals, leverage, and variances without explicitly forming $(\mX^\top \mX)^{-1}$.
-:::

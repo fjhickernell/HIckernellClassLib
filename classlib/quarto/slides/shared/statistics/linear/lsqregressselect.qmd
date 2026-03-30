@@ -64,16 +64,41 @@ As a rough rule of thumb:
 
 ---
 
-### Normal Q-Q plot
+### Normal Q–Q plot
 
-Many inference procedures for regression assume that the errors are normally distributed.
+Let $r_1,\dots,r_n$ be standardized residuals, and let  $r_{(1)} \le \cdots \le r_{(n)}$ denote the sorted values.
 
-A normal Q-Q plot compares the residuals to what we would expect under normality.
+&nbsp;
 
-- If the residuals are approximately normal, the points should lie roughly on a straight line.
-- Strong bending or heavy tails suggest departures from normality.
+Define plotting positions and corresponding normal quantiles:
+$$
+p_i = \frac{i - 1/2}{n}, \qquad i=1,\dots,n \qquad z_i = \Phi^{-1}(p_i), \qquad i=1,\dots,n
+$$
 
-This matters most for small samples. For large samples, moderate nonnormality is often less serious for estimation, though it may still affect inference.
+Plot the points $(z_i, r_{(i)})$, $i=1,\dots,n$
+
+&nbsp;
+
+- If the residuals are Normal, the points lie approximately on $y = x$
+- Systematic deviations, such as curvature, indicate non-normality
+- This matters most for small samples
+- For large samples, moderate nonnormality is often less serious for estimation, though it may still affect inference
+
+---
+
+### Why not a P–P plot?
+
+P–P plot would plot
+$$
+\bigl(p_i, \Phi(r_{(i)})\bigr)
+$$
+
+- This checks whether the $\Phi(r_i)$ are approximately $\Unif[0,1]$  
+- However, it compresses the tails and is less sensitive to deviations there
+
+&nbsp;
+
+👉 Q–Q plots are preferred because they better reveal **tail departures from Normality**
 
 ---
 
@@ -89,11 +114,11 @@ $$
 
 The matrix $\mP$ is sometimes called the [hat matrix]{.alert} because it puts a “hat” on $\vY$
 
-Its diagonal entries $p_{ii} = (\mP)_{ii} = \|\vQ_{i,\cdot}\|^2$, where $\mX = \mQ \mR$ is the QR decomposition of $\mX$, are clled the [leverages]{.alert}.
+Its diagonal entries $p_{ii} = (\mP)_{ii} = \|\vQ_{i,\cdot}\|^2$, where $\mX = \mQ \mR$ is the QR decomposition of $\mX$, are called the [leverages]{.alert}
 
-- A large value of $p_{ii}$ means that observation $i$ has an unusual predictor vector $\vx_i$.
-- Such observations can have a large effect on the fitted regression.
-- High leverage by itself is not necessarily bad, but it does mean that the observation deserves attention.
+- A large value of $p_{ii}$ means that observation $i$ has an unusual predictor vector $\vx_i$
+- Such observations can have a large effect on the fitted regression
+- High leverage by itself is not necessarily bad, but it does mean that the observation deserves attention
 
 ---
 
@@ -270,8 +295,9 @@ plt.show()
 ---
 
 :::{.key-point}
-A funnel shape in the residual plot suggests that the variance is changing with the mean or with $x$.
-Possible responses include transforming the response, modeling the variance, or using weighted least squares.
+- A funnel shape in the residual plot suggests that the variance is changing with the mean or with $x$
+
+- Possible responses include transforming the response, modeling the variance, or using weighted least squares
 :::
 
 ### What might help?
