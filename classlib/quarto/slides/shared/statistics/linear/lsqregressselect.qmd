@@ -1,6 +1,6 @@
 # Regression diagnostics and model selection {#ols_diagnostics}
 
-[({{< meta texts.cb.initials >}} §8.1–8.3; {{< meta texts.wms.initials >}} §10.1–10.2)]{.small}
+[({{< meta texts.cb.initials >}} §11.3; {{< meta texts.wms.initials >}} §11.14)]{.small}
 
 Up to this point, we have assumed that the chosen linear model is appropriate.
 

@@ -1,6 +1,6 @@
 # Inference for regression parameters and predictions assuming $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$ {#ols_inference}
 
-[({{< meta texts.cb.initials >}} §8.1–8.3; {{< meta texts.wms.initials >}} §11.4–11.7, 11.12–11.13)]{.small}
+[({{< meta texts.cb.initials >}} §11.3; {{< meta texts.wms.initials >}} §11.4–11.7, 11.12–11.13)]{.small}
 
 So far, we have only used the assumptions that 
 
