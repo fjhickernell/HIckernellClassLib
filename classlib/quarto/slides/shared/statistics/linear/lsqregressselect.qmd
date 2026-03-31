@@ -1025,7 +1025,9 @@ plt.show()
 
 :::{.key-point}
 
-Because the reduced model has only one regression parameter, the “simultaneous”
+- Because the reduced model has only one regression parameter, the “simultaneous”
 and “pointwise” intervals are the same in this case
+
+- The reduced model fits the data well, even though it is not of the same form as the true model
 
 :::
