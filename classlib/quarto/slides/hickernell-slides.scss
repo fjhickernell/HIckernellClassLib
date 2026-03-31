@@ -497,12 +497,19 @@ h1::before,
 }
 
 /* Subheaders inside slides */
-.reveal h3,
-.reveal h4 {
+/* Subheaders inside slides */
+.reveal h3 {
   color: var(--header-blue);
   font-weight: 600;
   font-size: 1.2em;
   margin-top: 0.8em;
+}
+
+.reveal h4 {
+  color: var(--header-blue);
+  font-weight: 600;
+  font-size: 1.1em;
+  margin-top: 0.6em;
 }
 
 /* ===============================

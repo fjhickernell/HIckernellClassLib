@@ -14,9 +14,12 @@ Types of linear models
 
   - [Inference for model parameters and predictions](#ols_inference)
 
-  - [Diagnostics and model selection](#ols_diagnostics)
+  - [Diagnostics](#ols_diagnostics)
 
-- [Analysis of variance (ANOVA)]{.alert} $Y = \vx^\top \vbeta + \varepsilon$ with $\varepsilon \sim (0,\sigma^2)$
+  - [Model selection](#ols_selection)
+
+
+- [One-way analysis of variance (ANOVA)](#oneway_anova) $Y_{ij} = \mu_i + \varepsilon_{ij}$ with $\Ex(\varepsilon_{ij}) = 0$ and $\cov(\varepsilon_{ij}) = \sigma^2 \mI$
 
 - [Logistic regression]{.alert} and other generalized linear models
 

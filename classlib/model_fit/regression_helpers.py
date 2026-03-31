@@ -215,6 +215,8 @@ def generate_quadratic_regression_example(
             fit["seed"] = seed
             fit["alpha"] = alpha
             fit["beta_true"] = beta_true
+            fit["sigma"] = sigma
+            fit["sigma2"] = sigma**2
             fit["x"] = x
             fit["y"] = y
             fit["X"] = X

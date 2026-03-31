@@ -216,7 +216,7 @@ plt.show()
 
 ### Confidence ellipsoid for $\vbeta$ assuming $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$
 
-From the normal distribution of $\hvbeta$, it follows that
+- From the normal distribution of $\hvbeta$, it follows that
 $$\frac{
 (\hvbeta-\vbeta)^\top
 (\mX^\top\mX)
@@ -225,15 +225,21 @@ $$\frac{
 \sim \chi^2_d
 $$
 
-$\hvbeta$ depends on the projection of $\vY$ onto $\cc(\mX)$, while $S^2$ depends on the projection onto $\cc(\mX)^\perp$; under normality, these orthogonal components are independent.
-Therefore, replacing $\sigma^2$ with $S^2$ gives
+- Also, $\hvbeta = \vbeta + (\mX^\top \mX)^{-1}\mX^\top \vveps = \vbeta + (\mX^\top \mX)^{-1}\mX^\top \mP \vveps$ since $\mP \mX =  \mX$, so $\hvbeta$ depends only on $\mP\vveps$
 
+- Moreover, $S^2 = \lVert(\mI - \mP)\vveps\rVert^2/(n-d)$, so $S^2$ depends only on $(\mI-\mP)\vveps$
+
+- Since $\hvbeta$ and $S^2$ depend on orthogonal projections of $\vveps$ onto $\cc(\mX)$ and $\cc(\mX)^\perp$, respectively, and $\vveps$ is Normal, $\hvbeta$ and $S^2$  are independent. 
+
+- Hence, replacing $\sigma^2$ with $S^2$ gives
 $$
 \frac{
 (\hvbeta-\vbeta)^\top(\mX^\top\mX)(\hvbeta-\vbeta)
 }{dS^2}
 \sim F_{d,n-d}
 $$
+
+---
 
 Therefore 
 
@@ -670,24 +676,22 @@ plt.show()
 
 ## Simultaneous confidence and prediction bands
 
-Pointwise intervals control uncertainty at one fixed $\vx$.
-A [band]{.alert} controls uncertainty [simultaneously]{.alert} for all $\vx$.  Since
-$$
-(\hvbeta-\vbeta)^\top(\mX^\top\mX)(\hvbeta-\vbeta)
-\le dS^2F_{d,n-d,\alpha},
-\qquad \Prob(F_{d,n-d}>F_{d,n-d,\alpha})=\alpha,
-$$
-then for every $\vx$,
-$$
+- Pointwise intervals control uncertainty at one fixed $\vx$
+
+- A [band]{.alert} controls uncertainty [simultaneously]{.alert} for all $\vx$
+
+\begin{multline*}
 \bigl|\hmu(\vx)-\mu(\vx)\bigr|
 =
-\bigl|\vx^\top(\hvbeta-\vbeta)\bigr|
+\bigl|\vx^\top(\hvbeta-\vbeta)\bigr| = \bigl|[(\mX^\top\mX)^{-1/2}\vx]^\top  [(\mX^\top\mX)^{1/2} (\hvbeta-\vbeta)]\bigr| \\
 \le
 \sqrt{\vx^\top(\mX^\top\mX)^{-1}\vx}
-\sqrt{(\hvbeta-\vbeta)^\top(\mX^\top\mX)(\hvbeta-\vbeta)}
-$$
+\sqrt{(\hvbeta-\vbeta)^\top(\mX^\top\mX)(\hvbeta-\vbeta)} \quad \text{for all }\vx \qquad \text{by Cauchy--Schwarz}
+\end{multline*}
 
-by Cauchy--Schwarz, so
+So the confidence ellipse,$(\hvbeta-\vbeta)^\top(\mX^\top\mX)(\hvbeta-\vbeta)
+\le dS^2F_{d,n-d,\alpha}$ 
+with probability $1-\alpha$, implies the following [$(1-\alpha)$ confidence band]{.alert}:
 
 $$
 \mu(\vx)
@@ -696,10 +700,10 @@ $$
 \pm
 \sqrt{dF_{d,n-d,\alpha}}\;
 S\sqrt{\vx^\top(\mX^\top\mX)^{-1}\vx}
-\qquad \text{simultaneously for all }\vx
+\qquad \text{for all }\vx
 $$
 
-Similarly, a simultaneous prediction band is
+Similarly, a [$(1-\alpha)$ prediction band]{.alert} is
 
 $$
 Y_{\text{new}}
@@ -708,7 +712,7 @@ Y_{\text{new}}
 \pm
 \sqrt{dF_{d,n-d,\alpha}}\;
 S\sqrt{1+\vx^\top(\mX^\top\mX)^{-1}\vx}
-\qquad \text{simultaneously for all }\vx
+\qquad \text{for all }\vx
 $$
 
 ---
@@ -937,6 +941,8 @@ Let $\mX \in \mathbb{R}^{n \times d}$ have full column rank, and write its QR de
 Then it follows that
 
 - [Least squares estimate]{.alert}: $\hvbeta = \mR^{-1} (\mQ^\top \vY)$
+
+- [Projection matrix]{.alert}: $\mP = \mQ \mQ^\top$
 
 - [Fitted values]{.alert} $\hvY = \mQ (\mQ^\top \vY)$
 

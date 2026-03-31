@@ -1,0 +1,229 @@
+# From Regression to One-Way Analysis of Variance (ANOVA) {#oneway_anova}
+
+[({{< meta texts.cb.initials >}} §11.4; {{< meta texts.wms.initials >}} §11.15)]{.small}
+
+- So far, we modeled relationships with quantitative predictors
+
+- Now we consider a *categorical predictor*
+
+
+::: {.key-point}
+Do different groups have different means?
+:::
+
+<h3>Set-up</h3>
+
+- $Y_{ij}$, $i=1,\ldots,k,\; j=1,\ldots,n_i$ comes from group $i$ and IID observation $j$ in that group
+
+- Total sample size is $n = \sum_{i=1}^k n_i$
+
+- Compare the group means, $\mu_i = \Ex(Y_{ij})$, $i=1,\ldots,k$
+
+---
+
+## Model for one-way ANOVA
+
+- Model:
+
+$$
+Y_{ij} = \mu_i + \varepsilon_{ij}
+$$
+
+- Assumptions:
+
+$$
+\varepsilon_{ij} \sim \Norm(0,\sigma^2), \quad \text{independent}
+$$
+
+- Each group has its own mean $\mu_i$
+
+---
+
+## Hypotheses
+
+- We test:
+
+$$
+H_0: \mu_1 = \mu_2 = \cdots = \mu_k
+$$
+
+$$
+H_a: \text{not all } \mu_i \text{ are equal}
+$$
+
+---
+
+## Sample means
+
+- Group means:
+
+$$
+\bar Y_i = \frac{1}{n_i} \sum_{j=1}^{n_i} Y_{ij}
+$$
+
+- Overall mean:
+
+$$
+\bar Y = \frac{1}{n} \sum_{i=1}^k \sum_{j=1}^{n_i} Y_{ij}
+$$
+
+---
+
+## Total variability
+
+- Total variation in the data:
+
+$$
+\text{SST}
+=
+\sum_{i=1}^k \sum_{j=1}^{n_i}
+(Y_{ij} - \bar Y)^2
+$$
+
+- Measures how spread out all observations are
+
+---
+
+## Decomposition of variability
+
+- We decompose total variation:
+
+$$
+\text{SST} = \text{SSB} + \text{SSW}
+$$
+
+- Between-group variation:
+
+$$
+\text{SSB}
+=
+\sum_{i=1}^k n_i (\bar Y_i - \bar Y)^2
+$$
+
+- Within-group variation:
+
+$$
+\text{SSW}
+=
+\sum_{i=1}^k \sum_{j=1}^{n_i}
+(Y_{ij} - \bar Y_i)^2
+$$
+
+---
+
+## Interpretation
+
+- $\text{SSB}$:
+
+  - measures differences between group means
+
+- $\text{SSW}$:
+
+  - measures variability within groups
+
+- Key idea:
+
+> Compare signal (between) vs noise (within)
+
+---
+
+## Degrees of freedom
+
+- Between groups:
+
+$$
+k - 1
+$$
+
+- Within groups:
+
+$$
+n - k
+$$
+
+- Total:
+
+$$
+n - 1
+$$
+
+---
+
+## Mean squares
+
+- Define:
+
+$$
+\text{MSB} = \frac{\text{SSB}}{k-1}
+$$
+
+$$
+\text{MSW} = \frac{\text{SSW}}{n-k}
+$$
+
+- $\text{MSW}$ estimates $\sigma^2$
+
+---
+
+## F-statistic
+
+- Compare variability:
+
+$$
+F = \frac{\text{MSB}}{\text{MSW}}
+$$
+
+- Under $H_0$:
+
+$$
+F \sim F_{k-1,\,n-k}
+$$
+
+---
+
+## Interpretation of the F-test
+
+- Large $F$:
+
+  - strong evidence that means differ
+
+- Small $F$:
+
+  - no evidence of differences
+
+- Important:
+
+> ANOVA detects differences, not which groups differ
+
+---
+
+## ANOVA table
+
+| Source        | Sum of Squares | df      | Mean Square |
+|---------------|----------------|---------|-------------|
+| Between groups| SSB            | $k-1$   | MSB         |
+| Within groups | SSW            | $n-k$   | MSW         |
+| Total         | SST            | $n-1$   |             |
+
+---
+
+## Big picture
+
+- One-way ANOVA compares multiple means
+
+- Uses variance decomposition:
+
+  - between-group variation  
+  - within-group variation  
+
+- Leads to a single global test
+
+---
+
+## Next steps
+
+- How ANOVA connects to regression
+
+- Dummy variables and design matrices
+
+- Identifying which groups differ

@@ -219,9 +219,9 @@ Therefore $\Ex\bigl(\lVert \hvveps \rVert^2\bigr)
 = \sigma^2 (n-d)
 $
 and so 
-$$
+\begin{multline*}
 S^2 := \frac 1{n-d} \sum_{i=1}^{n} \lvert Y_i - \vx_i^\top \hvbeta \rvert^2
 = \frac{\lVert \hvveps \rVert^2}{n-d}
-= \frac{1}{n-d}\,\vY^\top(\mI-\mP)\vY \quad \text{
-is an \class{alert}{unbiased} estimator of $\sigma^2$}
-$$
+= \frac{\lVert (\mI-\mP)\vY \rVert^2 }{n-d} = \frac{\lVert (\mI-\mP)\vveps \rVert^2 }{n-d} \\
+\text{is an \class{alert}{unbiased} estimator of $\sigma^2$}
+\end{multline*}
