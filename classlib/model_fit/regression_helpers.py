@@ -211,26 +211,23 @@ def generate_quadratic_regression_example(
             fit["beta_hat"], fit["XtX_inv"], fit["s2"], alpha, df=fit["df_resid"]
         )
 
-        if beta_ci[0, 0] <= 0.0 <= beta_ci[0, 1]:
-            fit["seed"] = seed
-            fit["alpha"] = alpha
-            fit["beta_true"] = beta_true
-            fit["sigma"] = sigma
-            fit["sigma2"] = sigma**2
-            fit["x"] = x
-            fit["y"] = y
-            fit["X"] = X
-            fit["eps"] = eps
-            fit["beta_ci"] = beta_ci
-            fit["r_standardized"] = standardized_residuals(
-                fit["resid"], fit["s"], fit["h"]
-            )
-            fit["r_studentized"] = studentized_residuals(
-                fit["resid"], fit["s2"], fit["h"], fit["n"], fit["d"]
-            )
-            return fit
-
-    raise RuntimeError("No suitable seed found.")
+        fit["seed"] = seed
+        fit["alpha"] = alpha
+        fit["beta_true"] = beta_true
+        fit["sigma"] = sigma
+        fit["sigma2"] = sigma**2
+        fit["x"] = x
+        fit["y"] = y
+        fit["X"] = X
+        fit["eps"] = eps
+        fit["beta_ci"] = beta_ci
+        fit["r_standardized"] = standardized_residuals(
+            fit["resid"], fit["s"], fit["h"]
+        )
+        fit["r_studentized"] = studentized_residuals(
+            fit["resid"], fit["s2"], fit["h"], fit["n"], fit["d"]
+        )
+        return fit
 
 
 import numpy as np

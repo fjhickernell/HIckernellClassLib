@@ -794,3 +794,238 @@ $$
 
 - Measures fit relative to 0 (not $\barY$)
 - Not directly comparable to the usual $R^2$
+
+---
+
+### Diagnostic plots for the reduced model
+
+```{python}
+#| echo: false
+#| fig-align: center
+#| fig-width: 18
+#| fig-height: 4.2
+
+from regression_helpers import fit_ols, standardized_residuals, normal_qq_data
+
+x = EX["x"]
+y = EX["y"]
+
+# Reduced model: no intercept, only x^2
+X_red = np.column_stack([x**2])
+fit_red = fit_ols(X_red, y)
+
+y_hat_red = fit_red["y_hat"]
+resid_red = fit_red["resid"]
+h_red = fit_red["h"]
+r_red = standardized_residuals(resid_red, fit_red["s"], h_red)
+
+z_theory_red, r_sorted_red = normal_qq_data(r_red)
+
+data_color = TOL_BRIGHT["blue"]
+ref_color = TOL_BRIGHT["red"]
+guide_color = "#666666"
+
+# Adaptive vertical range for residual plots
+r_lim = max(3.0, 1.1 * np.max(np.abs(r_red)))
+
+fig, axs = plt.subplots(1, 4, figsize=(18, 4.2))
+fig.subplots_adjust(wspace=0.40)
+
+# 1. Residuals vs fitted
+ax = axs[0]
+ax.scatter(y_hat_red, r_red, s=35, color=data_color)
+ax.axhline(0, color=guide_color, linestyle=":", linewidth=1.5)
+ax.set_ylim(-r_lim, r_lim)
+ax.set_xlabel(r"Fitted values $\widehat{\mu}(x_i)$")
+ax.set_ylabel(r"Standardized residuals")
+ax.set_title("Reduced: residuals vs fitted")
+
+# 2. Residuals vs x
+ax = axs[1]
+ax.scatter(x, r_red, s=35, color=data_color)
+ax.axhline(0, color=guide_color, linestyle=":", linewidth=1.5)
+ax.set_ylim(-r_lim, r_lim)
+ax.set_xlabel(r"$x_i$")
+ax.set_ylabel(r"Standardized residuals")
+ax.set_title(r"Reduced: residuals vs $x$")
+
+# 3. Normal Q-Q
+ax = axs[2]
+ax.scatter(z_theory_red, r_sorted_red, s=35, color=data_color)
+
+qmin = min(z_theory_red.min(), r_sorted_red.min())
+qmax = max(z_theory_red.max(), r_sorted_red.max())
+ax.plot([qmin, qmax], [qmin, qmax], color=ref_color, linewidth=2)
+
+ax.set_xlabel("Theoretical normal quantiles")
+ax.set_ylabel("Ordered standardized residuals")
+ax.set_title("Reduced: normal Q-Q")
+
+# 4. Leverage
+ax = axs[3]
+ax.scatter(x, h_red, s=35, color=data_color)
+ax.set_xlabel(r"$x_i$")
+ax.set_ylabel(r"Leverage $p_{ii}$")
+ax.set_title("Reduced: leverage")
+
+plt.show()
+```
+
+---
+
+### Confidence/prediction intervals/bands for the reduced model
+
+```{python}
+#| echo: false
+#| fig-align: center
+#| fig-width: 11
+#| fig-height: 4.4
+
+from classlib.plots.colors import TOL_BRIGHT, accent_color
+from regression_helpers import fit_ols, mean_prediction_and_simultaneous_bands
+
+x = EX["x"]
+y = EX["y"]
+beta_true = EX["beta_true"]
+alpha = EX["alpha"]
+
+# Reduced model: no intercept
+X_red = np.column_stack([x**2])
+fit_red = fit_ols(X_red, y)
+
+beta_hat_red = fit_red["beta_hat"]
+XtX_inv_red = fit_red["XtX_inv"]
+s2_red = fit_red["s2"]
+n = fit_red["n"]
+d_red = fit_red["d"]
+
+fig, ax = plt.subplots(figsize=(11, 4.4))
+set_tol_bright_cycle(ax)
+
+data_color = TOL_BRIGHT["blue"]
+true_color = TOL_BRIGHT["green"]
+fit_color = TOL_BRIGHT["red"]
+ci_color = accent_color
+pi_color = TOL_BRIGHT["orange"] if "orange" in TOL_BRIGHT else TOL_BRIGHT["red"]
+
+# grid for plotting
+xg = np.linspace(np.min(x), np.max(x), nlinspc)
+Xg_red = np.column_stack([xg**2])
+
+# true mean from the data-generating model
+mu_true_g = beta_true[0] + beta_true[1] * xg**2
+
+bands_red = mean_prediction_and_simultaneous_bands(
+    Xg_red, beta_hat_red, XtX_inv_red, s2_red, alpha, df=n - d_red
+)
+
+mu_hat_g_red = bands_red["mu_hat"]
+
+ci_lo_red = bands_red["pointwise_ci"][:, 0]
+ci_hi_red = bands_red["pointwise_ci"][:, 1]
+
+pi_lo_red = bands_red["pointwise_pi"][:, 0]
+pi_hi_red = bands_red["pointwise_pi"][:, 1]
+
+sci_lo_red = bands_red["simul_ci"][:, 0]
+sci_hi_red = bands_red["simul_ci"][:, 1]
+
+spi_lo_red = bands_red["simul_pi"][:, 0]
+spi_hi_red = bands_red["simul_pi"][:, 1]
+
+# data and curves
+ax.scatter(x, y, s=28, color=data_color)
+
+ax.plot(
+    xg, mu_true_g,
+    linewidth=2.5,
+    color=true_color,
+    label=r"true mean $\mu(x)=\beta_1+\beta_2 x^2$"
+)
+
+ax.plot(
+    xg, mu_hat_g_red,
+    linewidth=2.5,
+    color=fit_color,
+    label=r"reduced fit $\widehat{\mu}_{\mathrm{red}}(x)=\widehat{\beta}_2 x^2$"
+)
+
+# pointwise confidence interval
+ax.plot(
+    xg, ci_lo_red,
+    linestyle="--",
+    linewidth=2.0,
+    color=ci_color,
+    label=r"95% pointwise CI for $\mu_{\mathrm{red}}(x)$"
+)
+ax.plot(
+    xg, ci_hi_red,
+    linestyle="--",
+    linewidth=2.0,
+    color=ci_color
+)
+
+# simultaneous confidence band
+ax.plot(
+    xg, sci_lo_red,
+    linestyle="-.",
+    linewidth=2.2,
+    color=ci_color,
+    label=r"95% simultaneous confidence band"
+)
+ax.plot(
+    xg, sci_hi_red,
+    linestyle="-.",
+    linewidth=2.2,
+    color=ci_color
+)
+
+# pointwise prediction interval
+ax.plot(
+    xg, pi_lo_red,
+    linestyle=":",
+    linewidth=2.2,
+    color=pi_color,
+    label=r"95% pointwise PI for $Y \mid x$"
+)
+ax.plot(
+    xg, pi_hi_red,
+    linestyle=":",
+    linewidth=2.2,
+    color=pi_color
+)
+
+# simultaneous prediction band
+ax.plot(
+    xg, spi_lo_red,
+    linestyle=(0, (6, 2)),
+    linewidth=2.0,
+    color=pi_color,
+    label=r"95% simultaneous prediction band"
+)
+ax.plot(
+    xg, spi_hi_red,
+    linestyle=(0, (6, 2)),
+    linewidth=2.0,
+    color=pi_color
+)
+
+ax.set_xlabel(r"$x$")
+ax.set_ylabel(r"$y$")
+ax.set_title(r"Reduced model: pointwise intervals and simultaneous bands")
+
+box = ax.get_position()
+ax.set_position([box.x0, box.y0, box.width * 0.75, box.height])
+
+ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5))
+
+plt.tight_layout()
+plt.show()
+```
+
+:::{.key-point}
+
+Because the reduced model has only one regression parameter, the “simultaneous”
+and “pointwise” intervals are the same in this case
+
+:::

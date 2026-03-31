@@ -1,6 +1,6 @@
 # From Regression to One-Way Analysis of Variance (ANOVA) {#oneway_anova}
 
-[({{< meta texts.cb.initials >}} §11.4; {{< meta texts.wms.initials >}} §11.15)]{.small}
+[({{< meta texts.cb.initials >}} §??; {{< meta texts.wms.initials >}} §??)]{.small}
 
 - So far, we modeled relationships with quantitative predictors
 
@@ -23,107 +23,50 @@ Do different groups have different means?
 
 ## Model for one-way ANOVA
 
-- Model:
+### Model
 
 $$
-Y_{ij} = \mu_i + \varepsilon_{ij}
+Y_{ij} = \mu_i + \varepsilon_{ij}, \qquad \Ex(Y_{ij} = \mu_i, \quad \varepsilon_{ij} \sim \Norm(0,\sigma^2), \quad \text{independent}
 $$
 
-- Assumptions:
+
+### Hypotheses
 
 $$
-\varepsilon_{ij} \sim \Norm(0,\sigma^2), \quad \text{independent}
-$$
-
-- Each group has its own mean $\mu_i$
-
----
-
-## Hypotheses
-
-- We test:
-
-$$
-H_0: \mu_1 = \mu_2 = \cdots = \mu_k
-$$
-
-$$
+H_0: \mu_1 = \mu_2 = \cdots = \mu_k, \qquad 
 H_a: \text{not all } \mu_i \text{ are equal}
 $$
 
----
-
-## Sample means
-
-- Group means:
+### Sample means
 
 $$
-\bar Y_i = \frac{1}{n_i} \sum_{j=1}^{n_i} Y_{ij}
-$$
-
-- Overall mean:
-
-$$
-\bar Y = \frac{1}{n} \sum_{i=1}^k \sum_{j=1}^{n_i} Y_{ij}
+\text{Group: } \barY_i = \frac{1}{n_i} \sum_{j=1}^{n_i} Y_{ij}, \, i=1, \ldots, k, \qquad \text{Overall: } \barY = \frac{1}{n} \sum_{i=1}^k \sum_{j=1}^{n_i} Y_{ij}
 $$
 
 ---
 
-## Total variability
+### Variability
 
-- Total variation in the data:
-
-$$
-\text{SST}
-=
+\begin{align*}
+\SST &= \SSB + \SSW \\
+\text{Sum of Squares Total ($\SST$)}
+& =
 \sum_{i=1}^k \sum_{j=1}^{n_i}
-(Y_{ij} - \bar Y)^2
-$$
-
-- Measures how spread out all observations are
-
----
-
-## Decomposition of variability
-
-- We decompose total variation:
-
-$$
-\text{SST} = \text{SSB} + \text{SSW}
-$$
-
-- Between-group variation:
-
-$$
-\text{SSB}
-=
-\sum_{i=1}^k n_i (\bar Y_i - \bar Y)^2
-$$
-
-- Within-group variation:
-
-$$
-\text{SSW}
-=
+(Y_{ij} - \barY)^2 \\
+& \qquad \qquad \text{measures how spread out all observations are} \\
+\text{Sum of Squares Between ($\SSB$)} & =
+\sum_{i=1}^k n_i (\barY_i - \barY)^2 \\
+& \qquad \qquad \text{measures how spread out the group means are} \\
+\text{Sum of Squares Within ($\SSW$)} & =
 \sum_{i=1}^k \sum_{j=1}^{n_i}
-(Y_{ij} - \bar Y_i)^2
-$$
+(Y_{ij} - \barY_i)^2 \\
+& \qquad \qquad \text{measures how spread out the observations are within each group}
+\end{align*}
 
----
+:::{.key-point}
+Compare signal (between) vs noise (within)
+:::
 
-## Interpretation
-
-- $\text{SSB}$:
-
-  - measures differences between group means
-
-- $\text{SSW}$:
-
-  - measures variability within groups
-
-- Key idea:
-
-> Compare signal (between) vs noise (within)
 
 ---
 

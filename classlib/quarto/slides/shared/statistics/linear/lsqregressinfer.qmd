@@ -88,7 +88,8 @@ nlinspc = 400
 
 EX = generate_quadratic_regression_example(
     seed_start=47,
-    seed_stop=47
+    seed_stop=47,
+    beta_true=np.array([0.10, 0.90])
 )
 ```
 
@@ -676,9 +677,9 @@ plt.show()
 
 ## Simultaneous confidence and prediction bands
 
-- Pointwise intervals control uncertainty at one fixed $\vx$
+- Pointwise intervals control uncertainty at one fixed $\vx$; "$\forall \vx$" is _outside_ the probability statement
 
-- A [band]{.alert} controls uncertainty [simultaneously]{.alert} for all $\vx$
+- A [band]{.alert} controls uncertainty [simultaneously]{.alert} for all $\vx$; "$\forall \vx$" is _inside_ the probability statement
 
 \begin{multline*}
 \bigl|\hmu(\vx)-\mu(\vx)\bigr|
@@ -718,9 +719,9 @@ $$
 ---
 
 :::{.key-point}
-* Pointwise intervals use the $t$ multiplier because they control one fixed $\vx$.
+* Pointwise intervals use the $t$ multiplier because they control one fixed $\vx$
 
-* Simultaneous bands use the larger $\sqrt{dF_{d,n-d,\alpha}}$ multiplier because they must work for all $\vx$ at once.
+* Simultaneous bands use the larger $\sqrt{dF_{d,n-d,\alpha}}$ multiplier because they must work for all $\vx$ at once
 :::
 
 ```{python}

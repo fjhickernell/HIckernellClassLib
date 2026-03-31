@@ -108,6 +108,8 @@
         RSS:  "{\\operatorname{RSS}}",
         SST:  "{\\operatorname{SST}}",
         SSR:  "{\\operatorname{SSR}}",
+        SSB:  "{\\operatorname{SSB}}",
+        SSW:  "{\\operatorname{SSW}}",
 
         Bern:  "{\\operatorname{Bern}}",
         Bin:   "{\\operatorname{Bin}}",
