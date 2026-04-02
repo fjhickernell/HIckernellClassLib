@@ -4,7 +4,7 @@ Now we move the situation where we have a
 
 - [Response/Output/Dependent Variable]{.alert} $Y$
 
-- [Explained/Predicted]{.alert} by a vector of [Predictors/Explanatory Variables/Inputs/Indpendent Variables]{.alert} $\vx$, where the $x_j$ may be functions of other variables or each other
+- [Explained/Predicted]{.alert} by a vector of [Predictors/Explanatory Variables/Inputs/Independent Variables]{.alert} $\vx$, where the $x_j$ may be functions of other variables or each other
 
 Types of linear models
 

@@ -2,8 +2,8 @@
 
 [({{< meta texts.cb.initials >}} §11.3; {{< meta texts.wms.initials >}} §11.3–11.4, 11.10–11.11)]{.small}
 
-- Model: $Y = \vx^\top \vbeta + \varepsilon \qquad$ with $\Ex(\varepsilon)=0,
-\quad \var(\varepsilon)=\sigma^2$
+- Model: $Y = \underbrace{\vx^\top \vbeta}_{\mu(\vx)} + \varepsilon \quad$ with $\Ex(\varepsilon)=0$,
+$\var(\varepsilon)=\sigma^2$
 
   - $x_j$ may be a variable or a function of variables
 
@@ -179,7 +179,7 @@ plt.show()
 
 ## Unbiasedness of estimators
 
-Recall that $Y = \mX \vbeta + \vveps$, with $\Ex(\vveps)=0, \ \cov(\vveps)=\sigma^2 \mI$, where $\mX$ is fixed and of full column rank
+Recall that $Y = \mX \vbeta + \vveps$ with $\Ex(\vveps)=0$, $\cov(\vveps)=\sigma^2 \mI$, where $\mX$ is fixed and of full column rank
 
 ### Unbiasedness of $\hvbeta$ and $\hmu(\vx)$
 

@@ -110,6 +110,8 @@
         SSR:  "{\\operatorname{SSR}}",
         SSB:  "{\\operatorname{SSB}}",
         SSW:  "{\\operatorname{SSW}}",
+        MSB:  "{\\operatorname{MSB}}",
+        MSW:  "{\\operatorname{MSW}}",
 
         Bern:  "{\\operatorname{Bern}}",
         Bin:   "{\\operatorname{Bin}}",
@@ -208,6 +210,7 @@
         vnu:     "{\\boldsymbol{\\nu}}",
         vzeta:   "{\\boldsymbol{\\zeta}}",
 
+        mA: "{\\mathsf{A}}",
         mX: "{\\mathsf{X}}",
         mP: "{\\mathsf{P}}",
         mQ: "{\\mathsf{Q}}",
@@ -222,6 +225,7 @@
         hvbeta: "{\\widehat{\\boldsymbol{\\beta}}}",
         hlambda: "{\\widehat{\\lambda}}",
         hmu:    "{\\widehat{\\mu}}",
+        hvmu:   "{\\widehat{\\boldsymbol{\\mu}}}",
         hsigma: "{\\widehat{\\sigma}}",
         hSigma: "{\\widehat{\\Sigma}}",
         hp:    "{\\widehat{p}}",
@@ -230,6 +234,7 @@
         hY:     "{\\widehat{Y}}",
         hvY:    "{\\widehat{\\boldsymbol{Y}}}",
         hZ:     "{\\widehat{Z}}",
+        hveps:   "{\\widehat{\\varepsilon}}",
         hvveps: "{\\widehat{\\boldsymbol{\\varepsilon}}}",
 
         ct: "{\\mathcal{T}}",

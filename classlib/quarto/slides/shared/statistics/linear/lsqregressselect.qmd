@@ -17,7 +17,7 @@ In practice, we should also check whether
 The main questions are:
 
 - Is the mean response approximately linear in the chosen predictors, which themselves may be nonlinear transformations of underlying variables?
-- Does the variability of the errors stay roughly constant with respect to $\vx$ and $\Ex(Y \mid \vx)$?
+- Does the variability of the errors stay roughly constant with respect to $\vx$ and $\mu(\vx):=\Ex(Y \mid \vx)$?
 - Are the errors approximately normally distributed?
 - Are there unusual or influential observations that strongly affect the fit?
 
@@ -45,14 +45,14 @@ A residual plot should look like random noise around zero, not like a pattern.
 
 ### Standardized residuals
 
-Because the variability of $\hat\varepsilon_i$ depends on the leverage of observation $i$, it is useful to scale residuals.
+Because the variability of $\hveps_i$ depends on the leverage of observation $i$, it is useful to scale residuals.
 
 A standardized residual is
 
 $$
 r_i
 =
-\frac{\hat\varepsilon_i}{S\sqrt{1-h_{ii}}},
+\frac{\hveps_i}{S\sqrt{1-h_{ii}}},
 $$
 
 where $h_{ii}$ is the $i$th diagonal entry of the projection (hat) matrix $\mP$ (using $h_{ii}$ rather than $p_{ii}$ since $p_i$ is common for probabilities))
@@ -504,13 +504,16 @@ F
 \frac{(\RSS_0-\RSS_1)/(d_1-d_0)}{\RSS_1/(n-d_1)}
 $$
 
-Under the null hypothesis that the extra coefficients are all zero, and assuming the model assumptions hold, we have $\RSS_0-\RSS_1$ and $\RSS_1$ are independent scaled chi-square random variables, so
+Under the null hypothesis, $H_0: \beta_{d_0+1} = \cdots = \beta_{d_1} = 0$, and assuming the model assumptions hold, we have $\RSS_0-\RSS_1$ and $\RSS_1$ are independent scaled chi-square random variables, so
 
 $$
 F \sim F_{d_1-d_0,\;n-d_1}
 $$
 
-- Large $F$ gives evidence that the extra predictors improve the model  
+- $F > F_{d_1-d_0,\;n-d_1, \alpha}$ is compelling evidence to [reject $H_0$]{.alert} and conclude that 
+  
+  extra predictors improve the model  
+
 - Small $F$ suggests the simpler model is sufficient  
 
 ---
@@ -538,7 +541,7 @@ However, caution is needed:
 
 ### Suggested strategy
 
-- Use $t$-tests to *identify candidates for removal*, but do not automatically remove them based on a single test
+- $t$-tests *identify candidates for removal*, but do not imply automatic removal
 - Compare models using an $F$-test (or another criterion)
 
 &nbsp;
@@ -583,6 +586,20 @@ $$
 - Larger values are better  
 
 ---
+
+## Decomposition of sums of squares
+
+Assume the model includes an intercept, so $\vone\in\cc(\mX)$ and recall that $\hvY=\mP\vY \in \cc(\mX)$ and $\vY-\hvY=(\mI-\mP)\vY\in\cc(\mX)^\perp$
+
+Then we can decompose the total variability in $\vY$ as
+\begin{align*}
+\SST & = \sum_{i=1}^n (Y_i - \barY)^2 = \lVert \vY-\barY\vone\rVert^2 \\
+& = \lVert (\hvY-\barY\vone) + (\vY-\hvY) \rVert^2 \\
+& = \lVert \underbrace{\hvY-\barY\vone}_{\in \cc(\mX)}\rVert^2 + \lVert \underbrace{\vY-\hvY}_{\in \cc(\mX)^\perp}  \rVert^2 + 2 \underbrace{(\hvY-\barY\vone)^\top(\vY-\hvY)}_{\text{dot product of orthogonal vectors}} \\
+& = \sum_{i=1}^n (\hY_i - \barY)^2 + \sum_{i=1}^n (Y_i - \hat{Y}_i)^2 + 0 \\
+& = \SSR + \RSS
+\end{align*}
+
 
 ## Other metrics and methods for model selection
 
@@ -1030,4 +1047,20 @@ and “pointwise” intervals are the same in this case
 
 - The reduced model fits the data well, even though it is not of the same form as the true model
 
+
 :::
+
+---
+
+### Reduced model caveat
+
+- Removing the intercept forces $\mu(0)=0$
+
+- Near $x=0$, the confidence band misses the true mean (it shrinks like $x^2$)
+  - Widening the band does not help
+
+- This is *model misspecification*, not a band issue
+
+- Confidence bands reflect uncertainty *given the model*, not model correctness
+
+- From the observed data, there is no clear evidence that an intercept is needed

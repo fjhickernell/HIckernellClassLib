@@ -10,8 +10,8 @@ So far, we have only used the assumptions that
 Going forward, we assume that $\vveps \sim \Norm(\vzero,\sigma^2 \mI)$.  This allows us to
 
 - Make probabilistic statements about the estimators $\hvbeta$ and $\hmu(\vx)$
-- Construct confidence intervals for $\vbeta$, $\mu(\vx)$, and $\sigma^2$
-- Construct prediction intervals for $Y \mid \vx$
+- Construct confidence intervals and bands for $\vbeta$, $\mu(\vx)$, and $\sigma^2$
+- Construct prediction intervals and bands for $Y \mid \vx$
 - Perform hypothesis tests about $\vbeta$ and $\mu(\vx)$
 - Assess model fit and compare models
 
@@ -529,7 +529,7 @@ $$
 
 ::: {.column width="49%"}
 
-[Confidence]{.alert} interval for mean response:
+[Confidence]{.alert} interval for mean response, $\mu(\vx)$:
 
 $$
 \hmu(\vx)
@@ -547,7 +547,7 @@ $$
 
 ::: {.column width="49%"}
 
-[Prediction]{.alert} interval for a new observation:
+[Prediction]{.alert} interval for a new observation, $Y \mid \vx$:
 
 $$
 \hmu(\vx)
