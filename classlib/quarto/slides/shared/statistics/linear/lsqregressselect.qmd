@@ -1064,3 +1064,94 @@ and “pointwise” intervals are the same in this case
 - Confidence bands reflect uncertainty *given the model*, not model correctness
 
 - From the observed data, there is no clear evidence that an intercept is needed
+
+
+## F-tests: A unifying framework {data-state="goldborder"}
+
+### From Normal to $\chi^2$ to $F$
+
+- If $Z_1,\dots,Z_\nu \overset{\text{iid}}{\sim} \mathcal{N}(0,1)$, then
+  $$
+  \sum_{i=1}^{\nu} Z_i^2 \sim \chi^2_\nu, \text{ a chi-square distribution with $\nu$ degrees of freedom}
+  $$
+  Note that $\Ex(\chi^2_\nu) = \nu$ and $\var(\chi^2_\nu) = 2\nu$
+
+- If $U \sim \chi^2_\nu$ and $V \sim \chi^2_\lambda$ are independent, then
+  $$
+  \frac{U/\nu}{V/\lambda} \sim F_{\nu,\lambda}, \text{ an $F$-distribution with $\nu$ and $\lambda$ degrees of freedom}
+  $$
+  Note that $\Ex(F_{\nu,\lambda}) = \frac{\lambda}{\lambda - 2}$ for $\lambda > 2$ and $\var(F_{\nu,\lambda}) = \frac{2\lambda^2(\nu + \lambda - 2)}{\nu(\lambda - 2)^2(\lambda - 4)}$ for $\lambda > 4$
+
+---
+
+### Comparing variances
+
+- For two independent samples:
+  $$
+  \frac{S_1^2/\sigma_1^2}{S_2^2/\sigma_2^2}
+  \sim F_{n_1-1,\;n_2-1}
+  $$
+
+- To test $H_0:\ \sigma_1^2 = \sigma_2^2$, use
+  $$
+  F = \frac{S_1^2}{S_2^2}
+  $$
+
+- Put the *larger sample variance in the numerator*
+  - ensures $F \ge 1$
+  - simplifies one-sided rejection
+
+---
+
+### Regression and ANOVA
+
+- In nested linear models where $H_0$ assumes the [reduced model is correct]{.alert}:
+  \begin{align*}
+  F
+  & =
+  \frac{\text{extra explained variation (gain in fit) per added parameter}}
+       {\text{residual variation (noise) per degree of freedom}} \\
+  &=
+  \frac{(\text{RSS}_0 - \text{RSS}_1)/(d_1 - d_0)}
+       {\text{RSS}_1/(n - d_1)} \sim F_{d_1 - d_0,\, n - d_1}
+  \end{align*}
+
+- Large $F \implies$ [reduced model is inadequate]{.alert}, (compelling evidence to reject $H_0$)
+
+- Both numerator and denominator estimate $\sigma^2$
+- Under $H_0$, the extra parameters explain only noise, so the ratio is near 1
+
+- A large ratio indicates _signal beyond noise_
+
+---
+
+### Inverting degrees of freedom
+
+- If $F \sim F_{\nu,\lambda}$, then
+  $$
+  \frac{1}{F} \sim F_{\lambda,\nu}
+  $$
+
+- Therefore, critical values satisfy
+  $$
+  F_{\nu,\lambda,\alpha}
+  =
+  \frac{1}{F_{\lambda,\nu,\,1-\alpha}}
+  $$
+
+- Useful when tables only give one ordering
+
+---
+
+### Big picture
+
+- $F$-tests compare [two independent estimates of variance]{.alert}
+
+- Unify
+  - variance comparison  
+  - ANOVA  
+  - regression model selection  
+
+- Interpretation depends on context:
+  - variance comparison: _are two noise levels equal?_
+  - model selection: $\displaystyle\frac{\text{extra variation}}{\text{noise}}$

@@ -1,6 +1,6 @@
-# From Regression to One-Way Analysis of Variance (ANOVA) {#oneway_anova}
+# From Regression to One-Way Analysis of Variance (ANOVA) and Back {#oneway_anova}
 
-[({{< meta texts.cb.initials >}} §??; {{< meta texts.wms.initials >}} §??)]{.small}
+[({{< meta texts.cb.initials >}} §11.2; {{< meta texts.wms.initials >}} Ch. 13)]{.small}
 
 - So far, we modeled relationships with quantitative predictors
 
