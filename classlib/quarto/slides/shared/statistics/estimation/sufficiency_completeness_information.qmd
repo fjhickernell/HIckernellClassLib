@@ -41,7 +41,7 @@ $T(\vX)$ is [sufficient]{.alert} for $\vtheta$ iff
 \varrho(\vx \mid \vtheta) = L(\vtheta \mid \vx)
 & =
 g(T(\vx), \vtheta)\, h(\vx) \\
-\text{or equivalently } \qquad \ell(\vtheta \mid \vx)  = \log(L(\vtheta \mid \vx)) & = \tg(T(\vx), \vtheta) + \th(\vx)
+\text{or equivalently } \qquad \ell(\vtheta \mid \vx)  = \log(L(\vtheta \mid \vx)) & = \tg(T(\vx), \vtheta) + \tildeh(\vx)
 \end{align*}
 
 where
@@ -129,14 +129,14 @@ Suppose that $\ell(\vtheta \mid \vx) - \ell(\vtheta \mid \vy)$ is independent of
 
 For each $t \in \ct$, find one $\vx_t \in \cx$ such that $T(\vx_t) = t$, and define 
 
-- $\th(x) : = \ell(\vtheta \mid \vx) - \ell(\vtheta \mid \vx_{T(\vx)})\quad \forall x\in \cx \qquad$ (independent of $\vtheta$ by the hypothesis)
+- $\tildeh(x) : = \ell(\vtheta \mid \vx) - \ell(\vtheta \mid \vx_{T(\vx)})\quad \forall x\in \cx \qquad$ (independent of $\vtheta$ by the hypothesis)
 
 - $\tg(t,\vtheta) : = \ell(\vtheta \mid \vx_t)\quad \forall \vtheta, \forall t \in \ct$
 
 Then for any $\vx \in \cx$,
 
 $$
-\ell(\vtheta \mid \vx) \underbrace{=}_{\text{def. of} \th} \th(\vx) + \ell(\vtheta \mid \vx_{T(\vx)}) \underbrace{=}_{\text{def. of} \tg}  \th(\vx) + \tg(T(\vx),\vtheta)  
+\ell(\vtheta \mid \vx) \underbrace{=}_{\text{def. of } \tildeh} \tildeh(\vx) + \ell(\vtheta \mid \vx_{T(\vx)}) \underbrace{=}_{\text{def. of } \tg}  \tildeh(\vx) + \tg(T(\vx),\vtheta)  
 \quad  \forall \vtheta, \ \forall \vx \in \cx
 $$
 
@@ -148,11 +148,11 @@ _Proof that $T(\vX)$ is minimal sufficient_:
 
 Let $T'(\vX)$ be any other sufficient statistic, so
 
- $$\ell(\vtheta \mid \vx) = \tg'(T'(\vx),\vtheta) + \th'(\vx) \quad \text{by the Factorization Theorem}$$
+ $$\ell(\vtheta \mid \vx) = \tg'(T'(\vx),\vtheta) + \tildeh'(\vx) \quad \text{by the Factorization Theorem}$$
 
 For any $\vx, \vy \in \cx$ with $T'(\vx) = T'(\vy)$, we have
 $$
-\ell(\vtheta \mid \vx) - \ell(\vtheta \mid \vy) = \tg'(T'(\vx),\vtheta) + \th'(\vx) - \tg'(T'(\vy),\vtheta) - \th'(\vy) \underbrace{=}_{\text{since } T'(\vx) = T'(\vy)} \th'(\vx) - \th'(\vy)$$
+\ell(\vtheta \mid \vx) - \ell(\vtheta \mid \vy) = \tg'(T'(\vx),\vtheta) + \tildeh'(\vx) - \tg'(T'(\vy),\vtheta) - \tildeh'(\vy) \underbrace{=}_{\text{since } T'(\vx) = T'(\vy)} \tildeh'(\vx) - \tildeh'(\vy)$$
 which does not depend on $\vtheta$.  Thus, $T(\vx) = T(\vy)$ by the hypothesis of the theorem.
 
 &nbsp;
@@ -426,7 +426,7 @@ X_i \log p
 \frac{1 - X_i}{(1-p)^2}
 \right) \\
 \text{Fisher information} \quad I_n(p) & = 
-- \Ex[\ell''(p)] = 
+- \Ex[\ell''(p)] = n
 \left(
 \frac{p}{p^2}
 +

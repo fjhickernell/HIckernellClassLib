@@ -190,6 +190,7 @@
         tX:  "{\\widetilde{X}}",
         tY:  "{\\widetilde{Y}}",
         tZ:  "{\\widetilde{Z}}",
+        tildeh: "{\\widetilde{h}}",
 
         valpha: "{\\boldsymbol{\\alpha}}",
         vbeta:  "{\\boldsymbol{\\beta}}",

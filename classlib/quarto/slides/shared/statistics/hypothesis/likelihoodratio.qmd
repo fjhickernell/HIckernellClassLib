@@ -348,7 +348,7 @@ where the degrees of freedom is
 $$
 \df
 =
-\dim(\text{full model}) - \dim(\text{null model}))
+\dim(\text{full model}) - \dim(\text{null model})
 $$
 
 ### Example: Normal data with unknown $\sigma$
