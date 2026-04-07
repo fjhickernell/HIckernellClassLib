@@ -141,6 +141,8 @@
         col:   "{\\operatorname{col}}",
         nullspace: "{\\operatorname{null}}",
         Order: "{\\mathcal{O}}",
+        logit: "{\\operatorname{logit}}",
+        probit: "{\\operatorname{probit}}",
 
         IIDsim: "\\mathrel{\\stackrel{\\mathrm{IID}}{\\sim}}",
         LDsim:  "\\mathrel{\\stackrel{\\mathrm{LD}}{\\sim}}",

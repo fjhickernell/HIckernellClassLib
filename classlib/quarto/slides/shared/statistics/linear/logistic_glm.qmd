@@ -5,11 +5,11 @@
     - Model: $Y \sim \Norm(\mu(\vx), \sigma^2)$, $\mu(\vx) = \vx^\top \vbeta$
     - Model with data: $\vY \sim \Norm(\mX\vbeta, \sigma^2 \mI)$
   - One-way ANOVA: categorical predictors, still linear mean
-    - Model: $Y \sim \Norm(\mu_I, \sigma^2)$ for group $i = 1, \ldots, k$
+    - Model: $Y \sim \Norm(\mu_i, \sigma^2)$ for group $i = 1, \ldots, k$
     - Model with data: $Y_{ij} \sim \Norm(\mu_i, \sigma^2)$ independent, where $i = 1, \ldots, k$ and $j = 1, \ldots, n_i$
 
 - What if
-  - $Y \in \{0,1\}$ (success/failure)?
+  - $Y \in \{0,1\}$ (success/failure) [Bernoulli]{.alert} random variable with explanatory variables $\vx$?
     - $\Ex[Y \mid \vx] = p(\vx)$ with $p(\vx) \in [0,1]$
   - But $p(\vx) = \vx^\top \vbeta$ can fall outside $[0,1]$
     - Need a [nonlinear]{.alert} function of $\vx$ to model $p(\vx)$
@@ -27,12 +27,13 @@
 ### Logistic function
 
   $$
-  p_i = \frac{1}{1 + e^{-\vx_i^\top \vbeta}} \qquad \text{or equivalently} \qquad \log (\text{odds}) = \text{logit}(p_i) = \log\left(\frac{p_i}{1-p_i}\right) = \vx_i^\top \vbeta
+  p_i = \frac{1}{1 + e^{-\vx_i^\top \vbeta}} \qquad \text{or equivalently} \qquad \log (\text{odds}) = \logit(p_i) = \log\left(\frac{p_i}{1-p_i}\right) = \vx_i^\top \vbeta
   $$
 
-  $$
-  \beta_j = \text{change in log-odds per unit increase in } x_j \qquad e^{\beta_j} = \text{multiplicative change in odds per unit increase in } x_j
-  $$
+- $\beta_j = \text{change in log-odds per unit increase in } x_j$
+- $e^{\beta_j} = \text{multiplicative change in odds per unit increase in } x_j$
+- $\logit$ is the quantile function of the logistic distribution
+  - which has CDF $\displaystyle F(t) = \frac{1}{1 + e^{-t}}$, $- \infty < t < \infty$
 
 
 ## Likelihood
@@ -64,6 +65,38 @@
   - No closed form solution
   - Use numerical optimization (e.g., Newton–Raphson / IRLS)
 
+## Estimation by iteratively reweighted least squares (IRLS)
+
+- MLE: $\hvbeta = \arg\max_{\vb} \ell(\vb)$
+
+- Solve: $\nabla \ell(\vbeta)=0$ (no closed form)
+
+- Iteratively reweighted least squares (IRLS):
+
+  - Initialize $\vbeta^{(0)} = \vzero$
+
+  - For $t = 0,1,2,\ldots$ until convergence:
+
+    - $\vp^{(t)} = \bigl(p_1^{(t)},\dots,p_n^{(t)}\bigr)^\top$,  
+      $p_i^{(t)} = \dfrac{1}{1 + e^{-\vx_i^\top \vbeta^{(t)}}}$ predicted probabilities of success for data
+
+    - $\mW^{(t)} = \diag\!\bigl(p_i^{(t)}(1-p_i^{(t)})\bigr)$ diagaonal matrix of regression weights
+
+    - $\vz^{(t)} = \mX\vbeta^{(t)} + \bigl(\mW^{(t)}\bigr)^{-1}(\vy-\vp^{(t)})$, where $\vy-\vp^{(t)}$ is the vector of residuals
+
+    - Update:
+      $$
+      \vbeta^{(t+1)}
+      =
+    \arg\min_{\vb}
+    \sum_{i=1}^n
+    w_i^{(t)}\bigl(z_i^{(t)} - \vx_i^\top \vb\bigr)^2
+      =
+      \left(\mX^\top \mW^{(t)} \mX\right)^{-1}
+      \mX^\top \mW^{(t)} \vz^{(t)}
+      $$
+
+
 ## Inference
 
 - MLE: $\hvbeta = \arg\max_{\vb} \ell(\vb)$
@@ -80,146 +113,82 @@
 
 - Same philosophy as OLS: test whether predictors matter
 
-## Decision boundary
+## Decision boundary (prediction)
 
-- Predict: $\hp_i$
+- For a new $\vx$: $\hp(\vx) = \dfrac{1}{1 + e^{-\vx^\top \hvbeta}}$
 
-- Classification rule:
-  $$
-  \hat Y_i =
-  \begin{cases}
-  1 & \hat p_i > 0.5 \\
-  0 & \text{otherwise}
-  \end{cases}
-  $$
+- Classification: $\hY(\vx) = 1$ if $\hp(\vx) > 0.5$, else $0$
 
-- Boundary:
+- Boundary: $\hp(\vx)=0.5 \iff \vx^\top \hvbeta = 0$
+
+- Uncertainty in $\hp(\vx)$ comes from $\hvbeta$:
   $$
-  \hat p_i = 0.5
-  \iff
-  \vx^\top \hvbeta = 0
+  \text{SE}\bigl(\hp(\vx)\bigr)
+  \approx
+  \hp(\vx)\bigl(1-\hp(\vx)\bigr)
+  \sqrt{\vx^\top(\mX^\top \mW \mX)^{-1}\vx}
   $$
 
----
+- Confidence interval for probability:
+  $\hp(\vx) \pm z_{\alpha/2}\,\text{SE}\bigl(\hp(\vx)\bigr)$
+
+- Classification confidence:
+  - uncertain if $\hp(\vx) \approx 0.5$
+  - more confident as $\hp(\vx)$ moves away from $0.5$
+
+
+## Probit link
+
+- Logit: $\logit(p) = \displaystyle \log\left(\frac{p}{1-p}\right)$ is the [quantile function]{.alert} of the logistic distribution
+
+- Probit: $\probit(p) = \Phi^{-1}(p)$ is the [quantile function]{.alert} of the standard normal distribution
+  - Model is $\probit(p(\vx)) = \vx^\top \vbeta$
+  - $p(\vx) = \Phi(\vx^\top \vbeta)$, where $\Phi$ is the CDF of $\Norm(0,1)$
+
+- Both:
+  - map $(0,1) \to \reals$
+  - give similar fits
+
+- probit interpretation:
+  - latent normal threshold model
+  - lighter tails than logit
+
 
 ## Big picture
 
-- Linear model:
-  - models mean directly
+- Linear model models mean directly
 
-- Logistic regression:
-  - models transformed mean (log-odds)
+- Logistic regression models transformed mean (log-odds)
 
-- Key idea:
-  - keep linear structure, change the scale
+- Key idea: keep linear structure, change the scale
 
 
+## Generalized linear models
 
+- Form: $g(\mu_i) = \vx_i^\top \vbeta$
 
-## Inference
-
-- Wald:
-  $$
-  \frac{\hat\beta_j}{\text{SE}(\hat\beta_j)}
-  $$
-
-- Likelihood ratio:
-  - nested models
-
-- Same idea:
-  - does predictor matter?
+- Components:
+  - distribution of $Y_i$
+  - linear predictor $\vx_i^\top \vbeta$
+  - link $g$
 
 ---
 
-## Classification view
+## Examples
 
-- Predict $\hat p(\vx)$
+- OLS: $Y_i \sim \Norm(\mu_i,\sigma^2)$, $g(\mu)=\mu$
 
-- Rule:
-  $$
-  \hat Y =
-  \begin{cases}
-  1 & \hat p > 0.5 \\
-  0 & \text{otherwise}
-  \end{cases}
-  $$
+- Logistic: $Y_i \sim \text{Bernoulli}(p_i)$, $g(p)=\log\frac{p}{1-p}$
 
-- Boundary:
-  $$
-  \vx^\top \hvbeta = 0
-  $$
+- Poisson: $Y_i \sim \text{Poisson}(\mu_i)$, $g(\mu)=\log \mu$
 
 ---
 
-## Big picture
+## Big idea
 
-- OLS:
-  - linear mean
+- $g(\Ex[Y_i]) = \vx_i^\top \vbeta$
 
-- Logistic:
-  - linear **log-odds**
-
-- Strategy:
-  - keep linear structure
-  - change the scale
-
-
-## Inference
-
-- Wald:
-  $$
-  \frac{\hat\beta_j}{\text{SE}(\hat\beta_j)}
-  $$
-
-- Likelihood ratio:
-  - nested models
-
----
-
-## Decision rule
-
-- Predict $\hat p(\vx)$
-
-- Classify:
-  $$
-  \hat Y =
-  \begin{cases}
-  1 & \hat p > 0.5 \\
-  0 & \text{otherwise}
-  \end{cases}
-  $$
-
-- Boundary:
-  $$
-  \vx^\top \hvbeta = 0
-  $$
-
----
-
-## Big picture
-
-- Same linear structure
-
-- Different scale:
-  - mean → log-
-
-
-
-## What are we fixing?
-
-- OLS:
-  - $Y \sim \mathcal{N}(\mu,\sigma^2)$
-  - $\mu = \vx^\top \vbeta$
-
-- Logistic:
-  - $Y \sim \text{Bernoulli}(p)$
-  - $\log\frac{p}{1-p} = \vx^\top \vbeta$
-
-- Same idea:
-  - linear predictor
-  - different scale + distribution
-
----
+- Same linear structure, different scale + distribution
 
 ## Generalized linear model
 
