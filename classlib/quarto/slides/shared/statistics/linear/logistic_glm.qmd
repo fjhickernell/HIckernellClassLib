@@ -72,43 +72,31 @@
 
 - Weights: $\mW = \diag\bigl(p_i(1-p_i)\bigr)$
 
-- Standard errors: $\text{SE}(\hat\beta_j) = \sqrt{\bigl[(\mX^\top \mW \mX)^{-1}\bigr]_{jj}}$
+- Standard errors: $\SE(\hbeta_j) = \sqrt{\bigl[(\mX^\top \mW \mX)^{-1}\bigr]_{jj}}$
 
+- Wald statistic: $\displaystyle \frac{\hat\beta_j}{\text{SE}(\hat\beta_j)} \approx \Norm(0,1)$
 
+- Likelihood ratio statistic for nested models: $2\bigl(\ell(\text{full})-\ell(\text{reduced})\bigr) \approx \chi^2_\nu$
 
-## Inference
-
-- Wald tests:
-  $$
-  \frac{\hat\beta_j}{\text{SE}(\hat\beta_j)}
-  $$
-
-- Likelihood ratio tests:
-  - compare nested models
-
-- Same philosophy as OLS:
-  - test whether predictors matter
-
----
+- Same philosophy as OLS: test whether predictors matter
 
 ## Decision boundary
 
-- Predict:
-  $$
-  \hat{p}_i
-  $$
+- Predict: $\hp_i$
 
 - Classification rule:
   $$
-  \hat{Y}_i =
+  \hat Y_i =
   \begin{cases}
-  1 & \hat{p}_i > 0.5 \\
+  1 & \hat p_i > 0.5 \\
   0 & \text{otherwise}
   \end{cases}
   $$
 
 - Boundary:
   $$
+  \hat p_i = 0.5
+  \iff
   \vx^\top \hvbeta = 0
   $$
 

@@ -160,6 +160,7 @@
         ip:   ["{\\left\\langle #1, #2 \\right\\rangle}", 2],
         dim:   "{\\operatorname{dim}}",
         df:   "{\\mathrm{df}}",
+        SE:   "{\\operatorname{SE}}",
 
 
         bvec: ["{\\boldsymbol{#1}}", 1],
