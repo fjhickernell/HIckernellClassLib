@@ -252,6 +252,7 @@
 
         mA: "{\\mathsf{A}}",
         mX: "{\\mathsf{X}}",
+        mW: "{\\mathsf{W}}",
         mP: "{\\mathsf{P}}",
         mQ: "{\\mathsf{Q}}",
         mR: "{\\mathsf{R}}",

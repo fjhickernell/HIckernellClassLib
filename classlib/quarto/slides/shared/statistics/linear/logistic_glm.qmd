@@ -1,0 +1,405 @@
+# From linear to nonlinear mean
+
+- So far our models are [linear]{.alert}
+  - Ordinary least squares
+    - Model: $Y \sim \Norm(\mu(\vx), \sigma^2)$, $\mu(\vx) = \vx^\top \vbeta$
+    - Model with data: $\vY \sim \Norm(\mX\vbeta, \sigma^2 \mI)$
+  - One-way ANOVA: categorical predictors, still linear mean
+    - Model: $Y \sim \Norm(\mu_I, \sigma^2)$ for group $i = 1, \ldots, k$
+    - Model with data: $Y_{ij} \sim \Norm(\mu_i, \sigma^2)$ independent, where $i = 1, \ldots, k$ and $j = 1, \ldots, n_i$
+
+- What if
+  - $Y \in \{0,1\}$ (success/failure)?
+    - $\Ex[Y \mid \vx] = p(\vx)$ with $p(\vx) \in [0,1]$
+  - But $p(\vx) = \vx^\top \vbeta$ can fall outside $[0,1]$
+    - Need a [nonlinear]{.alert} function of $\vx$ to model $p(\vx)$
+
+## Binary response setup
+
+- Explanatory variables, $\vx \in \reals^d$ like OLS
+- Response data: $Y_i \in \{0,1\}$
+
+- Define $p_i = \Prob(Y_i = 1 \mid \vx_i)$, so $Y_i \sim \text{Bernoulli}(p_i)$
+
+- Need to model $p_i$ with a [nonlinear]{.alert} transformation that maps $\mathbb{R} \to (0,1)$
+
+
+### Logistic function
+
+  $$
+  p_i = \frac{1}{1 + e^{-\vx_i^\top \vbeta}} \qquad \text{or equivalently} \qquad \log (\text{odds}) = \text{logit}(p_i) = \log\left(\frac{p_i}{1-p_i}\right) = \vx_i^\top \vbeta
+  $$
+
+  $$
+  \beta_j = \text{change in log-odds per unit increase in } x_j \qquad e^{\beta_j} = \text{multiplicative change in odds per unit increase in } x_j
+  $$
+
+
+## Likelihood
+
+- Bernoulli likelihood:
+  $$
+  L\bigl(\vbeta \mid \{(\vx_i, y_i)\}_{i=1}^n\bigr)
+  =
+  \prod_{i=1}^n
+  p_i^{y_i}(1-p_i)^{1-y_i} = \prod_{i=1}^n
+  \left(\frac{1}{1 + e^{-\vx_i^\top \vbeta}}\right)^{y_i}
+  \left(\frac{1}{1 + e^{\vx_i^\top \vbeta}}\right)^{1-y_i}
+  $$
+
+- Log-likelihood:
+  \begin{align*}
+  \ell\bigl(\vbeta \mid \{(\vx_i, y_i)\}_{i=1}^n\bigr)
+  & =
+  \sum_{i=1}^n
+  \left[
+  y_i \log(p_i) + (1-y_i)\log(1-p_i) \right] \\
+  & = \sum_{i=1}^n
+  \left[
+  y_i \log\left(\frac{1}{1 + e^{-\vx_i^\top \vbeta}}\right) + (1-y_i)\log\left(\frac{1}{1 + e^{\vx_i^\top \vbeta}}\right)
+  \right]
+  \end{align*}
+
+- Estimate $\vbeta$ by MLE $\hvbeta = \argmax_\vb \ell\bigl(\vb \mid \{(\vx_i, y_i)\}_{i=1}^n\bigr)$
+  - No closed form solution
+  - Use numerical optimization (e.g., Newton–Raphson / IRLS)
+
+## Inference
+
+- MLE: $\hvbeta = \arg\max_{\vb} \ell(\vb)$
+
+- Approximate distribution: $\hvbeta \appxsim \Norm\!\bigl(\vbeta,\; (\mX^\top \mW \mX)^{-1}\bigr)$
+
+- Weights: $\mW = \diag\bigl(p_i(1-p_i)\bigr)$
+
+- Standard errors: $\text{SE}(\hat\beta_j) = \sqrt{\bigl[(\mX^\top \mW \mX)^{-1}\bigr]_{jj}}$
+
+
+
+## Inference
+
+- Wald tests:
+  $$
+  \frac{\hat\beta_j}{\text{SE}(\hat\beta_j)}
+  $$
+
+- Likelihood ratio tests:
+  - compare nested models
+
+- Same philosophy as OLS:
+  - test whether predictors matter
+
+---
+
+## Decision boundary
+
+- Predict:
+  $$
+  \hat{p}_i
+  $$
+
+- Classification rule:
+  $$
+  \hat{Y}_i =
+  \begin{cases}
+  1 & \hat{p}_i > 0.5 \\
+  0 & \text{otherwise}
+  \end{cases}
+  $$
+
+- Boundary:
+  $$
+  \vx^\top \hvbeta = 0
+  $$
+
+---
+
+## Big picture
+
+- Linear model:
+  - models mean directly
+
+- Logistic regression:
+  - models transformed mean (log-odds)
+
+- Key idea:
+  - keep linear structure, change the scale
+
+
+
+
+## Inference
+
+- Wald:
+  $$
+  \frac{\hat\beta_j}{\text{SE}(\hat\beta_j)}
+  $$
+
+- Likelihood ratio:
+  - nested models
+
+- Same idea:
+  - does predictor matter?
+
+---
+
+## Classification view
+
+- Predict $\hat p(\vx)$
+
+- Rule:
+  $$
+  \hat Y =
+  \begin{cases}
+  1 & \hat p > 0.5 \\
+  0 & \text{otherwise}
+  \end{cases}
+  $$
+
+- Boundary:
+  $$
+  \vx^\top \hvbeta = 0
+  $$
+
+---
+
+## Big picture
+
+- OLS:
+  - linear mean
+
+- Logistic:
+  - linear **log-odds**
+
+- Strategy:
+  - keep linear structure
+  - change the scale
+
+
+## Inference
+
+- Wald:
+  $$
+  \frac{\hat\beta_j}{\text{SE}(\hat\beta_j)}
+  $$
+
+- Likelihood ratio:
+  - nested models
+
+---
+
+## Decision rule
+
+- Predict $\hat p(\vx)$
+
+- Classify:
+  $$
+  \hat Y =
+  \begin{cases}
+  1 & \hat p > 0.5 \\
+  0 & \text{otherwise}
+  \end{cases}
+  $$
+
+- Boundary:
+  $$
+  \vx^\top \hvbeta = 0
+  $$
+
+---
+
+## Big picture
+
+- Same linear structure
+
+- Different scale:
+  - mean → log-
+
+
+
+## What are we fixing?
+
+- OLS:
+  - $Y \sim \mathcal{N}(\mu,\sigma^2)$
+  - $\mu = \vx^\top \vbeta$
+
+- Logistic:
+  - $Y \sim \text{Bernoulli}(p)$
+  - $\log\frac{p}{1-p} = \vx^\top \vbeta$
+
+- Same idea:
+  - linear predictor
+  - different scale + distribution
+
+---
+
+## Generalized linear model
+
+Three components:
+
+1. Random component  
+   $$
+   Y_i \sim \text{distribution with mean } \mu_i
+   $$
+
+2. Systematic component  
+   $$
+   \eta_i = \vx_i^\top \vbeta
+   $$
+
+3. Link function  
+   $$
+   g(\mu_i) = \eta_i
+   $$
+
+---
+
+## Unified form
+
+$$
+g(\Ex[Y_i]) = \vx_i^\top \vbeta
+$$
+
+- linear model survives
+- only the scale changes
+
+---
+
+## Examples
+
+- OLS:
+  $$
+  Y_i \sim \mathcal{N}(\mu_i,\sigma^2),
+  \quad g(\mu)=\mu
+  $$
+
+- Logistic:
+  $$
+  Y_i \sim \text{Bernoulli}(p_i),
+  \quad g(p)=\log\frac{p}{1-p}
+  $$
+
+---
+
+## Another example (preview)
+
+- Counts:
+  $$
+  Y_i \sim \text{Poisson}(\mu_i)
+  $$
+
+- Link:
+  $$
+  \log \mu_i = \vx_i^\top \vbeta
+  $$
+
+- Ensures:
+  - $\mu_i > 0$
+
+---
+
+## Why links?
+
+- Match range:
+  - probability $\in (0,1)$
+  - counts $\ge 0$
+
+- Make model linear:
+  $$
+  g(\mu_i) \text{ linear in } \vx_i
+  $$
+
+---
+
+## Variance is built in
+
+- OLS:
+  $$
+  \var(Y_i)=\sigma^2
+  $$
+
+- Logistic:
+  $$
+  \var(Y_i)=p_i(1-p_i)
+  $$
+
+- Poisson:
+  $$
+  \var(Y_i)=\mu_i
+  $$
+
+- Mean determines variance
+
+---
+
+## Estimation
+
+- Likelihood:
+  $$
+  L(\vbeta) = \prod f(y_i \mid \mu_i)
+  $$
+
+- Solve:
+  $$
+  \nabla \ell(\vbeta)=0
+  $$
+
+- Numerical:
+  - IRLS (generalizes least squares)
+
+---
+
+## Inference
+
+- Same playbook:
+
+  - Wald tests  
+  - Likelihood ratio tests  
+
+- Compare nested models
+
+---
+
+## Big picture
+
+- Linear model:
+  - structure stays
+
+- GLM:
+  - choose:
+    - distribution
+    - link
+
+- Covers:
+  - regression
+  - ANOVA
+  - classification
+  - counts
+
+
+## Same skeleton everywhere
+
+$$
+g(\mu_i) = \vx_i^\top \vbeta
+$$
+
+- OLS:
+  $$
+  g(\mu)=\mu
+  $$
+
+- Logistic:
+  $$
+  g(\mu)=\log\frac{\mu}{1-\mu}
+  $$
+
+- Poisson:
+  $$
+  g(\mu)=\log \mu
+  $$
+
+---
+
+- Linear model stays  
+- Only the scale changes  
+
