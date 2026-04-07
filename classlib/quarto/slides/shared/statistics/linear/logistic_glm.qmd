@@ -163,16 +163,24 @@
 - Key idea: keep linear structure, change the scale
 
 
-## Generalized linear models
+## From logit to a general framework
 
-- Form: $g(\mu_i) = \vx_i^\top \vbeta$
+- Logistic regression:
+  - $Y \sim \text{Bernoulli}(p)$
+  - $\logit(p) = \vx^\top \vbeta$
 
-- Components:
-  - distribution of $Y_i$
-  - linear predictor $\vx_i^\top \vbeta$
-  - link $g$
+- Key idea: linear model on a transformed mean
 
----
+### Generalized linear models
+
+- Form: $g(\mu) = \vx^\top \vbeta$, where $\mu = \Ex[Y]$
+
+- Three components:
+  - distribution of $Y$
+  - linear predictor $\vx^\top \vbeta$
+  - link function $g$
+
+Linear structure stays, only the transformation, $g$, changes
 
 ## Examples
 
@@ -182,181 +190,50 @@
 
 - Poisson: $Y_i \sim \text{Poisson}(\mu_i)$, $g(\mu)=\log \mu$
 
----
+### Links
 
-## Big idea
-
-- $g(\Ex[Y_i]) = \vx_i^\top \vbeta$
-
-- Same linear structure, different scale + distribution
-
-## Generalized linear model
-
-Three components:
-
-1. Random component  
-   $$
-   Y_i \sim \text{distribution with mean } \mu_i
-   $$
-
-2. Systematic component  
-   $$
-   \eta_i = \vx_i^\top \vbeta
-   $$
-
-3. Link function  
-   $$
-   g(\mu_i) = \eta_i
-   $$
-
----
-
-## Unified form
-
-$$
-g(\Ex[Y_i]) = \vx_i^\top \vbeta
-$$
-
-- linear model survives
-- only the scale changes
-
----
-
-## Examples
-
-- OLS:
-  $$
-  Y_i \sim \mathcal{N}(\mu_i,\sigma^2),
-  \quad g(\mu)=\mu
-  $$
-
-- Logistic:
-  $$
-  Y_i \sim \text{Bernoulli}(p_i),
-  \quad g(p)=\log\frac{p}{1-p}
-  $$
-
----
-
-## Another example (preview)
-
-- Counts:
-  $$
-  Y_i \sim \text{Poisson}(\mu_i)
-  $$
-
-- Link:
-  $$
-  \log \mu_i = \vx_i^\top \vbeta
-  $$
-
-- Ensures:
-  - $\mu_i > 0$
-
----
-
-## Why links?
-
-- Match range:
-  - probability $\in (0,1)$
+- Match the range:
+  - probabilities in $(0,1)$
   - counts $\ge 0$
 
 - Make model linear:
-  $$
-  g(\mu_i) \text{ linear in } \vx_i
-  $$
+  - $g(\mu_i)$ linear in $\vx_i$
 
----
 
 ## Variance is built in
 
-- OLS:
-  $$
-  \var(Y_i)=\sigma^2
-  $$
+- OLS: $\var(Y_i)=\sigma^2$
 
-- Logistic:
-  $$
-  \var(Y_i)=p_i(1-p_i)
-  $$
+- Logistic: $\var(Y_i)=p_i(1-p_i)$
 
-- Poisson:
-  $$
-  \var(Y_i)=\mu_i
-  $$
+- Poisson: $\var(Y_i)=\mu_i$
 
 - Mean determines variance
 
----
 
-## Estimation
+## Estimation and inference
 
-- Likelihood:
-  $$
-  L(\vbeta) = \prod f(y_i \mid \mu_i)
-  $$
+- Likelihood: $L(\vbeta) = \prod f(y_i \mid \mu_i)$
 
-- Solve:
-  $$
-  \nabla \ell(\vbeta)=0
-  $$
+- Solve: $\nabla \ell(\vbeta)=0$ (no closed form)
 
-- Numerical:
-  - IRLS (generalizes least squares)
+- Computation: IRLS (generalizes least squares)
 
----
-
-## Inference
-
-- Same playbook:
-
+- Inference:
   - Wald tests  
-  - Likelihood ratio tests  
-
-- Compare nested models
-
----
+  - likelihood ratio tests
 
 ## Big picture
 
 - Linear model:
-  - structure stays
+  - models mean directly
 
 - GLM:
-  - choose:
-    - distribution
-    - link
+  - models transformed mean
+
+- Choose:
+  - distribution  
+  - link  
 
 - Covers:
-  - regression
-  - ANOVA
-  - classification
-  - counts
-
-
-## Same skeleton everywhere
-
-$$
-g(\mu_i) = \vx_i^\top \vbeta
-$$
-
-- OLS:
-  $$
-  g(\mu)=\mu
-  $$
-
-- Logistic:
-  $$
-  g(\mu)=\log\frac{\mu}{1-\mu}
-  $$
-
-- Poisson:
-  $$
-  g(\mu)=\log \mu
-  $$
-
----
-
-- Linear model stays  
-- Only the scale changes  
-
+  - regression, ANOVA, classification, counts
