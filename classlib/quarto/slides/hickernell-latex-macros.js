@@ -116,7 +116,7 @@
         Bern:  "{\\operatorname{Bern}}",
         Bin:   "{\\operatorname{Bin}}",
         Unif:  "{\\operatorname{Unif}}",
-        Norm:  "{\\operatorname{N}}",
+        Norm:  "{\\operatorname{Norm}}",
         Exp:   "{\\operatorname{Exp}}",
         Gam:   "{\\operatorname{Gamma}}",
         Pois:  "{\\operatorname{Pois}}",
