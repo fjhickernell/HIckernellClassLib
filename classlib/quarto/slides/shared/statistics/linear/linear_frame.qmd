@@ -1,12 +1,26 @@
 # Linear Models
 
-Now we move the situation where we have a
+<h3>Until now</h3>
+- We have been focused on inference for population parameters, such as $\mu$, $\sigma^2$, $p$, $\lambda$, ...
+
+- Nothing influenced our random variable $Y$ except for the randomness in the data generating process
+
+<h3>Moving forward</h3>
 
 - [Response/Output/Dependent Variable]{.alert} $Y$
 
-- [Explained/Predicted]{.alert} by a vector of [Predictors/Explanatory Variables/Inputs/Independent Variables]{.alert} $\vx$, where the $x_j$ may be functions of other variables or each other
+- [Explained/Predicted]{.alert} by a vector of [Predictors/Explanatory Variables/Inputs/Independent Variables]{.alert} $\vx$
 
-Types of linear models
+  - The $x_j$ may be 
+  
+    - Functions of other variables or each other
+
+    - Categorical variables encoded as dummy variables
+
+- $\Ex(Y \mid \vx)$ depends on $\vx$ through a linear function $\vx^\top \vbeta$, where $\vbeta$ is a vector of unknown parameters 
+
+
+## Types of linear models
 
 - [Ordinary least squares (OLS)](#lsqregress) $Y = \vx^\top \vbeta + \varepsilon$ with $\Ex(\varepsilon) = 0$ and $\cov(\varepsilon) = \sigma^2 \mI$
 
