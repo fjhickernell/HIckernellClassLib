@@ -356,9 +356,9 @@ These can all be written in the form $H_0:\mA \vmu = \vb$
 
 ## Testing a linear hypothesis
 
-Consider the model $\vY = \mX \vmu + \vveps$,  $\vveps \sim \Norm(\vzero, \sigma^2 \mI)$
+Consider the model with data $\vY = \mX \vmu + \vveps$,  $\vveps \sim \Norm(\vzero, \sigma^2 \mI)$
 
-and the hypothesis $H_0:\mA \vmu = \vb$, where $\mA$ is an $r \times k$ matrix
+and the hypothesis $H_0:\mA \vmu = \vb$ of $r$ constraints, where $\mA$ is an $r \times k$ matrix
 
 ### F-statistic
 
@@ -379,9 +379,9 @@ S^2
 \quad \text{under } H_0.
 $$
 
-- $\mA \hvmu - \vb$ measures how far we are from satisfying the constraints
+- $\mA \hvmu - \vb$ is an $r \times 1$ vector that measures how far we are from satisfying the constraints
 
-- $\mA(\mX^\top \mX)^{-1}\mA^\top$ gives the covariance of $\mA \hvmu$ up to a factor of $\sigma^2$
+- $\mA(\mX^\top \mX)^{-1}\mA^\top$ is an $r \times r$ covariance matrix for $\mA \hvmu$ up to a factor of $\sigma^2$
 
 - $S^2 = \RSS/(n-k)$ estimates $\sigma^2$
 
