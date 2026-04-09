@@ -35,7 +35,7 @@
 
 - [One-way analysis of variance (ANOVA)](#oneway_anova) $Y_{ij} = \mu_i + \varepsilon_{ij}$ with $\Ex(\varepsilon_{ij}) = 0$ and $\cov(\varepsilon_{ij}) = \sigma^2 \mI$
 
-- [Logistic regression]{.alert} and other generalized linear models
+- [Logistic regression](#logistic-glm) and other generalized linear models
 
 - [Gaussian process regression]{.alert}
 

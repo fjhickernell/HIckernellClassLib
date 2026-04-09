@@ -1,4 +1,4 @@
-# From linear to nonlinear mean
+# From linear to nonlinear mean {#logistic-glm}
 
 - So far our models are [linear]{.alert}
   - Ordinary least squares
@@ -431,7 +431,8 @@ plt.show()
 
 ## Example: Graduate admissions explained by both GRE and GPA
 
-Admissions are not based on GRE alone.  A more realistic model allows the admission probability to depend on both GRE and GPA [(this is how the data were simulated to begin with)]{.alert}:
+- Admissions are not based on GRE alone
+- More realistic model allows the admission probability to depend on both GRE and GPA <br> [(this is how the data were simulated to begin with)]{.alert}
 
 $$
 \log\left(\frac{p(x_1,x_2)}{1-p(x_1,x_2)}\right)
@@ -445,14 +446,19 @@ where
 
 - $x_2$ is GPA
 
-We cannot visualize this model with a single probability curve against one predictor, but we can still explore model fit through fitted probabilities and grouped summaries
+Now the probability of admission depends on two predictors, so
+
+- Cannot visualize this model with a single probability curve against one predictor
+
+- Can still explore model fit through fitted probabilities and grouped summaries
 
 ---
 
 ### Simulated data with GRE and GPA
 
 ```{python}
-df.loc[:, ["GRE", "GPA", "admit"]].sample(12, random_state=563).sort_values(["GRE", "GPA"])
+which_few_state=20260317
+df.loc[:, ["GRE", "GPA", "admit"]].sample(12, random_state=which_few_state).sort_values(["GRE", "GPA"])
 ```
 
 ---
@@ -488,7 +494,7 @@ table2.round(4)
 df2_show = df.copy()
 df2_show["p_admit_hat"] = fit2.predict(X2)
 
-df2_show.loc[:, ["GRE", "GPA", "admit", "p_admit_hat"]].sample(12, random_state=2026) \
+df2_show.loc[:, ["GRE", "GPA", "admit", "p_admit_hat"]].sample(12, random_state=which_few_state) \
     .sort_values(["GRE", "GPA"]) \
     .round({"p_admit_hat": 3})
 ```
@@ -633,13 +639,18 @@ lrt_table
 
 ## From logit to a general framework
 
+::: {.columns}
+
+::: {.column width="55%"}
+
 - Logistic regression:
   - $Y \mid \vx \sim \Bern(p(\vx))$
   - $\logit\bigl(p(\vx)\bigr) = \vx^\top \vbeta$
 
 - Key idea: linear model on a transformed mean
 
-### Generalized linear models
+::: {.fragment fragment-index="1"}
+### Generalized linear models (GLMs)
 
 - Form: $g(\mu(\vx)) = \vx^\top \vbeta$, where $\mu = \Ex(Y \mid \vx)$
 
@@ -649,6 +660,40 @@ lrt_table
   - link function $g$
 
 The linear predictor stays; the distribution and link change
+:::
+
+:::
+
+::: {.column width="2%"}
+&nbsp;
+:::
+
+::: {.column width="40%"}
+
+::: {.fragment fragment-index="2"}
+### Link Function
+
+- $\mathcal{M}$ = set of possible means $\mu = \Ex[Y]$
+
+- $g : \mathcal{M} \to \mathbb{R}$ is the link function
+
+- Linear predictor:
+  $$
+  g\bigl(\mu(\vx)\bigr) = \vx^\top \vbeta
+  $$
+
+- Inverse link:
+  $$
+  \mu(\vx) = g^{-1}(\vx^\top \vbeta)
+  $$
+
+- $g$ maps the [mean space $\mathcal{M}$ to $\mathbb{R}$]{.alert} so a linear model applies to $g(\mu)$ instead of $\mu$ directly
+
+:::
+
+:::
+
+:::
 
 ## Examples
 
@@ -690,6 +735,27 @@ The linear predictor stays; the distribution and link change
 - Inference:
   - Wald tests  
   - likelihood ratio tests
+
+## Transformations and GLMs
+
+- In linear regression:
+  - Transform $Y$ to reduce patterns in residuals
+
+- In generalized linear models:
+  - Do **not** transform $Y$ directly
+  - Instead model:
+    $$
+    g(\mu) = \vx^\top \vbeta
+    $$
+
+- Interpretation:
+  - Relationship is [linear on the transformed mean scale]{.alert}
+  - Not linear in the original response
+
+- Key idea:
+  - Transformation is built into the model via the link function
+  - The randomness comes from the chosen distribution, not additive error after transformation
+
 
 ## Big picture
 
