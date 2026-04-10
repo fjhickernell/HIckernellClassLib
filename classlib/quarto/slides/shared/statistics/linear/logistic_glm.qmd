@@ -699,9 +699,9 @@ The linear predictor stays; the distribution and link change
 
 | Model | Distribution of $Y \mid \vx$ | Link function $g$ |
 |--------------|-------------|-------------------|
-| OLS | $\Norm(\mu, \sigma^2)$ | Identity: $g(\mu) = \mu$ |
-| Logistic regression | $\Bern(p(\vx))$ | Logit: $g(p) = \log\left(\dfrac{p}{1-p}\right)$ |
-| Poisson regression | $\Pois(\mu(\vx))$ | Log: $g(\mu) = \log (\mu)$ |
+| OLS | $\Norm\bigl(\mu(\vx), \sigma^2\bigr)$ | Identity: $g(\mu) = \mu$ |
+| Logistic regression | $\Bern\bigl(p(\vx)\bigr)$ | Logit: $g(p) = \log\left(\dfrac{p}{1-p}\right)$ |
+| Poisson regression | $\Pois\bigl(\mu(\vx)\bigr)$ | Log: $g(\mu) = \log (\mu)$ |
 
 
 ### Links
