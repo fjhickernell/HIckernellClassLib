@@ -389,10 +389,6 @@ $$
 We compare signal (violation of constraints) to noise
 :::
 
-
-
-
-
 ## Example: Testing Whether Two Means Are Equal
 
 We test whether groups 1 and 2 have the same mean
