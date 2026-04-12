@@ -442,7 +442,7 @@ plt.show()
 
 * Joint confidence for $\vbeta$ is not the same as simultaneous confidence for all $\beta_j$
 
-* The confidence elliposoid for $\vbeta$ and the individual confidence interval for $\beta_1$ both include $\beta_1 = 0$ so one might question whether there should be a constant term in the model
+* The confidence ellipsoid for $\vbeta$ and the individual confidence interval for $\beta_1$ both include $\beta_1 = 0$ so one might question whether there should be a constant term in the model
 
 :::
 
