@@ -773,3 +773,72 @@ The linear predictor stays; the distribution and link change
   - continuous responses
 	- binary responses
 	- count responses
+
+
+## Design matrix {#design-matrix data-state="goldborder"}
+
+The $n \times d$ [design matrix]{.alert} $\mX$ appears in generalized linear models with data as
+
+$$
+g \bigl(\Ex(\vY \mid \vx) \bigr) = \begin{pmatrix} g \bigl( \mu(\vx_1)  \bigr) \\ g \bigl( \mu(\vx_2)  \bigr) \\ \vdots \\ g \bigl( \mu(\vx_n)  \bigr) \end{pmatrix} = \mX \vbeta
+$$
+
+
+- Each *row* of $\mX$ is denoted by $\vx_i^\top= (x_{i1}, x_{i2}, \dots, x_{id})$ corresponds to one observation
+
+- Each *column* of $\mX$ is denoted by $\vX_j$ and corresponds to one predictor:
+  - Intercept (all 1s)
+  - Quantitative variables
+  - Indicator (dummy) variables
+
+👉 $\mX$ encodes *all the structure of the explanatory variables of the model*
+
+---
+
+### Why the design matrix matters
+
+- Fitted values: $\hat{\vY} = \mX \hat{\vbeta} \in \mathcal{C}(\mX)$
+
+- Residuals are orthogonal: $\vY - \hat{\vY} \perp \mathcal{C}(\mX)$
+
+- OLS estimator: $\hat{\vbeta} = (\mX^\top \mX)^{-1} \mX^\top \vY$ requires $\mX^\top \mX$ invertible <br>(columns of $\mX$ are linearly independent)
+
+---
+
+### Design matrix comes from the experiment
+
+So far, we treated $\mX$ as *given* by the data, but in many settings, <br> we *choose $\mX$* through the design of the experiment
+
+- We control the inputs $\vx_i$ (rows of $\mX$)
+- We decide
+  - Which predictor values to use
+  - How often to repeat them
+
+#### Examples
+
+- Clinical trials (treatment vs control)
+- Engineering experiments (temperature, pressure)
+- A/B testing
+
+👉 Better design ⇒ better estimates
+
+## Orthogonal and Optimal Designs
+
+### Orthogonal design
+
+Columns of $\mX$ are orthogonal: $\mX^\top \mX \text{ is diagonal}$
+
+- Coefficient estimates are **uncorrelated**
+- Interpretation is clean
+- Computation is simple
+
+### Optimal design (idea)
+
+Choose $\mX$ to make estimates *as precise as possible*
+
+- D-optimal: minimize $\det\big((\mX^\top \mX)^{-1}\big)$
+- A-optimal: minimize $\trace\big((\mX^\top \mX)^{-1}\big)$
+
+👉 The *design matrix controls estimator variance*
+
+👉 Statistics is not just analysis — it is also [design]{.alert}

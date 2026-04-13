@@ -137,6 +137,7 @@
         spann: "{\\operatorname{span}}",
         cond:  "{\\operatorname{cond}}",
         trace: "{\\operatorname{trace}}",
+        det:   "{\\operatorname{det}}",
         Si:    "{\\operatorname{Si}}",
         col:   "{\\operatorname{col}}",
         nullspace: "{\\operatorname{null}}",
