@@ -10,7 +10,7 @@
 
 - What if
   - $Y \in \{0,1\}$ (success/failure) [Bernoulli]{.alert} random variable with explanatory variables $\vx$?
-    - $\Ex[Y \mid \vx] = p(\vx)$ with $p(\vx) \in [0,1]$
+    - $\Ex(Y \mid \vx) = p(\vx)$ with $p(\vx) \in [0,1]$
   - But $p(\vx) = \vx^\top \vbeta$ can fall outside $[0,1]$
     - Need a [nonlinear]{.alert} function of $\vx$ to model $p(\vx)$
 
@@ -734,28 +734,20 @@ The linear predictor stays; the distribution and link change
 
 - Inference:
   - Wald tests  
-  - likelihood ratio tests
+  - likelihood ratio tests  
 
-## Transformations and GLMs
+## Transformations of $Y$ contrasted with GLMs and nonlinear regression
 
-- In linear regression:
-  - Transform $Y$ to reduce patterns in residuals
+| Transforming $Y$ | GLM with link function | Nonlinear regression |
+|------------------|------------------|------------------|
+| $g(Y) = \vx^\top \vbeta + \varepsilon$ <br> $Y = g^{-1}(\vx^\top \vbeta + \varepsilon)$ <br> $\varepsilon \sim \Norm(0,\sigma^2)$ | $g\bigl(\mu(\vx)\bigr) = \vx^\top \vbeta$, $\; \mu(\vx)=\Ex(Y \mid \vx)$ | $Y = f(\vx; \vbeta) + \varepsilon$ <br> $\varepsilon \sim \Norm(0,\sigma^2)$ |
+| Models $g(Y)$, not $Y$ | Models $g\bigl(\mu(\vx)\bigr)$ via a [nonlinear]{.alert} link | Models $\mu(\vx)$ via [nonlinear]{.alert} $f$ |
+| Additive error on _transformed_ scale | Variability specified via _distribution_ of $Y$ | Additive error on _original_ scale |
+| $\mu(\vx) = \Ex(Y \mid \vx) \ne g^{-1}(\vx^\top \vbeta)$ | $\mu(\vx) = g^{-1}(\vx^\top \vbeta)$ | $\mu(\vx) = f(\vx; \vbeta)$ |
+| Improves linearity and variance stability | Models mean–variance relationship | Flexible mean specification
+| Mean is distorted by transformation | Mean is modeled directly | Mean depends on chosen $f(\cdot;\vbeta)$ |
 
-- In generalized linear models:
-  - Do **not** transform $Y$ directly
-  - Instead model:
-    $$
-    g(\mu) = \vx^\top \vbeta
-    $$
-
-- Interpretation:
-  - Relationship is [linear on the transformed mean scale]{.alert}
-  - Not linear in the original response
-
-- Key idea:
-  - Transformation is built into the model via the link function
-  - The randomness comes from the chosen distribution, not additive error after transformation
-
+$\exstar$ What does this mean for $g(Y) = \log(Y)$ and $f(\vx; \vbeta) = \exp(\vx^\top \vbeta)$?
 
 ## Big picture
 

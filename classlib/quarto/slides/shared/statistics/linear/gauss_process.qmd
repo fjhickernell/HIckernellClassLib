@@ -1,0 +1,484 @@
+# Beyond predictors depending on $\vx^{\top} \vbeta$
+
+So far,
+
+- Ordinearly least squares regression: $\Ex(Y \mid \vx) = \mu(\vx) = \vx^\top \vbeta$
+
+- [Transform the response]{.alert}: $\Ex \big( g(Y) \mid \vx \big) = \vx^\top \vbeta$ to stabilize variance or improve linearity
+  
+- [Generalized linear models (GLMs)](#logistic-glm) with a link function: $g\bigl(\mu(\vx)\bigr) = \vx^\top \vbeta$, where $\mu(\vx) = \Ex(Y \mid \vx)$, to model non-Gaussian responses through a link function and a distributional family
+
+- [Nonlinear regression]{.alert} with a nonlinear mean function: $\Ex(Y \mid \vx) = \mu(\vx) = f(\vx; \vbeta)$, where $f$ is a [known]{.alert} nonlinear function of $\vx$ and $\vbeta$ is a vector of unknown parameters
+
+::: {.fragment}
+[Gaussian process regression]{.alert} takes a different point of view ([lose the $\vbeta$]{.alert} and place a [probability model on $f$]{.alert} directly):
+
+$$
+Y(\vx) = f(\vx) + \varepsilon(\vx),
+\qquad f \sim \GP(m,K), \quad \varepsilon(\vx) \sim \Norm(0,\sigma^2)
+$$
+
+:::
+
+
+## From parameters to functions
+
+In linear and generalized linear models, the unknown object is
+
+$$
+\vbeta \in \reals^p
+$$
+
+In Gaussian process regression, the unknown object is a whole function
+
+$$
+f : \cx \to \reals
+$$
+
+::: {.fragment}
+Instead of estimating coefficients, we are learning a surface:
+
+$$
+f(\vx_1),\dots,f(\vx_n)
+$$
+
+are jointly modeled.
+:::
+
+::: {.fragment}
+We write
+
+$$
+f \sim \GP(0,K)
+$$
+
+meaning that the function values behave like a multivariate normal vector.
+:::
+
+
+## What does $f \sim \GP(0,K)$ mean?
+
+For any inputs $\vx_1,\dots,\vx_n$,
+
+$$
+\begin{pmatrix}
+f(\vx_1)\\
+\vdots\\
+f(\vx_n)
+\end{pmatrix}
+\sim
+\Norm\!\bigl(
+\vzero,\;
+\mK
+\bigr),
+\qquad
+\mK_{ij} = K(\vx_i,\vx_j)
+$$
+
+::: {.fragment}
+So:
+
+- mean is zero
+- covariance comes from the kernel $K$
+:::
+
+::: {.fragment}
+This is just multivariate normal theory applied to function values.
+:::
+
+
+## Start with the noiseless model
+
+We begin with the simplest case:
+
+$$
+Y(\vx) = f(\vx),
+\qquad f \sim \GP(0,K)
+$$
+
+So for observed data,
+
+$$
+\vy =
+\begin{pmatrix}
+Y(\vx_1)\\
+\vdots\\
+Y(\vx_n)
+\end{pmatrix}
+=
+\begin{pmatrix}
+f(\vx_1)\\
+\vdots\\
+f(\vx_n)
+\end{pmatrix}
+$$
+
+and therefore
+
+$$
+\vy \sim \Norm(\vzero,\mK)
+$$
+
+::: {.fragment}
+All randomness comes from the function itself.
+:::
+
+## Interpreting the kernel $K$
+
+The kernel
+
+$$
+K(\vx,\vx')
+$$
+
+controls how function values relate.
+
+::: {.fragment}
+Interpretation:
+
+- if $\vx$ and $\vx'$ are close, then $f(\vx)$ and $f(\vx')$ are strongly correlated
+- if far apart, correlation is weaker
+:::
+
+::: {.fragment}
+So $K$ determines:
+
+- smoothness
+- scale
+- how quickly dependence decays
+:::
+
+::: {.fragment}
+👉 The kernel plays the role of a covariance matrix for functions.
+:::
+
+## Example: squared exponential kernel
+
+A standard choice is
+
+$$
+K(\vx,\vx')
+=
+\tau^2 \exp\!\left(
+-\frac{\|\vx-\vx'\|^2}{2\ell^2}
+\right)
+$$
+
+::: {.fragment}
+Parameters:
+
+- $\tau^2$: vertical scale
+- $\ell$: length scale
+:::
+
+::: {.fragment}
+Interpretation:
+
+- small $\ell$ → rapidly varying functions
+- large $\ell$ → smoother functions
+:::
+
+
+## Prediction in the noiseless case
+
+We want to predict $f(\vx_*)$.
+
+Jointly,
+
+$$
+\begin{pmatrix}
+\vy\\
+f(\vx_*)
+\end{pmatrix}
+\sim
+\Norm\!\left(
+\vzero,
+\begin{pmatrix}
+\mK & \vk_* \\
+\vk_*^\top & K(\vx_*,\vx_*)
+\end{pmatrix}
+\right)
+$$
+
+where
+
+$$
+\vk_* =
+\begin{pmatrix}
+K(\vx_1,\vx_*)\\
+\vdots\\
+K(\vx_n,\vx_*)
+\end{pmatrix}
+$$
+
+::: {.fragment}
+Conditioning gives
+
+$$
+f(\vx_*) \mid \vy
+=
+\vk_*^\top \mK^{-1} \vy
+$$
+:::
+
+::: {.fragment}
+👉 Prediction is a weighted combination of observed values.
+:::
+
+
+## Interpretation of the predictor
+
+The predictor
+
+$$
+\vk_*^\top \mK^{-1} \vy
+$$
+
+has a key interpretation:
+
+::: {.fragment}
+- weights depend on similarity via $K$
+- nearby points matter more
+- far points matter less
+:::
+
+::: {.fragment}
+This is a **data-adaptive smoother**.
+:::
+
+::: {.fragment}
+Compare:
+
+- linear model → global coefficients $\vbeta$
+- GP → local weighting determined by $K$
+:::
+
+
+## Adding noise back in
+
+Now return to
+
+$$
+Y(\vx) = f(\vx) + \varepsilon(\vx),
+\qquad
+\varepsilon(\vx) \sim \Norm(0,\sigma^2)
+$$
+
+Then
+
+$$
+\vy \sim \Norm(\vzero,\mK + \sigma^2 \mI)
+$$
+
+::: {.fragment}
+The noise adds a diagonal term to the covariance.
+:::
+
+::: {.fragment}
+Prediction becomes
+
+$$
+f(\vx_*) \mid \vy
+=
+\vk_*^\top (\mK+\sigma^2\mI)^{-1} \vy
+$$
+:::
+
+
+## Adding noise back in
+
+Now return to
+
+$$
+Y(\vx) = f(\vx) + \varepsilon(\vx),
+\qquad
+\varepsilon(\vx) \sim \Norm(0,\sigma^2)
+$$
+
+Then
+
+$$
+\vy \sim \Norm(\vzero,\mK + \sigma^2 \mI)
+$$
+
+::: {.fragment}
+The noise adds a diagonal term to the covariance.
+:::
+
+::: {.fragment}
+Prediction becomes
+
+$$
+f(\vx_*) \mid \vy
+=
+\vk_*^\top (\mK+\sigma^2\mI)^{-1} \vy
+$$
+:::
+
+## Big contrast with earlier models
+
+- Transformations: change $Y$
+- GLMs: transform the mean
+- Nonlinear regression: specify $f(\vx;\vbeta)$
+
+::: {.fragment}
+Gaussian processes:
+
+$$
+\text{do not specify } f \text{ explicitly}
+$$
+:::
+
+::: {.fragment}
+Instead:
+
+$$
+\text{specify how } f(\vx) \text{ and } f(\vx') \text{ relate via } K
+$$
+:::
+
+::: {.fragment}
+👉 Modeling moves from formulas to covariance structure.
+:::
+
+## Connection to kernel ridge regression
+
+From the noisy GP model:
+
+$$
+\vy \sim \Norm(\vzero, \mK + \sigma^2 \mI)
+$$
+
+the predictor is
+
+$$
+\hat f(\vx_*)
+=
+\vk_*^\top (\mK + \sigma^2 \mI)^{-1} \vy
+$$
+
+::: {.fragment}
+This has the same form as **kernel ridge regression**:
+
+$$
+\hat f(\vx)
+=
+\sum_{i=1}^n \alpha_i K(\vx_i,\vx),
+\qquad
+\valpha = (\mK + \lambda \mI)^{-1}\vy
+$$
+:::
+
+::: {.fragment}
+So:
+
+- GP regression = kernel ridge regression  
+- with $\lambda = \sigma^2$
+:::
+
+::: {.fragment}
+👉 Same estimator, different interpretation:
+
+- GP: probabilistic model  
+- KRR: optimization problem
+:::
+
+## Kernel ridge regression viewpoint
+
+Kernel ridge regression solves
+
+$$
+\min_{f \in \mathcal{H}_K}
+\;
+\sum_{i=1}^n \bigl(Y_i - f(\vx_i)\bigr)^2
++
+\lambda \|f\|_{\mathcal{H}_K}^2
+$$
+
+::: {.fragment}
+Key points:
+
+- $\mathcal{H}_K$ = function space induced by kernel $K$
+- penalty enforces smoothness
+:::
+
+::: {.fragment}
+Solution has the form
+
+$$
+\hat f(\vx)
+=
+\sum_{i=1}^n \alpha_i K(\vx_i,\vx)
+$$
+:::
+
+::: {.fragment}
+👉 This is the **representer theorem** in action.
+:::
+
+## RKHS (light introduction)
+
+Every kernel $K$ defines a function space:
+
+$$
+\mathcal{H}_K
+$$
+
+called a **reproducing kernel Hilbert space**.
+
+::: {.fragment}
+Key property:
+
+$$
+f(\vx)
+=
+\langle f, K(\cdot,\vx) \rangle_{\mathcal{H}_K}
+$$
+:::
+
+::: {.fragment}
+So evaluation at a point is a linear functional.
+:::
+
+::: {.fragment}
+👉 The kernel encodes both
+
+- similarity between inputs  
+- geometry of the function space
+:::
+
+## GP vs RKHS viewpoint
+
+Two perspectives on the same object:
+
+| Gaussian process | RKHS / optimization |
+|---|---|
+| Random function $f \sim \GP(0,K)$ | Deterministic $f \in \mathcal{H}_K$ |
+| Covariance = $K$ | Inner product defined by $K$ |
+| Inference via conditioning | Estimation via optimization |
+| Uncertainty quantification | Point estimate |
+
+::: {.fragment}
+👉 Same kernel, two interpretations.
+:::
+
+::: {.fragment}
+👉 GP adds **uncertainty quantification** to kernel methods.
+:::
+
+## Big picture for 563
+
+We now have three equivalent lenses:
+
+- **Multivariate normal theory** → Gaussian processes  
+- **Regularization** → kernel ridge regression  
+- **Functional analysis** → RKHS  
+
+::: {.fragment}
+All are tied together by the kernel $K$.
+:::
+
+::: {.fragment}
+👉 Choice of kernel = choice of model class.
+:::
+
