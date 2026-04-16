@@ -2,7 +2,7 @@
 
 So far,
 
-- Ordinearly least squares regression: $\Ex(Y \mid \vx) = \mu(\vx) = \vx^\top \vbeta$
+- Ordinary least squares   regression: $\Ex(Y \mid \vx) = \mu(\vx) = \vx^\top \vbeta$
 
 - [Transform the response]{.alert}: $\Ex \big( g(Y) \mid \vx \big) = \vx^\top \vbeta$ to stabilize variance or improve linearity
   
@@ -21,42 +21,30 @@ $$
 :::
 
 
-## From parameters to functions
+## From unknown parameters to unknown functions
 
-In linear and generalized linear models, the unknown object is
+- In linear and generalized linear models, the unknown object is $\vbeta \in \reals^p$
 
-$$
-\vbeta \in \reals^p
-$$
+- In Gaussian process regression, the unknown object is a whole function $f : \cx \to \reals$
 
-In Gaussian process regression, the unknown object is a whole function
+Instead of estimating coefficients, we are learning a surface $y = f(\vx)$ 
 
-$$
-f : \cx \to \reals
-$$
+   &nbsp; &nbsp; &nbsp; &nbsp; from data, $Y_1, \dots, Y_n$ observed at inputs $\vx_1, \dots, \vx_n$:
 
 ::: {.fragment}
-Instead of estimating coefficients, we are learning a surface:
 
-$$
-f(\vx_1),\dots,f(\vx_n)
-$$
+1.  $Y = f(\vx)$ with 
 
-are jointly modeled.
-:::
+    a. $f \sim \GP(0,K)$ means that the function values at any finite collection of points have a multivariate normal distribution with mean zero and covariance given by $K$.
 
-::: {.fragment}
-We write
+    b.  $f \sim \GP(m,K)$ means that the mean may be nonzero
 
-$$
-f \sim \GP(0,K)
-$$
+3. $Y = f(\vx) + \varepsilon$ means that the observed data is a noisy version of the underlying function values
 
-meaning that the function values behave like a multivariate normal vector.
 :::
 
 
-## What does $f \sim \GP(0,K)$ mean?
+## $f \sim \GP(0,K)$
 
 For any inputs $\vx_1,\dots,\vx_n$,
 
@@ -72,122 +60,54 @@ f(\vx_n)
 \mK
 \bigr),
 \qquad
-\mK_{ij} = K(\vx_i,\vx_j)
+\mK = \bigl(K(\vx_i,\vx_j)\bigr)_{i,j=1}^n = \begin{pmatrix} K(\vx_1,\vx_1) & \cdots & K(\vx_1,\vx_n)\\ \vdots & \ddots & \vdots\\ K(\vx_n,\vx_1) & \cdots & K(\vx_n,\vx_n) \end{pmatrix}
 $$
 
-::: {.fragment}
-So:
-
-- mean is zero
-- covariance comes from the kernel $K$
-:::
-
-::: {.fragment}
-This is just multivariate normal theory applied to function values.
-:::
-
-
-## Start with the noiseless model
-
-We begin with the simplest case:
+means 
 
 $$
-Y(\vx) = f(\vx),
-\qquad f \sim \GP(0,K)
+\Ex[(f(\vx)] = 0, \qquad \cov \bigl ( f(\vt), f(\vx) \bigr ) = K(\vt,\vx), \qquad \text{for all } \vt, \vx
 $$
 
-So for observed data,
+- Multivariate normal theory applied to function values
+
+- All randomness comes from the function itself
+
+## The kernel $K$ controls the properties of $f$
+
+### Example: squared exponential kernel
 
 $$
-\vy =
-\begin{pmatrix}
-Y(\vx_1)\\
-\vdots\\
-Y(\vx_n)
-\end{pmatrix}
-=
-\begin{pmatrix}
-f(\vx_1)\\
-\vdots\\
-f(\vx_n)
-\end{pmatrix}
-$$
-
-and therefore
-
-$$
-\vy \sim \Norm(\vzero,\mK)
-$$
-
-::: {.fragment}
-All randomness comes from the function itself.
-:::
-
-## Interpreting the kernel $K$
-
-The kernel
-
-$$
-K(\vx,\vx')
-$$
-
-controls how function values relate.
-
-::: {.fragment}
-Interpretation:
-
-- if $\vx$ and $\vx'$ are close, then $f(\vx)$ and $f(\vx')$ are strongly correlated
-- if far apart, correlation is weaker
-:::
-
-::: {.fragment}
-So $K$ determines:
-
-- smoothness
-- scale
-- how quickly dependence decays
-:::
-
-::: {.fragment}
-👉 The kernel plays the role of a covariance matrix for functions.
-:::
-
-## Example: squared exponential kernel
-
-A standard choice is
-
-$$
-K(\vx,\vx')
+K(\vt,\vx)
 =
 \tau^2 \exp\!\left(
--\frac{\|\vx-\vx'\|^2}{2\ell^2}
+-\frac{\|\vt-\vx\|^2}{2\ell^2}
 \right)
 $$
 
-::: {.fragment}
-Parameters:
 
 - $\tau^2$: vertical scale
-- $\ell$: length scale
-:::
+- $\ell$: length scale:  small $\ell$ → rapidly varying functions, large $\ell$ → smoother functions
 
-::: {.fragment}
-Interpretation:
+### Interpreting the kernel $K$
 
-- small $\ell$ → rapidly varying functions
-- large $\ell$ → smoother functions
-:::
+$K(\vt,\vx)$ controls how function values relate at different inputs $\vt$ and $\vx$.
+
+- if $\vt$ and $\vx$ are close, then $f(\vt)$ and $f(\vx)$ are strongly correlated
+
+$K$ determines
+
+- smoothness
+- scale
 
 
-## Prediction in the noiseless case
+## Prediction in the noiseless, zero mean case
 
-We want to predict $f(\vx_*)$.
-
-Jointly,
+We want to predict $f(\vx_*)$ from observed data $\vY = (Y_1, \dots, Y_n)^\top = \bigl(f(\vx_1), \dots, f(\vx_n)\bigr)^\top$ 
 
 $$
 \begin{pmatrix}
-\vy\\
+\vY\\
 f(\vx_*)
 \end{pmatrix}
 \sim
@@ -209,49 +129,61 @@ K(\vx_1,\vx_*)\\
 \vdots\\
 K(\vx_n,\vx_*)
 \end{pmatrix}
+\qquad 
+\mK  = \begin{pmatrix} K(\vx_1,\vx_1) & \cdots & K(\vx_1,\vx_n)\\ \vdots & \ddots & \vdots\\ K(\vx_n,\vx_1) & \cdots & K(\vx_n,\vx_n) \end{pmatrix}
 $$
 
 ::: {.fragment}
 Conditioning gives
 
 $$
-f(\vx_*) \mid \vy
+\Ex[f(\vx_*) \mid \vY]
 =
-\vk_*^\top \mK^{-1} \vy
+\vk_*^\top \mK^{-1} \vY, \qquad \var \bigl(f(\vx_*) \mid \vY\bigl) = K(\vx_*,\vx_*) - \vk_*^\top \mK^{-1} \vk_*
 $$
-:::
-
-::: {.fragment}
 👉 Prediction is a weighted combination of observed values.
 :::
 
 
+
+
+## Deriving the predictor from the conditional distribution
+We want to find $f(\vx_*) \mid \vY \sim \Norm(\mu_*, \sigma_*^2)$.  Note that the conditional density is
+\begin{align*}
+\varrho_{f(\vx_*) \mid \vY}(y_* \mid \vy) &=   \frac{\varrho_{\vY, f(\vx*)}(\vy, y_*)}{\varrho_{\vY}(\vy)} \\
+\log \bigl(\varrho_{f(\vx_*) \mid \vY}(y_* \mid \vy)\bigr) &= \log \bigl(\varrho_{\vY, f(\vx_*)}(\vy, y_*)\bigr) - C(\text{independent of } y_*) \\
+& = -\frac{1}{2} \begin{pmatrix} \vy &  y_* \end{pmatrix} \begin{pmatrix} \mK & \vk_* \\ \vk_*^\top & K(\vx_*,\vx_*) \end{pmatrix}^{-1} \begin{pmatrix} \vy \\ y_* \end{pmatrix} + C'(\text{indepndent of } y_*) 
+\end{align*}
+
+Let $s_*^2 = K(\vx_*,\vx_*) - \vk_*^\top \mK^{-1}\vk_*$, and note that 
+$$\begin{pmatrix} \mK & \vk_* \\ \vk_*^\top & K(\vx_*,\vx_*) \end{pmatrix}^{-1}
+= \begin{pmatrix} \mK^{-1} + \mK^{-1} \vk_* s_*^{-2} \vk_*^\top \mK^{-1} & -\mK^{-1} \vk_* s_*^{-2} \\ -s_*^{-2} \vk_*^\top \mK^{-1} & s_*^{-2}  \end{pmatrix}
+$$
+\begin{align*}
+\text{So} \qquad \log \bigl(\varrho_{f(\vx_*) \mid \vY}(y_* \mid \vy)\bigr) 
+& = -\frac{1}{2} \left[ y_*^2 s_*^{-2} - 2 y_* s_*^{-2}\vk_*^\top \mK^{-1} \vy \right] + C''(\text{independent of } y_*) \\
+& = -\frac{1}{2} \left[ \bigl(y_* - \vk_*^\top \mK^{-1} \vy\bigr)^2 s_*^{-2} \right] + C'''(\text{independent of } y_*)
+\end{align*}
+Read off the mean and variance from this expression
+
+
 ## Interpretation of the predictor
 
-The predictor
+Predictor (no noise yet) in terms of data is a *data-adaptive interpolant*
 
 $$
-\vk_*^\top \mK^{-1} \vy
+\Ex[f(x_*) \mid \vy] = \vk_*^\top \mK^{-1} \vy
 $$
 
-has a key interpretation:
 
-::: {.fragment}
 - weights depend on similarity via $K$
 - nearby points matter more
 - far points matter less
-:::
 
-::: {.fragment}
-This is a **data-adaptive smoother**.
-:::
-
-::: {.fragment}
-Compare:
+Contrast:
 
 - linear model → global coefficients $\vbeta$
-- GP → local weighting determined by $K$
-:::
+- Gaussian process → local weighting determined by $K$
 
 
 ## Adding noise back in
@@ -261,59 +193,91 @@ Now return to
 $$
 Y(\vx) = f(\vx) + \varepsilon(\vx),
 \qquad
-\varepsilon(\vx) \sim \Norm(0,\sigma^2)
-$$
-
-Then
-
-$$
-\vy \sim \Norm(\vzero,\mK + \sigma^2 \mI)
-$$
-
-::: {.fragment}
-The noise adds a diagonal term to the covariance.
-:::
-
-::: {.fragment}
-Prediction becomes
-
-$$
-f(\vx_*) \mid \vy
-=
-\vk_*^\top (\mK+\sigma^2\mI)^{-1} \vy
-$$
-:::
-
-
-## Adding noise back in
-
-Now return to
-
-$$
-Y(\vx) = f(\vx) + \varepsilon(\vx),
+\varepsilon(\vx) \sim \Norm(0,\sigma^2),
 \qquad
-\varepsilon(\vx) \sim \Norm(0,\sigma^2)
+\varepsilon(\vx) \text{ independent of } f
 $$
 
 Then
 
 $$
-\vy \sim \Norm(\vzero,\mK + \sigma^2 \mI)
+\vY =
+\begin{pmatrix}
+Y(\vx_1)\\
+\vdots\\
+Y(\vx_n)
+\end{pmatrix}
+\sim
+\Norm(\vzero,\mK + \sigma^2 \mI)
 $$
 
-::: {.fragment}
-The noise adds a diagonal term to the covariance.
-:::
-
-::: {.fragment}
-Prediction becomes
+and
 
 $$
-f(\vx_*) \mid \vy
+\cov\bigl(\vY, f(\vx_*)\bigr)
 =
-\vk_*^\top (\mK+\sigma^2\mI)^{-1} \vy
+\cov\bigl(\vY, f(\vx_*)\bigr)
+=
+\vk_*,
+\qquad
+\var\bigl(f(\vx_*)\bigr)=K(\vx_*,\vx_*)
 $$
-:::
+
+So the joint distribution is
+
+$$
+\begin{pmatrix}
+\vY\\
+f(\vx_*)
+\end{pmatrix}
+\sim
+\Norm\!\left(
+\vzero,
+\begin{pmatrix}
+\mK+\sigma^2\mI & \vk_* \\
+\vk_*^\top & K(\vx_*,\vx_*)
+\end{pmatrix}
+\right)
+$$
+
+---
+
+Conditioning gives
+
+$$
+\Ex\bigl[f(\vx_*) \mid \vy\bigr]
+=
+\vk_*^\top (\mK+\sigma^2\mI)^{-1}\vy
+$$
+
+and
+
+$$
+\var\bigl(f(\vx_*) \mid \vy\bigr)
+=
+K(\vx_*,\vx_*) - \vk_*^\top (\mK+\sigma^2\mI)^{-1}\vk_*
+$$
+
+The noise inflates the covariance of the observed data from $\mK$ to $\mK+\sigma^2\mI$.
+
+
+## Interpretation
+
+- $\Ex\bigl[f(\vx_*) \mid \vy\bigr]
+  =
+  \vk_*^\top (\mK+\sigma^2\mI)^{-1}\vy$
+  - Still a weighted average of the observed responses
+
+  - No longer an interpolant: the noise means we don't trust the data as much
+
+- $\var\bigl(f(\vx_*) \mid \vy\bigr)
+  =
+  K(\vx_*,\vx_*) - \vk_*^\top (\mK+\sigma^2\mI)^{-1}\vk_*$
+  - Larger than in the noiseless case
+  
+  - As $\sigma^2$ increases, the data are trusted less
+
+
 
 ## Big contrast with earlier models
 
@@ -341,47 +305,6 @@ $$
 👉 Modeling moves from formulas to covariance structure.
 :::
 
-## Connection to kernel ridge regression
-
-From the noisy GP model:
-
-$$
-\vy \sim \Norm(\vzero, \mK + \sigma^2 \mI)
-$$
-
-the predictor is
-
-$$
-\hat f(\vx_*)
-=
-\vk_*^\top (\mK + \sigma^2 \mI)^{-1} \vy
-$$
-
-::: {.fragment}
-This has the same form as **kernel ridge regression**:
-
-$$
-\hat f(\vx)
-=
-\sum_{i=1}^n \alpha_i K(\vx_i,\vx),
-\qquad
-\valpha = (\mK + \lambda \mI)^{-1}\vy
-$$
-:::
-
-::: {.fragment}
-So:
-
-- GP regression = kernel ridge regression  
-- with $\lambda = \sigma^2$
-:::
-
-::: {.fragment}
-👉 Same estimator, different interpretation:
-
-- GP: probabilistic model  
-- KRR: optimization problem
-:::
 
 ## Kernel ridge regression viewpoint
 
