@@ -185,6 +185,158 @@ Contrast:
 - linear model → global coefficients $\vbeta$
 - Gaussian process → local weighting determined by $K$
 
+## Credible intervals for $f(\vx_*)$
+
+From the conditional distribution,
+
+$$
+f(\vx_*) \mid \vY \sim \Norm\!\bigl(\mu_*(\vx_*),\, \sigma_*^2(\vx_*)\bigr)
+$$
+
+where
+
+$$
+\mu_*(\vx_*) = \vk_*^\top \mK^{-1} \vY,
+\qquad
+\sigma_*^2(\vx_*) = K(\vx_*,\vx_*) - \vk_*^\top \mK^{-1} \vk_*
+$$
+
+---
+
+## $(1-\alpha)$ credible interval
+
+$$
+f(\vx_*) \in
+\mu_*(\vx_*)
+\pm
+z_{\alpha/2}\,\sigma_*(\vx_*)
+\qquad \text{with probability } 1-\alpha
+$$
+
+---
+
+## Interpretation
+
+- uncertainty depends on geometry of inputs
+- near observed data → small variance  
+- far from data → large variance  
+
+👉 Gaussian processes give uncertainty quantification automatically
+
+---
+
+## Kernel parameters (hyperparameters)
+
+The kernel typically depends on parameters:
+
+- scale: $\tau^2$
+- length scale: $\ell$
+- (later) smoothness: $\nu$
+
+Example (squared exponential):
+
+$$
+K(\vt,\vx)
+=
+\tau^2 \exp\!\left(-\frac{\|\vt-\vx\|^2}{2\ell^2}\right)
+$$
+
+---
+
+## How do we choose these parameters?
+
+Treat them as unknown:
+
+$$
+\theta = (\tau^2, \ell, \dots)
+$$
+
+and use the distribution of the data
+
+$$
+\vY \sim \Norm(\vzero, \mK_\theta)
+$$
+
+---
+
+## Log marginal likelihood
+
+$$
+\log p(\vY \mid \theta)
+=
+-\tfrac{1}{2} \vY^\top \mK_\theta^{-1} \vY
+-\tfrac{1}{2} \log |\mK_\theta|
+-\tfrac{n}{2} \log(2\pi)
+$$
+
+---
+
+## Empirical Bayes (maximum likelihood)
+
+$$
+\hat{\theta}
+=
+\arg\max_\theta \log p(\vY \mid \theta)
+$$
+
+---
+
+## Interpretation of the objective
+
+Balances:
+
+- data fit:
+  $$
+  \vY^\top \mK^{-1} \vY
+  $$
+
+- complexity penalty:
+  $$
+  \log |\mK|
+  $$
+
+👉 automatic tradeoff between overfitting and smoothness
+
+---
+
+## Beyond squared exponential: Matérn kernels
+
+A flexible family controlling smoothness:
+
+$$
+K_\nu(r)
+=
+\tau^2
+\frac{2^{1-\nu}}{\Gamma(\nu)}
+\left(\frac{\sqrt{2\nu}r}{\ell}\right)^\nu
+K_\nu\!\left(\frac{\sqrt{2\nu}r}{\ell}\right),
+\qquad r = \|\vt-\vx\|
+$$
+
+---
+
+## Special cases and interpretation
+
+- $\nu = \tfrac{1}{2}$ → exponential (rough paths)  
+- $\nu \to \infty$ → squared exponential (very smooth)  
+
+- smaller $\nu$ → rougher functions  
+- larger $\nu$ → smoother functions  
+
+👉 kernel choice encodes assumptions about the function
+
+---
+
+## Key takeaway before adding noise
+
+- GP gives:
+  - predictions
+  - uncertainty
+  - parameter estimation
+
+- all from multivariate normal theory
+
+👉 Next: incorporate observation noise
 
 ## Adding noise back in
 
