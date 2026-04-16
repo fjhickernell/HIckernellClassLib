@@ -19,7 +19,7 @@
 - Explanatory variables, $\vx \in \reals^d$ like OLS
 - Response data: $Y_i \in \{0,1\}$
 
-- Define $p_i = \Prob(Y_i = 1 \mid \vx_i)$, so $Y_i \sim \text{Bernoulli}(p_i)$
+- Define $p_i = \Prob(Y_i = 1 \mid \vx_i)$, so $Y_i \sim \Bern(p_i)$
 
 - Need to model $p_i$ with a [nonlinear]{.alert} transformation that maps $\mathbb{R} \to (0,1)$
 
@@ -171,7 +171,7 @@ plt.show()
       \left(\mX^\top \mW^{(t)} \mX\right)^{-1}
       \mX^\top (\vy-\vp^{(t)})
       $
-- $\hvbeta= \lim_{t\to\infty} \vbeta^{(t)}$ and $\hp_i = \dfrac{1}{1+e^{-\vx_i^\top \hvbeta}}$
+- $\displaystyle \hvbeta= \lim_{t\to\infty} \vbeta^{(t)}$ and $\hp_i = \dfrac{1}{1+e^{-\vx_i^\top \hvbeta}}$
 
 ## Inference
 
