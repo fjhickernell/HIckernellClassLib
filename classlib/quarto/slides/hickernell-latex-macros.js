@@ -265,6 +265,7 @@
         mone: "{\\mathsf{1}}",
 
         htheta: "{\\widehat{\\theta}}",
+        hvtheta: "{\\widehat{\\boldsymbol{\\theta}}}",
         hTheta: "{\\widehat{\\Theta}}",
         hbeta:  "{\\widehat{\\beta}}",
         hvbeta: "{\\widehat{\\boldsymbol{\\beta}}}",
@@ -283,6 +284,7 @@
         hvveps: "{\\widehat{\\boldsymbol{\\varepsilon}}}",
 
         ct: "{\\mathcal{T}}",
+        ck: "{\\mathcal{K}}",
         cf: "{\\mathcal{F}}",
         cc: "{\\mathcal{C}}",
         cx: "{\\mathcal{X}}",

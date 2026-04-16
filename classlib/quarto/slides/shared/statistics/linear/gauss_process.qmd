@@ -11,7 +11,7 @@ So far,
 - [Nonlinear regression]{.alert} with a nonlinear mean function: $\Ex(Y \mid \vx) = \mu(\vx) = f(\vx; \vbeta)$, where $f$ is a [known]{.alert} nonlinear function of $\vx$ and $\vbeta$ is a vector of unknown parameters
 
 ::: {.fragment}
-[Gaussian process regression]{.alert} takes a different point of view ([lose the $\vbeta$]{.alert} and place a [probability model on $f$]{.alert} directly):
+[Gaussian process regression]{.alert}, also known as kriging, takes a different point of view ([lose the $\vbeta$]{.alert} and place a [probability model on $f$]{.alert} directly):
 
 $$
 Y(\vx) = f(\vx) + \varepsilon(\vx),
@@ -185,25 +185,24 @@ Contrast:
 - linear model → global coefficients $\vbeta$
 - Gaussian process → local weighting determined by $K$
 
+$\exstar$ Show that $\Ex[f(x_i) \mid \vy] = f(\vx_i)$, i.e,. the predictor interpolates the data
+
+$\exstar$ What is $\sigma_*^2$ for $\vx_* = \vx_i$?  What does this say about the uncertainty at observed data points?
+
+$\exstar$ Show that the kernel $K$ and the kernel $47 K$ give the same predictor, but different variances
+
 ## Credible intervals for $f(\vx_*)$
 
 From the conditional distribution,
 
-$$
-f(\vx_*) \mid \vY \sim \Norm\!\bigl(\mu_*(\vx_*),\, \sigma_*^2(\vx_*)\bigr)
-$$
-
-where
-
-$$
+\begin{multline*}
+f(\vx_*) \mid \vY \sim \Norm\!\bigl(\mu_*(\vx_*),\, \sigma_*^2(\vx_*)\bigr), \\ \text{where }
 \mu_*(\vx_*) = \vk_*^\top \mK^{-1} \vY,
-\qquad
+\quad
 \sigma_*^2(\vx_*) = K(\vx_*,\vx_*) - \vk_*^\top \mK^{-1} \vk_*
-$$
+\end{multline*}
 
----
-
-## $(1-\alpha)$ credible interval
+### $(1-\alpha)$ credible interval
 
 $$
 f(\vx_*) \in
@@ -213,9 +212,7 @@ z_{\alpha/2}\,\sigma_*(\vx_*)
 \qquad \text{with probability } 1-\alpha
 $$
 
----
-
-## Interpretation
+### Interpretation
 
 - uncertainty depends on geometry of inputs
 - near observed data → small variance  
@@ -223,11 +220,10 @@ $$
 
 👉 Gaussian processes give uncertainty quantification automatically
 
----
 
 ## Kernel parameters (hyperparameters)
 
-The kernel typically depends on parameters:
+[But wait!]{.alert} We haven't said how to choose the kernel $K$ or its parameters:
 
 - scale: $\tau^2$
 - length scale: $\ell$
@@ -241,67 +237,82 @@ K(\vt,\vx)
 \tau^2 \exp\!\left(-\frac{\|\vt-\vx\|^2}{2\ell^2}\right)
 $$
 
----
+### How do we choose these parameters?
 
-## How do we choose these parameters?
+Treat them as unknown and infer them from the data
 
-Treat them as unknown:
+- $\vtheta = (\tau^2, \ell, \dots)$
 
-$$
-\theta = (\tau^2, \ell, \dots)
-$$
+- $\vY \sim \Norm(\vzero, \mK_\vtheta)$
 
-and use the distribution of the data
+## Empirical Bayes (maximum likelihood) approach
 
-$$
-\vY \sim \Norm(\vzero, \mK_\theta)
-$$
-
----
-
-## Log marginal likelihood
+### Log marginal likelihood
 
 $$
-\log p(\vY \mid \theta)
+\log \varrho(\vY \mid \vtheta)
 =
--\tfrac{1}{2} \vY^\top \mK_\theta^{-1} \vY
--\tfrac{1}{2} \log |\mK_\theta|
--\tfrac{n}{2} \log(2\pi)
+-\frac{1}{2} \vY^\top \mK_{\vtheta}^{-1} \vY
+-\frac{1}{2} \log \bigl(\det(\mK_{\vtheta})\bigr)
+-\frac{n}{2} \log(2\pi)
 $$
 
----
 
-## Empirical Bayes (maximum likelihood)
+### Empirical Bayes (maximum likelihood)
 
 $$
-\hat{\theta}
+\hvtheta
 =
-\arg\max_\theta \log p(\vY \mid \theta)
+\argmax_{\vtheta} \log \varrho(\vY \mid \vtheta) \qquad \text{solved by numerical optimization, e.g., gradient ascent}
 $$
 
----
+### Objective balances fit and complexity
 
-## Interpretation of the objective
 
-Balances:
+- data fit: $\vY^\top \mK_{\vtheta}^{-1} \vY$
 
-- data fit:
-  $$
-  \vY^\top \mK^{-1} \vY
-  $$
-
-- complexity penalty:
-  $$
-  \log |\mK|
-  $$
+- complexity penalty: $\log \bigl(\det(\mK_{\vtheta})\bigr)$
 
 👉 automatic tradeoff between overfitting and smoothness
 
----
+## Beyond squared exponential: Matérn kernels
+
+Many, many kernels to choose
+
+Matérn family, which includes the squared exponential as a special case, has an additional parameter $\nu$ controlling smoothness:
+
+$$
+K(\vt,\vx) = K_\nu(\lVert\vt-\vx\Vert), \qquad
+K_\nu(r)
+=
+\tau^2
+\frac{2^{1-\nu}}{\Gamma(\nu)}
+\left(\frac{\sqrt{2\nu}r}{\ell}\right)^\nu
+\ck_\nu\!\left(\frac{\sqrt{2\nu}r}{\ell}\right)
+$$
+
+where $\ck_\nu$ is a modified Bessel function of the second kind
+
+### Special cases and interpretation
+
+- $\nu = 1/2$: $K(r) = \tau^2 \exp\!\left(-r/\ell\right) \quad$ (exponential, rough paths)
+
+- $\nu = 3/2$: $K(r) = \tau^2 \left(1 + \sqrt{3} r/\ell \right)
+  \exp\!\left(-\sqrt{3} r/\ell\right)$
+  (once differentiable, smoother)
+
+- $\nu \to \infty$ → squared exponential (very smooth)
+
+- larger $\nu$ → smoother functions  
+
+👉 kernel choice encodes assumptions about the function
+
 
 ## Beyond squared exponential: Matérn kernels
 
-A flexible family controlling smoothness:
+Many, many kernels to choose
+
+Matérn family, which includes the squared exponential as a special case, has an additional parameter $\nu$ controlling smoothness:
 
 $$
 K_\nu(r)
@@ -312,12 +323,11 @@ K_\nu(r)
 K_\nu\!\left(\frac{\sqrt{2\nu}r}{\ell}\right),
 \qquad r = \|\vt-\vx\|
 $$
+where $K_\nu$ is a modified Bessel function of the second kind
 
----
+### Special cases and interpretation
 
-## Special cases and interpretation
-
-- $\nu = \tfrac{1}{2}$ → exponential (rough paths)  
+- $\nu = \frac{1}{2}$ → exponential (rough paths)  
 - $\nu \to \infty$ → squared exponential (very smooth)  
 
 - smaller $\nu$ → rougher functions  
