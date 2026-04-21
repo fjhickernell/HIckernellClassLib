@@ -295,9 +295,9 @@ where $\ck_\nu$ is a modified Bessel function of the second kind
 
 ### Special cases and interpretation
 
-- $\nu = 1/2$: $K(r) = \tau^2 \exp\!\left(-r/\ell\right) \quad$ (exponential, rough paths)
+- $K_{1/2}(r) = \tau^2 \exp\!\left(-r/\ell\right) \quad$ (exponential, rough paths)
 
-- $\nu = 3/2$: $K(r) = \tau^2 \left(1 + \sqrt{3} r/\ell \right)
+- $K_{3/2}(r) = \tau^2 \left(1 + \sqrt{3} r/\ell \right)
   \exp\!\left(-\sqrt{3} r/\ell\right)$
   (once differentiable, smoother)
 
