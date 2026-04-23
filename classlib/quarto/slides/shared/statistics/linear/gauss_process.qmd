@@ -145,8 +145,6 @@ $$
 :::
 
 
-
-
 ## Deriving the predictor from the conditional distribution
 We want to find $f(\vx_*) \mid \vY \sim \Norm(\mu_*, \sigma_*^2)$.  Note that the conditional density is
 \begin{align*}
@@ -360,6 +358,330 @@ where $\ck_\nu$ is a modified Bessel function of the second kind
 
 👉 kernel choice encodes assumptions about the function
 
+---
+
+```{python}
+#| echo: false
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# ============================================================
+# 1. Kernel functions in 1D
+# ============================================================
+
+def matern_half(r, tau2=1.0, ell=0.2):
+    """
+    Matérn kernel with nu = 1/2:
+        K(r) = tau^2 exp(-r / ell)
+    """
+    r = np.asarray(r)
+    return tau2 * np.exp(-r / ell)
+
+
+def matern_three_halves(r, tau2=1.0, ell=0.2):
+    """
+    Matérn kernel with nu = 3/2:
+        K(r) = tau^2 (1 + sqrt(3) r / ell) exp(-sqrt(3) r / ell)
+    """
+    r = np.asarray(r)
+    return tau2 * (1 + np.sqrt(3) * r / ell) * np.exp(-np.sqrt(3) * r / ell)
+
+
+def squared_exponential(r, tau2=1.0, ell=0.2):
+    """
+    Squared exponential kernel, the Matérn limit as nu -> infinity:
+        K(r) = tau^2 exp(-r^2 / (2 ell^2))
+    """
+    r = np.asarray(r)
+    return tau2 * np.exp(-(r**2) / (2 * ell**2))
+
+
+def covariance_matrix(x, kernel, tau2=1.0, ell=0.2, nugget=0.0):
+    """
+    Build covariance matrix K_ij = kernel(|x_i - x_j|).
+    """
+    x = np.asarray(x)
+    r = np.abs(x[:, None] - x[None, :])
+    K = kernel(r, tau2=tau2, ell=ell)
+    if nugget > 0:
+        K = K + nugget * np.eye(len(x))
+    return K
+
+
+# ============================================================
+# 2. Plot kernel shape centered at 0
+# ============================================================
+
+tau2 = 1.0
+ell = 0.2
+
+h = np.linspace(-1.0, 1.0, 800)
+
+k_matern_half = matern_half(np.abs(h), tau2=tau2, ell=ell)
+k_matern_three_halves = matern_three_halves(np.abs(h), tau2=tau2, ell=ell)
+k_se = squared_exponential(np.abs(h), tau2=tau2, ell=ell)
+
+plt.figure(figsize=(15, 9))
+plt.plot(h, k_matern_half, label=r"Matérn, $\nu=1/2$", linewidth=2)
+plt.plot(h, k_matern_three_halves, label=r"Matérn, $\nu=3/2$", linewidth=2)
+plt.plot(h, k_se, label=r"Limit $\nu\to\infty$ (squared exponential)", linewidth=2)
+plt.axvline(0, linewidth=1, alpha=0.5)
+plt.xlabel(r"$x$")
+plt.ylabel(r"$K_{\nu}(x,0)$")
+plt.title("Matern kernel for different smoothness parameters")
+plt.legend(loc="upper right")
+plt.tight_layout()
+plt.show()
+
+```
+
+---
+
+```{python}
+#| echo: false
+
+# ============================================================
+# 3. Sample locations
+# ============================================================
+
+# Evenly spaced points
+x_equal = np.linspace(0, 1, 12)
+
+# More points on the left, fewer on the right
+x_unequal = np.array([0.00, 0.05, 0.09, 0.13, 0.18, 0.24, 0.31, 0.40, 0.55, 0.72, 0.88, 1.00])
+
+
+# ============================================================
+# 4. Covariance matrices
+# ============================================================
+
+tau2 = 1.0
+ell = 0.15
+
+K_equal = covariance_matrix(x_equal, matern_three_halves, tau2=tau2, ell=ell, nugget=1e-10)
+K_unequal = covariance_matrix(x_unequal, matern_three_halves, tau2=tau2, ell=ell, nugget=1e-10)
+
+Q_equal = np.linalg.inv(K_equal)
+Q_unequal = np.linalg.inv(K_unequal)
+
+
+import matplotlib.pyplot as plt
+
+fig = plt.figure(figsize=(12, 10))
+gs = fig.add_gridspec(2, 3, width_ratios=[1, 1, 0.05])  # last column = colorbars
+
+# Axes
+ax_K_eq = fig.add_subplot(gs[0, 0])
+ax_K_uneq = fig.add_subplot(gs[0, 1])
+ax_Q_eq = fig.add_subplot(gs[1, 0])
+ax_Q_uneq = fig.add_subplot(gs[1, 1])
+
+# Colorbar axes
+cax_K = fig.add_subplot(gs[0, 2])
+cax_Q = fig.add_subplot(gs[1, 2])
+
+
+# ============================================================
+# Helper (square + clean)
+# ============================================================
+
+def heatmap(ax, M, x, title, cmap="viridis", vmin=None, vmax=None):
+    x = np.asarray(x)
+    n = len(x)
+
+    # Build cell edges from point locations
+    edges = np.empty(n + 1)
+    edges[1:-1] = 0.5 * (x[:-1] + x[1:])
+    edges[0] = x[0] - 0.5 * (x[1] - x[0])
+    edges[-1] = x[-1] + 0.5 * (x[-1] - x[-2])
+
+    im = ax.pcolormesh(
+        edges,
+        edges,
+        M,
+        cmap=cmap,
+        shading="flat",
+        vmin=vmin,
+        vmax=vmax
+    )
+
+    ax.set_title(title)
+    ax.set_xlabel(r"$x_j$")
+    ax.set_ylabel(r"$x_i$")
+
+    ax.set_xticks(x)
+    ax.set_yticks(x[::-1])
+
+    ax.set_xticklabels([f"{xi:.2f}" for xi in x], rotation=45, ha="right", fontsize=8)
+    ax.set_yticklabels([f"{xi:.2f}" for xi in x[::-1]], fontsize=8)
+
+    ax.invert_yaxis()  # <-- this is the clean way
+
+    return im
+
+# ============================================================
+# Match color scales across each row
+# ============================================================
+
+K_vmin = 0.0
+K_vmax = max(K_equal.max(), K_unequal.max())
+
+Q_vmax = max(
+    np.percentile(np.abs(Q_equal), 98),
+    np.percentile(np.abs(Q_unequal), 98)
+)
+
+
+# ============================================================
+# Plot
+# ============================================================
+
+im_K1 = heatmap(ax_K_eq, K_equal, x_equal, r"$K_{ij}=K(x_i,x_j)$ (evenly spaced)", vmin=K_vmin, vmax=K_vmax)
+im_K2 = heatmap(ax_K_uneq, K_unequal, x_unequal, r"$K_{ij}=K(x_i,x_j)$ (nonuniform)", vmin=K_vmin, vmax=K_vmax)
+
+im_Q1 = heatmap(ax_Q_eq, Q_equal, x_equal, r"$Q_{ij}$ with $\mathsf{Q}=\mathsf{K}^{-1}$ (evenly spaced)", cmap="RdBu_r", vmin=-Q_vmax, vmax=Q_vmax)
+im_Q2 = heatmap(ax_Q_uneq, Q_unequal, x_unequal, r"$Q_{ij}$ with $\mathsf{Q}=\mathsf{K}^{-1}$ (nonuniform)", cmap="RdBu_r", vmin=-Q_vmax, vmax=Q_vmax)
+
+
+# ============================================================
+# Colorbars (no overlap)
+# ============================================================
+
+fig.colorbar(im_K1, cax=cax_K)
+fig.colorbar(im_Q1, cax=cax_Q)
+
+
+# ============================================================
+# Final polish
+# ============================================================
+
+# Remove redundant y-labels on right column
+ax_K_uneq.set_ylabel("")
+ax_Q_uneq.set_ylabel("")
+
+plt.tight_layout()
+plt.show()
+```
+
+## Example
+
+```{python}
+#| echo: false
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# ============================================================
+# Cross-covariance using your existing pattern
+# ============================================================
+
+def covariance_cross(x1, x2, kernel, tau2=1.0, ell=0.2):
+    x1 = np.asarray(x1)
+    x2 = np.asarray(x2)
+    r = np.abs(x1[:, None] - x2[None, :])
+    return kernel(r, tau2=tau2, ell=ell)
+
+
+# ============================================================
+# GP posterior (reuses covariance_matrix)
+# ============================================================
+
+def gp_posterior(x_train, y_train, x_test, kernel, tau2=1.0, ell=0.2, sigma2=1e-8):
+
+    K = covariance_matrix(x_train, kernel, tau2=tau2, ell=ell, nugget=sigma2)
+    Ks = covariance_cross(x_train, x_test, kernel, tau2=tau2, ell=ell)
+    Kss = covariance_matrix(x_test, kernel, tau2=tau2, ell=ell)
+
+    K_inv = np.linalg.inv(K)
+
+    mean = Ks.T @ K_inv @ y_train
+    cov = Kss - Ks.T @ K_inv @ Ks
+    var = np.maximum(np.diag(cov), 0.0)
+
+    return mean, var
+
+
+# ============================================================
+# Function and data
+# ============================================================
+
+def f_true(x):
+    return 0.7 * np.sin(2*np.pi*x) + 0.3 * np.cos(5*np.pi*x)
+
+x_train = np.array([0.00, 0.08, 0.15, 0.23, 0.32, 0.45, 0.58, 0.72, 0.84, 0.93, 1.00])
+y_train = f_true(x_train)
+
+x_grid = np.linspace(0, 1, 500)
+y_true = f_true(x_grid)
+
+
+# ============================================================
+# Same kernel, different length scales
+# ============================================================
+
+tau2 = 1.0
+sigma2 = 1e-8
+
+ell_small = 0.08
+ell_large = 0.30
+
+mean_small, var_small = gp_posterior(
+    x_train, y_train, x_grid,
+    matern_three_halves,
+    tau2=tau2,
+    ell=ell_small,
+    sigma2=sigma2
+)
+
+mean_large, var_large = gp_posterior(
+    x_train, y_train, x_grid,
+    matern_three_halves,
+    tau2=tau2,
+    ell=ell_large,
+    sigma2=sigma2
+)
+
+sd_small = np.sqrt(var_small)
+sd_large = np.sqrt(var_large)
+
+
+# ============================================================
+# Plot
+# ============================================================
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5), sharey=True)
+
+# small ell
+axes[0].plot(x_grid, y_true, "-", linewidth=2, label="true")
+axes[0].plot(x_grid, mean_small, '--', linewidth=2, label="posterior mean")
+axes[0].fill_between(x_grid,
+                     mean_small - 1.96*sd_small,
+                     mean_small + 1.96*sd_small,
+                     alpha=0.25)
+axes[0].plot(x_train, y_train, "o", markersize=6)
+axes[0].set_title(r"Matérn $\nu=3/2$, small $\ell$")
+axes[0].set_xlabel(r"$x$")
+axes[0].set_ylabel(r"$f(x)$")
+axes[0].legend(loc="upper right")
+
+# large ell
+axes[1].plot(x_grid, y_true, "-", linewidth=2, label="true")
+axes[1].plot(x_grid, mean_large, '--', linewidth=2, label="posterior mean")
+axes[1].fill_between(x_grid,
+                     mean_large - 1.96*sd_large,
+                     mean_large + 1.96*sd_large,
+                     alpha=0.25)
+axes[1].plot(x_train, y_train, "o", markersize=6)
+axes[1].set_title(r"Matérn $\nu=3/2$, large $\ell$")
+axes[1].set_xlabel(r"$x$")
+axes[1].legend(loc="upper right")
+
+plt.tight_layout()
+plt.show()
+```
 
 ## Key takeaway before adding noise
 
@@ -400,8 +722,6 @@ $$
 and
 
 $$
-\cov\bigl(\vY, f(\vx_*)\bigr)
-=
 \cov\bigl(\vY, f(\vx_*)\bigr)
 =
 \vk_*,
@@ -446,24 +766,145 @@ $$
 
 The noise inflates the covariance of the observed data from $\mK$ to $\mK+\sigma^2\mI$.
 
+## Credible interval versus prediction interval
+
+So far, we have the conditional distribution of the latent function value:
+
+$$
+f(\vx_*) \mid \vy
+\sim
+\Norm\!\bigl(\mu_*(\vx_*),\, s_f^2(\vx_*)\bigr)
+$$
+
+where
+
+$$
+\mu_*(\vx_*)
+=
+\vk_*^\top (\mK+\sigma^2\mI)^{-1}\vy,
+\qquad
+s_f^2(\vx_*)
+=
+K(\vx_*,\vx_*) - \vk_*^\top (\mK+\sigma^2\mI)^{-1}\vk_*
+$$
+
+### Credible interval for the latent function
+
+$$
+f(\vx_*)
+\in
+\mu_*(\vx_*)
+\pm
+z_{\alpha/2}\, s_f(\vx_*)
+\qquad \text{with probability } 1-\alpha
+$$
+
+This quantifies uncertainty about the underlying signal $f(\vx_*)$.
+
+---
+
+A future noisy response is
+
+$$
+Y(\vx_*) = f(\vx_*) + \varepsilon(\vx_*),
+\qquad
+\varepsilon(\vx_*) \sim \Norm(0,\sigma^2)
+$$
+
+so
+
+$$
+Y(\vx_*) \mid \vy
+\sim
+\Norm\!\bigl(\mu_*(\vx_*),\, s_f^2(\vx_*) + \sigma^2\bigr)
+$$
+
+### Prediction interval for a future observation
+
+$$
+Y(\vx_*)
+\in
+\mu_*(\vx_*)
+\pm
+z_{\alpha/2}\sqrt{s_f^2(\vx_*)+\sigma^2}
+\qquad \text{with probability } 1-\alpha
+$$
+
+- credible interval: uncertainty about $f(\vx_*)$
+- prediction interval: uncertainty about a new noisy observation
+
+👉 prediction intervals are wider because they include observation noise
+
 
 ## Interpretation
 
 - $\Ex\bigl[f(\vx_*) \mid \vy\bigr]
   =
   \vk_*^\top (\mK+\sigma^2\mI)^{-1}\vy$
-  - Still a weighted average of the observed responses
-
-  - No longer an interpolant: the noise means we don't trust the data as much
+  - still a weighted average of the observed responses
+  - no longer an interpolant: noisy data are not trusted exactly
 
 - $\var\bigl(f(\vx_*) \mid \vy\bigr)
   =
   K(\vx_*,\vx_*) - \vk_*^\top (\mK+\sigma^2\mI)^{-1}\vk_*$
-  - Larger than in the noiseless case
-  
-  - As $\sigma^2$ increases, the data are trusted less
+  - posterior uncertainty about the latent function
+  - smaller near informative data, larger far away
 
+- $\var\bigl(Y(\vx_*) \mid \vy\bigr)
+  =
+  \var\bigl(f(\vx_*) \mid \vy\bigr) + \sigma^2$
+  - uncertainty for a future observation
+  - larger than the credible interval variance by exactly $\sigma^2$
 
+👉 as $\sigma^2$ increases, the data are trusted less and prediction intervals widen
+
+## Empirical Bayes (maximum likelihood) with noise
+
+Now the observed data satisfy
+
+$$
+\vY \sim \Norm(\vzero,\mK_\vtheta + \sigma^2 \mI)
+$$
+
+where the hyperparameters may include
+
+$$
+\vtheta = (\tau^2,\ell,\nu,\sigma^2)
+$$
+
+---
+
+### Log marginal likelihood
+
+$$
+\log \varrho(\vY \mid \vtheta)
+=
+-\frac{1}{2}\vy^\top(\mK_\vtheta+\sigma^2\mI)^{-1}\vy
+-\frac{1}{2}\log\det(\mK_\vtheta+\sigma^2\mI)
+-\frac{n}{2}\log(2\pi)
+$$
+
+### Empirical Bayes estimate
+
+$$
+\widehat{\vtheta}
+=
+\argmax_{\vtheta}\log \varrho(\vY \mid \vtheta)
+$$
+
+computed numerically
+
+- data fit:
+  $$
+  \vy^\top(\mK_\vtheta+\sigma^2\mI)^{-1}\vy
+  $$
+
+- complexity penalty:
+  $$
+  \log\det(\mK_\vtheta+\sigma^2\mI)
+  $$
+
+👉 the marginal likelihood balances fit, smoothness, and noise level
 
 ## Big contrast with earlier models
 
@@ -591,3 +1032,83 @@ All are tied together by the kernel $K$.
 👉 Choice of kernel = choice of model class.
 :::
 
+## Beyond Gaussian processes
+
+The Gaussian assumption is strong:
+
+- fully determined by mean and covariance  
+- light tails  
+- very convenient: closed-form conditioning  
+
+::: {.fragment}
+What if we want heavier tails or robustness to outliers?
+:::
+
+---
+
+### Student-t processes
+
+Replace the multivariate normal with a multivariate $t$:
+
+$$
+\bigl(f(\vx_1),\dots,f(\vx_n)\bigr)
+\sim t_\nu(\vzero,\mK)
+$$
+
+- heavier tails → more robust to outliers  
+- conditioning still possible (but more complicated)  
+
+👉 closest analogue to Gaussian processes
+
+## Other non-Gaussian process ideas
+
+### Scale mixtures of Gaussian processes
+
+$$
+f \mid \lambda \sim \GP(0,\lambda K),
+\quad \lambda \text{ random}
+$$
+
+- induces heavy-tailed behavior  
+- retains much of GP structure  
+
+---
+
+### Stable process models
+
+- allow heavy tails and skewness  
+
+❗ but:
+
+- often no finite variance  
+- covariance/kernel no longer sufficient  
+- conditioning becomes difficult  
+
+👉 much of the GP machinery breaks
+
+---
+
+### Most common approach in practice
+
+Keep the GP prior, change the data model:
+
+$$
+f \sim \GP(0,K),
+\quad Y \mid f \sim \text{non-Gaussian}
+$$
+
+- Bernoulli (classification)  
+- Poisson (counts)  
+- heavy-tailed noise  
+
+👉 inference via approximation (Laplace, VI, MCMC)
+
+---
+
+### Takeaway
+
+- Gaussian processes dominate because:
+  - simple linear algebra  
+  - closed-form conditioning  
+
+👉 beyond Gaussian, we lose this simplicity
