@@ -1,4 +1,4 @@
-# Beyond predictors depending on $\vx^{\top} \vbeta$
+# Beyond predictors depending on $\vx^{\top} \vbeta$ {#gauss_process}
 
 So far,
 
