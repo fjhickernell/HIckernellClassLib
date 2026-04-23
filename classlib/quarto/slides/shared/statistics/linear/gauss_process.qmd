@@ -191,6 +191,59 @@ $\exstar$ What is $\sigma_*^2$ for $\vx_* = \vx_i$?  What does this say about th
 
 $\exstar$ Show that the kernel $K$ and the kernel $47 K$ give the same predictor, but different variances
 
+## Precision matrix viewpoint
+
+Recall the joint distribution
+
+$$
+\vY \sim \Norm(\vzero, \mK),
+\qquad
+\class{alert}{\text{covariance matrix }} \mK = \bigl(K(\vx_i,\vx_j)\bigr)_{i,j=1}^n
+$$
+
+Instead of the covariance $\mK$, consider its inverse
+
+$$
+\mQ = \mK^{-1}
+\quad \class{alert}{\text{(precision matrix)}}
+$$
+
+### Why look at $\mQ$?
+
+- $\mQ$ encodes *conditional (direct) relationships*
+
+- $Q_{ij} = 0$ if and only if $Y_i$ and $Y_j$ are conditionally independent given the other variables
+
+- $\var(Y_i \mid \{Y_k : k \ne i\}) = \displaystyle \frac{1}{Q_{ii}}$
+
+- $\displaystyle \corr(Y_i, Y_j \mid \{Y_k : k \ne i,j\}) = \frac{- Q_{ij}}{\sqrt{Q_{ii}Q_{jj}}}$
+
+---
+
+### Interpretation for GP models
+
+- $\mK$ → similarity / smoothness via kernel  
+- $\mQ$ → local dependence structure  
+
+- Large $Q_{ij}$:
+  - strong *direct* interaction between $Y_i$ and $Y_j$
+
+- Sparse $\mQ$:
+  - “local” models  
+  - connects to Gaussian Markov random fields (GMRFs)
+
+### Computational perspective
+
+Prediction uses $\Ex\bigl(f(\vx_*) \mid \vY\bigr)
+= \vk_*^\top \mK^{-1} \vY
+= \vk_*^\top \mQ \vY$
+
+### Big picture
+
+- Covariance view: *global smoothness*  
+- Precision view: *local structure + computation*  
+
+
 ## Credible intervals for $f(\vx_*)$
 
 From the conditional distribution,
@@ -307,35 +360,6 @@ where $\ck_\nu$ is a modified Bessel function of the second kind
 
 👉 kernel choice encodes assumptions about the function
 
-
-## Beyond squared exponential: Matérn kernels
-
-Many, many kernels to choose
-
-Matérn family, which includes the squared exponential as a special case, has an additional parameter $\nu$ controlling smoothness:
-
-$$
-K_\nu(r)
-=
-\tau^2
-\frac{2^{1-\nu}}{\Gamma(\nu)}
-\left(\frac{\sqrt{2\nu}r}{\ell}\right)^\nu
-K_\nu\!\left(\frac{\sqrt{2\nu}r}{\ell}\right),
-\qquad r = \|\vt-\vx\|
-$$
-where $K_\nu$ is a modified Bessel function of the second kind
-
-### Special cases and interpretation
-
-- $\nu = \frac{1}{2}$ → exponential (rough paths)  
-- $\nu \to \infty$ → squared exponential (very smooth)  
-
-- smaller $\nu$ → rougher functions  
-- larger $\nu$ → smoother functions  
-
-👉 kernel choice encodes assumptions about the function
-
----
 
 ## Key takeaway before adding noise
 
