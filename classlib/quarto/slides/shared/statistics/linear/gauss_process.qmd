@@ -77,6 +77,10 @@ $$
 
 ### Example: squared exponential kernel
 
+::: {.columns}
+
+::: {.column width="50%"}
+
 $$
 K(\vt,\vx)
 =
@@ -85,20 +89,127 @@ K(\vt,\vx)
 \right)
 $$
 
-
 - $\tau^2$: vertical scale
-- $\ell$: length scale:  small $\ell$ → rapidly varying functions, large $\ell$ → smoother functions
+- $\ell$: length scale
+
+  - small $\ell$ → rapidly varying functions, 
+  - large $\ell$ → smoother functions
+
+::: 
+
+::: {.column width="50%"}
+
+```{python}
+#| echo: false
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# ============================================================
+# 1. Kernel functions in 1D
+# ============================================================
+
+def matern_half(r, tau2=1.0, ell=0.2):
+    """
+    Matérn kernel with nu = 1/2:
+        K(r) = tau^2 exp(-r / ell)
+    """
+    r = np.asarray(r)
+    return tau2 * np.exp(-r / ell)
+
+
+def matern_three_halves(r, tau2=1.0, ell=0.2):
+    """
+    Matérn kernel with nu = 3/2:
+        K(r) = tau^2 (1 + sqrt(3) r / ell) exp(-sqrt(3) r / ell)
+    """
+    r = np.asarray(r)
+    return tau2 * (1 + np.sqrt(3) * r / ell) * np.exp(-np.sqrt(3) * r / ell)
+
+
+def squared_exponential(r, tau2=1.0, ell=0.2):
+    """
+    Squared exponential kernel, the Matérn limit as nu -> infinity:
+        K(r) = tau^2 exp(-r^2 / (2 ell^2))
+    """
+    r = np.asarray(r)
+    return tau2 * np.exp(-(r**2) / (2 * ell**2))
+
+
+def covariance_matrix(x, kernel, tau2=1.0, ell=0.2, nugget=0.0):
+    """
+    Build covariance matrix K_ij = kernel(|x_i - x_j|).
+    """
+    x = np.asarray(x)
+    r = np.abs(x[:, None] - x[None, :])
+    K = kernel(r, tau2=tau2, ell=ell)
+    if nugget > 0:
+        K = K + nugget * np.eye(len(x))
+    return K
+
+
+# ============================================================
+# 2. Plot kernel shape centered at 0
+# ============================================================
+
+tau2 = 1.0
+ell = 0.2
+ell_long = 0.5
+
+h = np.linspace(-1.0, 1.0, 800)
+
+k_matern_half = matern_half(np.abs(h), tau2=tau2, ell=ell)
+k_matern_three_halves = matern_three_halves(np.abs(h), tau2=tau2, ell=ell)
+k_se = squared_exponential(np.abs(h), tau2=tau2, ell=ell)
+k_se_long = squared_exponential(np.abs(h), tau2=tau2, ell=ell_long)
+
+plt.figure(figsize=(9, 4.7))
+plt.plot(h, k_se, label=rf"$\ell = {ell: .2f}$", linewidth=2)
+plt.plot(h, k_se_long, label=rf"$\ell = {ell_long: .2f}$", linewidth=2)
+plt.axvline(0, linewidth=1, alpha=0.5)
+plt.xlabel(r"$x$")
+plt.ylabel(r"$K_{\nu}(x,0)$")
+plt.title("Squared exponential kernel w/ different length scales")
+plt.legend(loc="upper right")
+plt.tight_layout()
+plt.show()
+
+```
+
+:::
+
+:::
+
+
 
 ### Interpreting the kernel $K$
 
-$K(\vt,\vx)$ controls how function values relate at different inputs $\vt$ and $\vx$.
+::: {.columns}
 
-- if $\vt$ and $\vx$ are close, then $f(\vt)$ and $f(\vx)$ are strongly correlated
+::: {.column width="75%"}
+
+$K(\vt,\vx)$ controls how function values relate at different inputs $\vt$ and $\vx$
+
+- $\vt$ and $\vx$ close $\implies$ $f(\vt)$ and $f(\vx)$  strongly correlated
+
+
+:::
+
+
+:::  {.column width="25%"}
 
 $K$ determines
 
 - smoothness
 - scale
+- periodicity
+
+
+:::
+
+
+:::
 
 
 ## Prediction in the noiseless, zero mean case
@@ -276,6 +387,10 @@ $$
 
 [But wait!]{.alert} We haven't said how to choose the kernel $K$ or its parameters:
 
+::: {.columns}
+
+::: {.column width="50%"}
+
 - scale: $\tau^2$
 - length scale: $\ell$
 - (later) smoothness: $\nu$
@@ -288,6 +403,28 @@ K(\vt,\vx)
 \tau^2 \exp\!\left(-\frac{\|\vt-\vx\|^2}{2\ell^2}\right)
 $$
 
+:::
+
+::: {.column width="50%"}
+
+```{python}
+#| echo: false
+
+plt.figure(figsize=(9, 4.7))
+plt.plot(h, k_se, label=rf"$\ell = {ell: .2f}$", linewidth=2)
+plt.plot(h, k_se_long, label=rf"$\ell = {ell_long: .2f}$", linewidth=2)
+plt.axvline(0, linewidth=1, alpha=0.5)
+plt.xlabel(r"$x$")
+plt.ylabel(r"$K_{\nu}(x,0)$")
+plt.title("Squared exponential kernel w/ different length scales")
+plt.legend(loc="upper right")
+plt.tight_layout()
+plt.show()
+```
+
+:::
+
+:::
 ### How do we choose these parameters?
 
 Treat them as unknown and infer them from the data
@@ -363,66 +500,6 @@ where $\ck_\nu$ is a modified Bessel function of the second kind
 ```{python}
 #| echo: false
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-
-# ============================================================
-# 1. Kernel functions in 1D
-# ============================================================
-
-def matern_half(r, tau2=1.0, ell=0.2):
-    """
-    Matérn kernel with nu = 1/2:
-        K(r) = tau^2 exp(-r / ell)
-    """
-    r = np.asarray(r)
-    return tau2 * np.exp(-r / ell)
-
-
-def matern_three_halves(r, tau2=1.0, ell=0.2):
-    """
-    Matérn kernel with nu = 3/2:
-        K(r) = tau^2 (1 + sqrt(3) r / ell) exp(-sqrt(3) r / ell)
-    """
-    r = np.asarray(r)
-    return tau2 * (1 + np.sqrt(3) * r / ell) * np.exp(-np.sqrt(3) * r / ell)
-
-
-def squared_exponential(r, tau2=1.0, ell=0.2):
-    """
-    Squared exponential kernel, the Matérn limit as nu -> infinity:
-        K(r) = tau^2 exp(-r^2 / (2 ell^2))
-    """
-    r = np.asarray(r)
-    return tau2 * np.exp(-(r**2) / (2 * ell**2))
-
-
-def covariance_matrix(x, kernel, tau2=1.0, ell=0.2, nugget=0.0):
-    """
-    Build covariance matrix K_ij = kernel(|x_i - x_j|).
-    """
-    x = np.asarray(x)
-    r = np.abs(x[:, None] - x[None, :])
-    K = kernel(r, tau2=tau2, ell=ell)
-    if nugget > 0:
-        K = K + nugget * np.eye(len(x))
-    return K
-
-
-# ============================================================
-# 2. Plot kernel shape centered at 0
-# ============================================================
-
-tau2 = 1.0
-ell = 0.2
-
-h = np.linspace(-1.0, 1.0, 800)
-
-k_matern_half = matern_half(np.abs(h), tau2=tau2, ell=ell)
-k_matern_three_halves = matern_three_halves(np.abs(h), tau2=tau2, ell=ell)
-k_se = squared_exponential(np.abs(h), tau2=tau2, ell=ell)
-
 plt.figure(figsize=(15, 9))
 plt.plot(h, k_matern_half, label=r"Matérn, $\nu=1/2$", linewidth=2)
 plt.plot(h, k_matern_three_halves, label=r"Matérn, $\nu=3/2$", linewidth=2)
@@ -430,7 +507,7 @@ plt.plot(h, k_se, label=r"Limit $\nu\to\infty$ (squared exponential)", linewidth
 plt.axvline(0, linewidth=1, alpha=0.5)
 plt.xlabel(r"$x$")
 plt.ylabel(r"$K_{\nu}(x,0)$")
-plt.title("Matern kernel for different smoothness parameters")
+plt.title("Matérn kernel for different smoothness parameters")
 plt.legend(loc="upper right")
 plt.tight_layout()
 plt.show()
