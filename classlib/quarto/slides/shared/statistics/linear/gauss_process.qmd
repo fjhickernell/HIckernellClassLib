@@ -463,6 +463,49 @@ $$
 
 👉 automatic tradeoff between overfitting and smoothness
 
+---
+
+### Optimizing the vertical scale $\tau^2$
+
+Suppose that the kernel has the form $K_{\vtheta}=\tau^2 \widetilde{\mK}_{\tvtheta}$
+
+- $\mK_{\vtheta}^{-1} = \tau^{-2}\widetilde{\mK}_{\tvtheta}^{-1}$ 
+- $\det(\mK_{\vtheta,\tau^2})= (\tau^2)^n \det(\widetilde{\mK}_{\vtheta})$
+
+So the log marginal likelihood becomes
+$$
+\ell(\tau^2,\vtheta)
+=
+-\frac{1}{2\tau^2}
+\vY^\top \widetilde{\mK}_{\vtheta}^{-1}\vY
+-\frac{n}{2}\log(\tau^2)
+-\frac{1}{2}\log\bigl(\det(\widetilde{\mK}_{\vtheta})\bigr)
+-\frac{n}{2}\log(2\pi)
+$$
+
+Differentiate with respect to $\tau^2$, set equal to zero, and solve for $\tau^2$ to get the profiled log likelihood
+$$
+\frac{\partial \ell}{\partial \tau^2}
+=
+\frac{1}{2(\tau^2)^2}
+\vY^\top \widetilde{\mK}_{\vtheta}^{-1}\vY
+-
+\frac{n}{2\tau^2}, \qquad 
+\widehat{\tau}^2(\vtheta)
+=
+\frac{1}{n}
+\vY^\top \widetilde{\mK}_{\vtheta}^{-1}\vY
+$$
+
+Ignoring constants, optimize one less parameter
+$$
+\hvtheta = \argmin_{\vtheta}
+\left[n\log(
+\vY^\top \widetilde{\mK}_{\vtheta}^{-1}\vY)
++ \log \bigl(\det(\widetilde{\mK}_{\vtheta}) \bigr)
+\right]
+$$
+
 ## Beyond squared exponential: Matérn kernels
 
 Many, many kernels to choose
@@ -668,17 +711,27 @@ def covariance_cross(x1, x2, kernel, tau2=1.0, ell=0.2):
 
 def gp_posterior(x_train, y_train, x_test, kernel, tau2=1.0, ell=0.2, sigma2=1e-8):
 
+    n = len(y_train)
+
+    if tau2 is None: #optimize tau2 by maximizing the marginal likelihood
+        K_tilde = covariance_matrix(x_train, kernel, tau2=1.0, ell=ell, nugget=sigma2)
+        alpha_tilde = np.linalg.solve(K_tilde, y_train)
+
+        tau2 = (y_train.T @ alpha_tilde) / n
+
     K = covariance_matrix(x_train, kernel, tau2=tau2, ell=ell, nugget=sigma2)
     Ks = covariance_cross(x_train, x_test, kernel, tau2=tau2, ell=ell)
     Kss = covariance_matrix(x_test, kernel, tau2=tau2, ell=ell)
 
-    K_inv = np.linalg.inv(K)
+    alpha = np.linalg.solve(K, y_train)
 
-    mean = Ks.T @ K_inv @ y_train
-    cov = Kss - Ks.T @ K_inv @ Ks
+    mean = Ks.T @ alpha
+
+    V = np.linalg.solve(K, Ks)
+    cov = Kss - Ks.T @ V
     var = np.maximum(np.diag(cov), 0.0)
 
-    return mean, var
+    return mean, var, tau2
 
 
 # ============================================================
@@ -699,64 +752,132 @@ y_true = f_true(x_grid)
 # Same kernel, different length scales
 # ============================================================
 
-tau2 = 1.0
 sigma2 = 1e-8
 
 ell_small = 0.08
 ell_large = 0.30
+# ============================================================
+# Compare fixed vs optimized tau^2
+# ============================================================
 
-mean_small, var_small = gp_posterior(
+tau2_fixed = 1.0
+
+# ---- fixed tau^2 ----
+mean_small_fixed, var_small_fixed, _ = gp_posterior(
     x_train, y_train, x_grid,
     matern_three_halves,
-    tau2=tau2,
+    tau2=tau2_fixed,
     ell=ell_small,
     sigma2=sigma2
 )
 
-mean_large, var_large = gp_posterior(
+mean_large_fixed, var_large_fixed, _ = gp_posterior(
     x_train, y_train, x_grid,
     matern_three_halves,
-    tau2=tau2,
+    tau2=tau2_fixed,
     ell=ell_large,
     sigma2=sigma2
 )
 
-sd_small = np.sqrt(var_small)
-sd_large = np.sqrt(var_large)
+sd_small_fixed = np.sqrt(var_small_fixed)
+sd_large_fixed = np.sqrt(var_large_fixed)
 
+# ---- optimized tau^2 (empirical Bayes) ----
+mean_small_opt, var_small_opt, tau2_opt_small_ell = gp_posterior(
+    x_train, y_train, x_grid,
+    matern_three_halves,
+    tau2=None,
+    ell=ell_small,
+    sigma2=sigma2
+)
+
+mean_large_opt, var_large_opt, tau2_opt_large_ell = gp_posterior(
+    x_train, y_train, x_grid,
+    matern_three_halves,
+    tau2=None,
+    ell=ell_large,
+    sigma2=sigma2
+)
+
+sd_small_opt = np.sqrt(var_small_opt)
+sd_large_opt = np.sqrt(var_large_opt)
 
 # ============================================================
-# Plot
+# Plot (2x2)
 # ============================================================
 
-fig, axes = plt.subplots(1, 2, figsize=(14, 5), sharey=True)
+fig, axes = plt.subplots(
+    2, 2,
+    figsize=(14, 8),
+    sharex=True,
+    sharey=True,
+    gridspec_kw={"wspace": 0.35, "hspace": 0.30}
+)
 
-# small ell
-axes[0].plot(x_grid, y_true, "-", linewidth=2, label="true")
-axes[0].plot(x_grid, mean_small, '--', linewidth=2, label="posterior mean")
-axes[0].fill_between(x_grid,
-                     mean_small - 1.96*sd_small,
-                     mean_small + 1.96*sd_small,
-                     alpha=0.25)
-axes[0].plot(x_train, y_train, "o", markersize=6)
-axes[0].set_title(r"Matérn $\nu=3/2$, small $\ell$")
-axes[0].set_xlabel(r"$x$")
-axes[0].set_ylabel(r"$f(x)$")
-axes[0].legend(loc="upper right")
+# ---------- Top row: fixed tau ----------
+axes[0, 0].plot(x_grid, y_true, "-", linewidth=2, label="true")
+axes[0, 0].plot(x_grid, mean_small_fixed, '--', linewidth=2, label="posterior mean")
+axes[0, 0].fill_between(
+    x_grid,
+    mean_small_fixed - 1.96*sd_small_fixed,
+    mean_small_fixed + 1.96*sd_small_fixed,
+    alpha=0.25
+)
+axes[0, 0].plot(x_train, y_train, "o", markersize=6)
+axes[0, 0].set_title(rf"Fixed $\tau^2={tau2_fixed}$, small $\ell = {ell_small}$")
 
-# large ell
-axes[1].plot(x_grid, y_true, "-", linewidth=2, label="true")
-axes[1].plot(x_grid, mean_large, '--', linewidth=2, label="posterior mean")
-axes[1].fill_between(x_grid,
-                     mean_large - 1.96*sd_large,
-                     mean_large + 1.96*sd_large,
-                     alpha=0.25)
-axes[1].plot(x_train, y_train, "o", markersize=6)
-axes[1].set_title(r"Matérn $\nu=3/2$, large $\ell$")
-axes[1].set_xlabel(r"$x$")
-axes[1].legend(loc="upper right")
+axes[0, 1].plot(x_grid, y_true, "-", linewidth=2)
+axes[0, 1].plot(x_grid, mean_large_fixed, '--', linewidth=2)
+axes[0, 1].fill_between(
+    x_grid,
+    mean_large_fixed - 1.96*sd_large_fixed,
+    mean_large_fixed + 1.96*sd_large_fixed,
+    alpha=0.25
+)
+axes[0, 1].plot(x_train, y_train, "o", markersize=6)
+axes[0, 1].set_title(rf"Fixed $\tau^2={tau2_fixed}$, large $\ell = {ell_large}$")
 
-plt.tight_layout()
+# ---------- Bottom row: optimized tau ----------
+axes[1, 0].plot(x_grid, y_true, "-", linewidth=2)
+axes[1, 0].plot(x_grid, mean_small_opt, '--', linewidth=2)
+axes[1, 0].fill_between(
+    x_grid,
+    mean_small_opt - 1.96*sd_small_opt,
+    mean_small_opt + 1.96*sd_small_opt,
+    alpha=0.25
+)
+axes[1, 0].plot(x_train, y_train, "o", markersize=6)
+axes[1, 0].set_title(rf"Optimized $\tau^2={tau2_opt_small_ell : .2f}$, small $\ell = {ell_small}$")
+
+axes[1, 1].plot(x_grid, y_true, "-", linewidth=2)
+axes[1, 1].plot(x_grid, mean_large_opt, '--', linewidth=2)
+axes[1, 1].fill_between(
+    x_grid,
+    mean_large_opt - 1.96*sd_large_opt,
+    mean_large_opt + 1.96*sd_large_opt,
+    alpha=0.25
+)
+axes[1, 1].plot(x_train, y_train, "o", markersize=6)
+axes[1, 1].set_title(rf"Optimized $\tau^2={tau2_opt_large_ell :.2f}$, large $\ell = {ell_large}$")
+
+# labels
+for ax in axes[:, 0]:
+    ax.set_ylabel(r"$f(x)$")
+
+for ax in axes[1, :]:
+    ax.set_xlabel(r"$x$")
+
+handles, labels = axes[0, 0].get_legend_handles_labels()
+
+fig.legend(
+    handles, labels,
+    loc="upper center",
+    bbox_to_anchor=(0.5, 1.03),  # push legend up
+    ncol=3,
+    frameon=False
+)
+
+plt.tight_layout(rect=[0, 0, 1, 0.92])  # reserve more top space
 plt.show()
 ```
 
@@ -937,27 +1058,15 @@ $$
 
 ## Empirical Bayes (maximum likelihood) with noise
 
-Now the observed data satisfy
-
-$$
-\vY \sim \Norm(\vzero,\mK_\vtheta + \sigma^2 \mI)
-$$
-
-where the hyperparameters may include
-
-$$
-\vtheta = (\tau^2,\ell,\nu,\sigma^2)
-$$
-
----
+Now $\vY \sim \Norm(\vzero,\mK_\vtheta + \sigma^2 \mI)$, where the hyperparameters may include $\vtheta = (\tau^2,\ell,\nu,\sigma^2)$
 
 ### Log marginal likelihood
 
 $$
 \log \varrho(\vY \mid \vtheta)
 =
--\frac{1}{2}\vy^\top(\mK_\vtheta+\sigma^2\mI)^{-1}\vy
--\frac{1}{2}\log\det(\mK_\vtheta+\sigma^2\mI)
+-\frac{1}{2}\vY^\top(\mK_\vtheta+\sigma^2\mI)^{-1}\vY
+-\frac{1}{2}\log \bigl(\det(\mK_\vtheta+\sigma^2\mI) \bigr)
 -\frac{n}{2}\log(2\pi)
 $$
 
@@ -971,17 +1080,272 @@ $$
 
 computed numerically
 
-- data fit:
-  $$
-  \vy^\top(\mK_\vtheta+\sigma^2\mI)^{-1}\vy
-  $$
+- data fit: $\vY^\top(\mK_\vtheta+\sigma^2\mI)^{-1}\vY$
 
-- complexity penalty:
-  $$
-  \log\det(\mK_\vtheta+\sigma^2\mI)
-  $$
+- complexity penalty: $\log\bigl(\det(\mK_\vtheta+\sigma^2\mI)\bigr)$
 
 👉 the marginal likelihood balances fit, smoothness, and noise level
+
+$\exstar$ Derive the formula for the optimal vertical scale, $\tau^2$, in the presence of noise
+
+
+
+## Adding a parametric mean
+
+So far we assumed a zero-mean Gaussian process.  More generally, write
+
+$$
+Y(\vx)
+=
+\vh(\vx)^\top\vbeta
++
+g(\vx)
++
+\varepsilon(\vx),
+$$
+
+where
+
+$$
+g \sim \GP(0,K),
+\qquad
+\varepsilon(\vx) \sim \Norm(0,\sigma^2),
+\qquad
+\varepsilon(\vx) \text{ independent of } g
+$$
+
+Here $\vh(\vx)$ is a vector of chosen regressors, for example
+
+$$
+\vh(\vx) =
+\begin{pmatrix}
+1\\
+x
+\end{pmatrix}
+\qquad
+\text{or}
+\qquad
+\vh(\vx) =
+\begin{pmatrix}
+1\\
+x\\
+x^2
+\end{pmatrix}
+$$
+
+---
+
+Let
+
+$$
+\mH =
+\begin{pmatrix}
+\vh(\vx_1)^\top\\
+\vdots\\
+\vh(\vx_n)^\top
+\end{pmatrix},
+\qquad
+\vK_\sigma = \mK+\sigma^2\mI
+$$
+
+Then
+
+$$
+\vY \sim \Norm(\mH\vbeta,\vK_\sigma)
+$$
+
+---
+
+## Prediction with a parametric mean
+
+For a new point $\vx_*$, define
+
+$$
+\vh_* = \vh(\vx_*),
+\qquad
+\vk_* =
+\begin{pmatrix}
+K(\vx_1,\vx_*)\\
+\vdots\\
+K(\vx_n,\vx_*)
+\end{pmatrix}
+$$
+
+The joint distribution is
+
+$$
+\begin{pmatrix}
+\vY\\
+f(\vx_*)
+\end{pmatrix}
+\sim
+\Norm\!\left(
+\begin{pmatrix}
+\mH\vbeta\\
+\vh_*^\top\vbeta
+\end{pmatrix},
+\begin{pmatrix}
+\vK_\sigma & \vk_* \\
+\vk_*^\top & K(\vx_*,\vx_*)
+\end{pmatrix}
+\right)
+$$
+
+Conditioning gives
+
+$$
+\Ex\bigl[f(\vx_*) \mid \vy,\vbeta\bigr]
+=
+\vh_*^\top\vbeta
++
+\vk_*^\top \vK_\sigma^{-1}
+(\vy-\mH\vbeta)
+$$
+
+and
+
+$$
+\var\bigl(f(\vx_*) \mid \vy,\vbeta\bigr)
+=
+K(\vx_*,\vx_*) - \vk_*^\top \vK_\sigma^{-1}\vk_*
+$$
+
+So the Gaussian process smooths the residuals after subtracting the parametric mean
+
+---
+
+## Estimating the mean parameters
+
+For fixed covariance parameters, the generalized least squares estimate is
+
+$$
+\widehat{\vbeta}
+=
+(\mH^\top \vK_\sigma^{-1}\mH)^{-1}
+\mH^\top \vK_\sigma^{-1}\vy.
+$$
+
+Then the posterior mean becomes
+
+$$
+\widehat{\mu}_*(\vx_*)
+=
+\vh_*^\top\widehat{\vbeta}
++
+\vk_*^\top \vK_\sigma^{-1}
+(\vy-\mH\widehat{\vbeta}).
+$$
+
+Interpretation:
+
+- $\vh_*^\top\widehat{\vbeta}$ gives the large-scale parametric trend
+
+- $\vk_*^\top \vK_\sigma^{-1}(\vy-\mH\widehat{\vbeta})$ gives the GP correction
+
+👉 the GP models what remains after the trend has been removed
+
+## Empirical Bayes with noise and a parametric mean
+
+Now suppose
+
+$$
+\vY \sim \Norm(\mH\vbeta,\vK_\sigma),
+\qquad
+\vK_\sigma = \mK_{\vtheta}+\sigma^2\mI.
+$$
+
+The log marginal likelihood, conditional on $\vbeta$, is
+
+$$
+\ell(\vbeta,\vtheta,\sigma^2)
+=
+-\frac{1}{2}
+(\vy-\mH\vbeta)^\top
+\vK_\sigma^{-1}
+(\vy-\mH\vbeta)
+-\frac{1}{2}\log\det(\vK_\sigma)
+-\frac{n}{2}\log(2\pi)
+$$
+
+For fixed covariance parameters, the generalized least squares estimate is
+
+$$
+\widehat{\vbeta}
+=
+(\mH^\top \vK_\sigma^{-1}\mH)^{-1}
+\mH^\top \vK_\sigma^{-1}\vy
+$$
+
+Substituting this back gives the profiled log marginal likelihood
+
+$$
+\ell_{\mathrm{prof}}(\vtheta,\sigma^2)
+=
+-\frac{1}{2}
+(\vy-\mH\widehat{\vbeta})^\top
+\vK_\sigma^{-1}
+(\vy-\mH\widehat{\vbeta})
+-\frac{1}{2}\log\det(\vK_\sigma)
+-\frac{n}{2}\log(2\pi).
+$$
+
+Then empirical Bayes chooses $\displaystyle (\widehat{\vtheta},\widehat{\sigma}^2)
+=
+\argmax_{\vtheta,\sigma^2}
+\ell_{\mathrm{prof}}(\vtheta,\sigma^2)$
+
+---
+
+Interpretation:
+
+- $\widehat{\vbeta}$ estimates the parametric mean using generalized least squares
+
+- $\vK_\sigma = \mK_{\vtheta}+\sigma^2\mI$ describes residual covariance after removing the mean
+
+- the quadratic term measures residual data fit
+
+- the log determinant penalizes overly flexible covariance choices
+
+👉 empirical Bayes chooses the trend, smoothness, scale, and noise level by maximizing the marginal likelihood
+
+
+## Noiseless case with parametric mean
+
+The noiseless case is obtained by setting
+
+$$
+\sigma^2 = 0
+$$
+
+Then
+
+$$
+\vK_\sigma = \mK,
+$$
+
+and
+
+$$
+\Ex\bigl[f(\vx_*) \mid \vy,\vbeta\bigr]
+=
+\vh_*^\top\vbeta
++
+\vk_*^\top \mK^{-1}
+(\vy-\mH\vbeta).
+$$
+
+If $\vbeta$ is estimated by generalized least squares,
+
+$$
+\widehat{\vbeta}
+=
+(\mH^\top \mK^{-1}\mH)^{-1}
+\mH^\top \mK^{-1}\vy
+$$
+
+In the noiseless case, the posterior mean interpolates the data, provided $\mK$ is nonsingular
+
+
 
 ## Big contrast with earlier models
 
@@ -1008,6 +1372,7 @@ $$
 ::: {.fragment}
 👉 Modeling moves from formulas to covariance structure.
 :::
+
 
 
 ## Kernel ridge regression viewpoint

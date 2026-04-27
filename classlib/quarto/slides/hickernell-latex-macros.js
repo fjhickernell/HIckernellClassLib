@@ -255,6 +255,7 @@
         vzeta:   "{\\boldsymbol{\\zeta}}",
 
         mA: "{\\mathsf{A}}",
+        mH: "{\\mathsf{H}}",
         mX: "{\\mathsf{X}}",
         mW: "{\\mathsf{W}}",
         mP: "{\\mathsf{P}}",
@@ -266,6 +267,7 @@
 
         htheta: "{\\widehat{\\theta}}",
         hvtheta: "{\\widehat{\\boldsymbol{\\theta}}}",
+        tvtheta: "{\\widetilde{\\boldsymbol{\\theta}}}",
         hTheta: "{\\widehat{\\Theta}}",
         hbeta:  "{\\widehat{\\beta}}",
         hvbeta: "{\\widehat{\\boldsymbol{\\beta}}}",
