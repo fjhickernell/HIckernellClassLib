@@ -73,6 +73,14 @@ $$
 
 - All randomness comes from the function itself
 
+---
+
+### The kernel, $K$, must be symmetric, positve definite
+
+- Since $\mK$ is a covariance matrix, it must be symmetric and positive definite (positive eigenvalues)
+
+- The kernel function, $K$, must be defined such that $\mK = \bigl(K(\vx_i,\vx_j)\bigr)_{i,j=1}^n$ is a symmetric, positive definite matrix for all distinct choices of $\vx_1, \ldots, \vx_n$
+
 ## The kernel $K$ controls the properties of $f$
 
 ### Example: squared exponential kernel
@@ -1154,8 +1162,6 @@ $$
 \vY \sim \Norm(\mH\vbeta,\vK_\sigma)
 $$
 
----
-
 ## Prediction with a parametric mean
 
 For a new point $\vx_*$, define
@@ -1194,18 +1200,18 @@ $$
 Conditioning gives
 
 $$
-\Ex\bigl[f(\vx_*) \mid \vy,\vbeta\bigr]
+\Ex\bigl[f(\vx_*) \mid \vY ,\vbeta\bigr]
 =
 \vh_*^\top\vbeta
 +
 \vk_*^\top \vK_\sigma^{-1}
-(\vy-\mH\vbeta)
+(\vY-\mH\vbeta)
 $$
 
 and
 
 $$
-\var\bigl(f(\vx_*) \mid \vy,\vbeta\bigr)
+\var\bigl(f(\vx_*) \mid \vY,\vbeta\bigr)
 =
 K(\vx_*,\vx_*) - \vk_*^\top \vK_\sigma^{-1}\vk_*
 $$
@@ -1244,6 +1250,8 @@ Interpretation:
 
 👉 the GP models what remains after the trend has been removed
 
+---
+
 ## Empirical Bayes with noise and a parametric mean
 
 Now suppose
@@ -1260,10 +1268,10 @@ $$
 \ell(\vbeta,\vtheta,\sigma^2)
 =
 -\frac{1}{2}
-(\vy-\mH\vbeta)^\top
+(\vY-\mH\vbeta)^\top
 \vK_\sigma^{-1}
-(\vy-\mH\vbeta)
--\frac{1}{2}\log\det(\vK_\sigma)
+(\vY-\mH\vbeta)
+-\frac{1}{2}\log\bigl(\det(\vK_\sigma) \bigr)
 -\frac{n}{2}\log(2\pi)
 $$
 
@@ -1286,13 +1294,10 @@ $$
 \vK_\sigma^{-1}
 (\vy-\mH\widehat{\vbeta})
 -\frac{1}{2}\log\det(\vK_\sigma)
--\frac{n}{2}\log(2\pi).
+-\frac{n}{2}\log(2\pi)
 $$
 
-Then empirical Bayes chooses $\displaystyle (\widehat{\vtheta},\widehat{\sigma}^2)
-=
-\argmax_{\vtheta,\sigma^2}
-\ell_{\mathrm{prof}}(\vtheta,\sigma^2)$
+Then empirical Bayes chooses $\displaystyle (\widehat{\vtheta},\widehat{\sigma}^2) = \argmax_{\vtheta,\sigma^2} \ell_{\mathrm{prof}}(\vtheta,\sigma^2)$
 
 ---
 
@@ -1408,17 +1413,10 @@ $$
 👉 This is the **representer theorem** in action.
 :::
 
-## RKHS (light introduction)
+## The parallel universe of repoducing kernel Hilbert spaces (RKHS)
 
-Every kernel $K$ defines a function space:
+Every symmetric, positive definite kernel $K$ defines a Hilbert space (complete vector space of functions with an inner product), $\ch_K$, called a *reproducing kernel Hilbert space*
 
-$$
-\mathcal{H}_K
-$$
-
-called a **reproducing kernel Hilbert space**.
-
-::: {.fragment}
 Key property:
 
 $$
@@ -1426,18 +1424,18 @@ f(\vx)
 =
 \langle f, K(\cdot,\vx) \rangle_{\mathcal{H}_K}
 $$
-:::
 
-::: {.fragment}
-So evaluation at a point is a linear functional.
-:::
+Evaluation at a point is a bounded, linear functional
 
-::: {.fragment}
+
 👉 The kernel encodes both
 
 - similarity between inputs  
 - geometry of the function space
-:::
+
+Let $\hf$ be the minimum-norm function that interpolates the data, $(\vx_1, Y_1), \ldots, (\vx_n, Y_n)$
+
+Then $\hf(\vx_*) = \vk_*^\top \mK^{-1} \vY$ (same formula as for Gaussian process regression)
 
 ## GP vs RKHS viewpoint
 
@@ -1450,29 +1448,10 @@ Two perspectives on the same object:
 | Inference via conditioning | Estimation via optimization |
 | Uncertainty quantification | Point estimate |
 
-::: {.fragment}
-👉 Same kernel, two interpretations.
-:::
+👉 Same kernel, two interpretations
 
-::: {.fragment}
-👉 GP adds **uncertainty quantification** to kernel methods.
-:::
+👉 GP adds **uncertainty quantification** to kernel methods
 
-## Big picture for 563
-
-We now have three equivalent lenses:
-
-- **Multivariate normal theory** → Gaussian processes  
-- **Regularization** → kernel ridge regression  
-- **Functional analysis** → RKHS  
-
-::: {.fragment}
-All are tied together by the kernel $K$.
-:::
-
-::: {.fragment}
-👉 Choice of kernel = choice of model class.
-:::
 
 ## Beyond Gaussian processes
 

@@ -277,6 +277,7 @@
         hsigma: "{\\widehat{\\sigma}}",
         hSigma: "{\\widehat{\\Sigma}}",
         hp:    "{\\widehat{p}}",
+        hf:    "{\\widehat{f}}",
         hP:     "{\\widehat{P}}",
         hX:     "{\\widehat{X}}",
         hY:     "{\\widehat{Y}}",
@@ -286,6 +287,7 @@
         hvveps: "{\\widehat{\\boldsymbol{\\varepsilon}}}",
 
         ct: "{\\mathcal{T}}",
+        ch: "{\\mathcal{H}}",
         ck: "{\\mathcal{K}}",
         cf: "{\\mathcal{F}}",
         cc: "{\\mathcal{C}}",
