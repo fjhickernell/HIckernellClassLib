@@ -18,6 +18,8 @@ Y(\vx) = f(\vx) + \varepsilon(\vx),
 \qquad f \sim \GP(m,K), \quad \varepsilon(\vx) \sim \Norm(0,\sigma^2)
 $$
 
+
+See [scikit-learn](https://scikit-learn.org/stable/) and [GPy](https://gpy.readthedocs.io/en/latest/) for Python implementations
 :::
 
 
@@ -66,7 +68,7 @@ $$
 means 
 
 $$
-\Ex[(f(\vx)] = 0, \qquad \cov \bigl ( f(\vt), f(\vx) \bigr ) = K(\vt,\vx), \qquad \text{for all } \vt, \vx
+\Ex[f(\vx)] = 0, \qquad \cov \bigl ( f(\vt), f(\vx) \bigr ) = K(\vt,\vx), \qquad \text{for all } \vt, \vx
 $$
 
 - Multivariate normal theory applied to function values
@@ -75,7 +77,7 @@ $$
 
 ---
 
-### The kernel, $K$, must be symmetric, positve definite
+### The kernel, $K$, must be symmetric, positive definite
 
 - Since $\mK$ is a covariance matrix, it must be symmetric and positive definite (positive eigenvalues)
 
@@ -1094,8 +1096,117 @@ computed numerically
 
 👉 the marginal likelihood balances fit, smoothness, and noise level
 
-$\exstar$ Derive the formula for the optimal vertical scale, $\tau^2$, in the presence of noise
 
+---
+
+### Optimizing out the vertical scale $\tau^2$
+Write the covariance as
+
+$$
+\mK_\vtheta + \sigma^2 \mI
+=
+\tau^2\widetilde{\mK}_{\vtheta,\lambda},
+\qquad
+\widetilde{\mK}_{\vtheta,\lambda}
+=
+\mR_\vtheta + \lambda \mI,
+\qquad
+\lambda = \frac{\sigma^2}{\tau^2}
+$$
+
+where $\mR_\vtheta$ is the kernel matrix with unit marginal variance.  For fixed $(\vtheta,\lambda)$,
+
+$$
+\widehat{\tau}^2(\vtheta,\lambda)
+=
+\frac{1}{n}
+\vY^\top
+\widetilde{\mK}_{\vtheta,\lambda}^{-1}
+\vY
+$$
+
+So the profiled likelihood estimate is obtained from
+
+$$
+(\widehat{\vtheta},\widehat{\lambda})
+=
+\argmin_{\vtheta,\lambda}
+\left[
+n\log\!\left(
+\vY^\top
+\widetilde{\mK}_{\vtheta,\lambda}^{-1}
+\vY
+\right)
++
+\log\!\left(
+\det(\widetilde{\mK}_{\vtheta,\lambda})
+\right)
+\right]
+$$
+
+Then
+
+$$
+\widehat{\sigma}^2
+=
+\widehat{\lambda}\,
+\widehat{\tau}^2
+$$
+
+
+## Example as before with noisy observations
+
+Now observe
+
+$$
+Y_i = f(x_i) + \varepsilon_i,
+\qquad
+\varepsilon_i \sim \Norm(0,\sigma^2)
+$$
+
+The posterior mean no longer interpolates the data.
+
+```{python}
+#| echo: false
+
+rng = np.random.default_rng(476563)
+
+sigma = 0.20
+sigma2_noisy = sigma**2
+
+y_noisy = f_true(x_train) + rng.normal(0, sigma, size=len(x_train))
+
+ell_noisy = 0.15
+tau2_noisy = 1.0
+
+mean_noisy, var_noisy, _ = gp_posterior(
+    x_train, y_noisy, x_grid,
+    matern_three_halves,
+    tau2=tau2_noisy,
+    ell=ell_noisy,
+    sigma2=sigma2_noisy
+)
+
+sd_noisy = np.sqrt(var_noisy)
+
+plt.figure(figsize=(12, 6))
+plt.plot(x_grid, y_true, "-", linewidth=2, label="true $f$")
+plt.plot(x_grid, mean_noisy, "--", linewidth=2, label="posterior mean")
+plt.fill_between(
+    x_grid,
+    mean_noisy - 1.96*sd_noisy,
+    mean_noisy + 1.96*sd_noisy,
+    alpha=0.25,
+    label="95% credible band for $f$"
+)
+plt.plot(x_train, y_noisy, "o", markersize=6, label="noisy observations")
+plt.xlabel(r"$x$")
+plt.ylabel(r"$y$")
+plt.title(rf"Noisy observations, $\sigma={sigma:.2f}$, $\ell={ell_noisy}$")
+plt.legend(loc="upper right")
+plt.tight_layout()
+plt.show()
+```
 
 
 ## Adding a parametric mean
@@ -1312,6 +1423,78 @@ Interpretation:
 - the log determinant penalizes overly flexible covariance choices
 
 👉 empirical Bayes chooses the trend, smoothness, scale, and noise level by maximizing the marginal likelihood
+
+## Ordinary kriging (constant mean)
+
+A special case of the parametric mean is a constant:
+
+$$
+\vh(\vx) = 1,
+\qquad
+\mH = \vone,
+\qquad
+\vbeta = \beta_0
+$$
+
+Then
+
+$$
+\vY \sim \Norm(\beta_0 \vone,\vK_\sigma),
+\qquad
+\vK_\sigma = \mK_{\vtheta}+\sigma^2\mI
+$$
+
+
+### Estimating the constant mean
+
+$$
+\widehat{\beta}_0
+=
+\frac{\vone^\top \vK_\sigma^{-1} \vy}
+{\vone^\top \vK_\sigma^{-1} \vone}
+$$
+
+
+### Prediction
+
+For a new point $\vx_*$,
+
+$$
+\widehat{\mu}_*(\vx_*)
+=
+\widehat{\beta}_0
++
+\vk_*^\top \vK_\sigma^{-1}
+(\vy-\widehat{\beta}_0\vone)
+$$
+
+---
+
+### Interpretation
+
+- $\widehat{\beta}_0$ is the estimated global baseline level  
+
+- Gaussian process term models deviations from this baseline  
+
+👉 this is called *ordinary kriging*
+
+
+### Key property: constants are preserved
+
+$$
+\widehat{\mu}_*(\vx_*)
+=
+\sum_{i=1}^n w_i(\vx_*)\, Y_i, \qquad 
+\sum_{i=1}^n w_i(\vx_*) = 1
+$$
+
+Therefore, if $Y_1=\cdots=Y_n=c$, then
+
+$$
+\widehat{\mu}_*(\vx_*) = c
+$$
+
+👉 ordinary kriging preserves constant signals
 
 
 ## Noiseless case with parametric mean
