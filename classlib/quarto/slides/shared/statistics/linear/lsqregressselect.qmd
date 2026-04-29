@@ -514,7 +514,7 @@ $$
   
   extra predictors improve the model  
 
-- Small $F$ suggests the simpler model is sufficient  
+- Small $F$ suggests insufficient evidence that the simpler model is inadequate
 
 ---
 
@@ -1057,13 +1057,16 @@ and “pointwise” intervals are the same in this case
 - Removing the intercept forces $\mu(0)=0$
 
 - Near $x=0$, the confidence band misses the true mean (it shrinks like $x^2$)
+
   - Widening the band does not help
 
 - This is *model misspecification*, not a band issue
 
 - Confidence bands reflect uncertainty *given the model*, not model correctness
 
-- From the observed data, there is no clear evidence that an intercept is needed
+- Observed data provide no clear evidence that an intercept is needed
+
+  - But should check domain knowledge and subject-matter considerations
 
 
 ## F-tests: A unifying framework {data-state="goldborder"}

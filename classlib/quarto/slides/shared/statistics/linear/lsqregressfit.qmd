@@ -41,14 +41,15 @@ Furthermore
 
 - $\hvY : = \mX \hvbeta = \underbrace{\mX (\mX^\top \mX)^{-1} \mX^\top}_{\href{https://en.wikipedia.org/wiki/Projection_matrix}{\text{projection matrix }} \mP} \vY$ is an estimator of $\mu(\vX) = \Ex(\vY)$
 
-- $\mP$ is the projection matrix (also called the hat matrix) onto 
+- $\mP$ is the projection matrix (also called the hat matrix) from $\reals^n$ onto 
 $$
 \cc(\mX):= \text{ the column space of } \mX = \text{ the set of all linear combinations of the columns of } \mX = \{ \mX \vb : \vb \in \reals^d \}
 $$
 This means that
-  - $\mP^2 = \mP$ (idempotent), and so $\mP$ has eigenvalues of $0$ and $1$ only
+  - $\mP^2 = \mP$ (idempotent)
+    - $\mP$ has only the eigenvalues $0$ (multiplicity $n-d$) and $1$ (multiplicity $d$)
   - $\mP^\top = \mP$ (symmetric) 
-  - $\mP \mX = \mX$ (projection onto $\cc(\mX)$)   
+  - $\mP \mX = \mX$ (projection onto $\cc(\mX)$, columns of $\mX$ are eigenvectors of $\mP$ with eigenvalue $1$)   
   - $(\mI - \mP) \mX = \mzero$ (projection onto the orthogonal complement of $\cc(\mX)$ )
 
 - $\hvveps : = \vY - \hvY = (\mI - \mP) \vY$ is the vector of [residuals]{.alert}, 
