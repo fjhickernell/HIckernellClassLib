@@ -467,6 +467,7 @@ Diagnostics do not automatically tell us the right fix, but they do tell us wher
   - Reduces residual sum of squares (RSS)
 
 - However, a more complicated model is not better if the improvement is insignificant
+  - We must ask whether the improvement is *real signal or just noise*
 
 Model selection aims to balance:
 
@@ -475,14 +476,13 @@ Model selection aims to balance:
 - interpretability  
 - predictive performance  
 
----
 
 ## Comparing nested models
 
 Suppose we compare two nested models:
 
-- reduced model with $d_0$ parameters and residual sum of squares $\RSS_0$  
-- full model with $d_1 > d_0$ parameters and residual sum of squares $\RSS_1$  
+- *Reduced model* with $d_0$ parameters and residual sum of squares $\RSS_0$  
+- *Full model* with $d_1 > d_0$ parameters and residual sum of squares $\RSS_1$  
 
 Since the full model has more predictors, we always have
 
@@ -490,35 +490,89 @@ $$
 \RSS_1 \le \RSS_0
 $$
 
-The question is whether the reduction in RSS is large enough to justify the extra parameters.
+Is the reduction in RSS is large enough to justify the extra parameters?
 
----
+## Geometry behind the test
 
-### F-test for nested models
+$$
+\underbrace{\vY}_{\text{data}}
+=
+\underbrace{\hvY_0}_{\text{fit of reduced model}}
++
+\underbrace{(\hvY_1 - \hvY_0)}_{\text{extra explained by new predictors}}
++
+\underbrace{(\vY - \hvY_1)}_{\text{residual of full model}},  \qquad \mathcal{C}(\mX_0) \subset \mathcal{C}(\mX_1)
+$$
 
-To test whether the additional predictors in the full model are needed, use
+- $\hvY_1 = \mP_1\vY =$ fit of full model
+- $\vY - \hvY_0 =$ residual of reduced model
+- $\hvY_1 - \hvY_0 \in \cc(\mX_1)$
+- $\vY - \hvY_1 \in \cc(\mX_1)^\perp$
+
+Since $(\hvY_1 - \hvY_0) \perp (\vY - \hvY_1)$, we have
+
+$$
+\underbrace{\lVert \vY - \hvY_0 \rVert^2}_{\RSS_0}
+=
+\underbrace{\lVert \hvY_1 - \hvY_0\rVert ^2}_{\SS_{\text{extra}}}
++
+\underbrace{\lVert \vY - \hvY_1\rVert^2}_{\RSS_1}
+$$
+
+::: {.key-point}
+The improvement in fit is itself a sum of squares from an orthogonal component
+:::
+
+
+## Normal model $\implies$ independence
+
+If $\vY \sim \Norm(\mX_1 \vbeta, \sigma^2 \mI)$, then orthogonal components are independent
+
+Under $H_0: \text{reduced model is correct}$,
+
+$$
+\frac{\SS_{\text{extra}}}{\sigma^2} \sim \chi^2_{d_1-d_0},
+\quad
+\frac{\RSS_1}{\sigma^2} \sim \chi^2_{n-d_1} \qquad \text{independently}
+$$
+
+### The $F$ statistic
 
 $$
 F
 =
-\frac{(\RSS_0-\RSS_1)/(d_1-d_0)}{\RSS_1/(n-d_1)}
+\frac{(\SS_{\text{extra}})/(d_1-d_0)}{\RSS_1/(n-d_1)} = \frac{(\RSS_0-\RSS_1)/(d_1-d_0)}{\RSS_1/(n-d_1)}
+\sim
+F_{d_1-d_0,\;n-d_1}
 $$
-
-Under the null hypothesis, $H_0: \beta_{d_0+1} = \cdots = \beta_{d_1} = 0$, and assuming the model assumptions hold, we have $\RSS_0-\RSS_1$ and $\RSS_1$ are independent scaled chi-square random variables, so
-
-$$
-F \sim F_{d_1-d_0,\;n-d_1}
-$$
-
-- $F > F_{d_1-d_0,\;n-d_1, \alpha}$ is compelling evidence to [reject $H_0$]{.alert} and conclude that 
-  
-  extra predictors improve the model  
-
-- Small $F$ suggests insufficient evidence that the simpler model is inadequate
 
 ---
 
-### Using $t$-tests in model selection
+## ANOVA table for regression $F$-test
+
+| Source | df | Sum of squares | Mean square | $F$ |
+|----------|---|---|-----|----|
+| Extra (Full vs Reduced) | $d_1 - d_0$ | $\SS_{\text{extra}} = \RSS_0 - \RSS_1$ | $\displaystyle \text{MS}_{\text{extra}}= \frac{\SS_{\text{extra}}}{d_1 - d_0}$ | $\dfrac{\text{MS}_{\text{extra}}}{\text{MSE}}$ |
+| Error (Full) | $n - d_1$ | $\RSS_1$ | $\displaystyle\text{MSE}= \frac{\RSS_1}{n - d_1}$ | |
+| Total (Reduced) | $n - d_0$ | $\RSS_0$ | | |
+
+
+::: {.key-point}
+The $F$ statistic compares **extra signal** to **noise level**
+:::
+
+---
+
+## Interpretation
+
+- Numerator: improvement from added predictors  
+- Denominator: variability not explained by the full model  
+
+👉 Large $F$ ⇒ added variables matter  
+👉 Small $F$ ⇒ reduced model is adequate  
+
+
+## Using $t$-tests in model selection
 
 A natural way to simplify a model is to examine individual coefficients:
 
@@ -561,7 +615,7 @@ To measure goodness of fit, we decompose the variability in the response:
 =
 \underbrace{\sum_{i=1}^n (\hY_i - \barY)^2}_{\SSR = \text{regression sum of squares}}
 +
-\underbrace{\sum_{i=1}^n (Y_i - \hat{Y}_i)^2}_{\RSS = \text{residual sum of squares}} \\
+\underbrace{\sum_{i=1}^n (Y_i - \hY_i)^2}_{\RSS = \text{residual sum of squares}} \\
 R^2 = \frac{\SSR}{\SST} = 1 - \frac{\RSS}{\SST} \in [0,1]
 \end{gather*}
 
@@ -585,7 +639,60 @@ $$
 
 - Larger values are better  
 
+
 ---
+
+## Classical regression $F$ test
+
+The usual regression $F$ test is the special case where the reduced model is the mean-only model:
+
+$$
+Y_i = \beta_0 + \varepsilon_i
+$$
+
+Then
+
+$$
+\RSS_0 = \SST,
+\qquad
+\RSS_1 = \RSS,
+\qquad
+\SS_{\text{extra}} = \SST - \RSS = \SSR
+$$
+
+So the general nested-model statistic becomes
+
+$$
+F
+=
+\frac{\SSR/(d-1)}{\RSS/(n-d)}
+=
+\frac{\text{MSR}}{\text{MSE}}
+\sim
+F_{d-1,n-d}
+\qquad \text{under } H_0
+$$
+
+where $H_0$ says that the full model is no better than the mean-only model.
+
+::: {.key-point}
+The classical regression $F$ test asks whether the explanatory variables, taken together, explain significant variation beyond the sample mean
+:::
+
+## Classical regression ANOVA table
+
+| Source | df | Sum of squares | Mean square | $F$ |
+|-----|---|---|-----|----|
+| Regression | $d-1$ | $\SSR = \SST-\RSS$ | $\displaystyle \text{MSR}=\frac{\SSR}{d-1}$ | $\displaystyle \frac{\text{MSR}}{\text{MSE}}$ |
+| Error | $n-d$ | $\RSS$ | $\displaystyle \text{MSE}=\frac{\RSS}{n-d}$ | |
+| Total | $n-1$ | $\SST$ | | |
+
+::: {.key-point}
+In this special case, $\SS_{\text{extra}} = \SSR$ and $\RSS_1 = \RSS$,
+so the regression ANOVA table is just the nested-model $F$ test with the mean-only model as the reduced model
+:::
+
+
 
 ## Decomposition of sums of squares
 
@@ -1158,3 +1265,4 @@ and “pointwise” intervals are the same in this case
 - Interpretation depends on context:
   - variance comparison: _are two noise levels equal?_
   - model selection: $\displaystyle\frac{\text{extra variation}}{\text{noise}}$
+

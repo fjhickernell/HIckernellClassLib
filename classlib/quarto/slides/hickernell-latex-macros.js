@@ -105,6 +105,7 @@
         vol:   "{\\operatorname{vol}}",
         bias:  "{\\operatorname{bias}}",
         RR:   "{\\mathcal{R}}",
+        SS:   "{\\operatorname{SS}}",
         RSS:  "{\\operatorname{RSS}}",
         SST:  "{\\operatorname{SST}}",
         SSR:  "{\\operatorname{SSR}}",
