@@ -21,7 +21,7 @@ Note: $F$ has a jump of size $p$ at $x=0$, corresponding to $\Prob(X=0)=p$
 \begin{align*}
 \mu & = \Ex(X) = \int_{-\infty}^{\infty} x \, \dif F(x) \qquad   
      \mathlink{https://en.wikipedia.org/wiki/Lebesgue-Stieltjes_integration}{(Lebesgue–Stieltjes integral)}\\
-& = \underbrace{0 \times p}_{\text{from the jump at } 0} + \int_0^{\infty} x \times (1-p)\exp(-\lambda x) \, \dif x = (1-p)/ \lambda
+& = \underbrace{0 \times p}_{\text{from the jump at } 0} + \int_0^{\infty} x \times (1-p) \lambda \exp(-\lambda x) \, \dif x = (1-p)/ \lambda
 \\
 \sigma^2 & = \var(X) = \Ex(X^2) - \mu^2 \exeq \frac{1-p^2}{\lambda^2}
 \end{align*} 
