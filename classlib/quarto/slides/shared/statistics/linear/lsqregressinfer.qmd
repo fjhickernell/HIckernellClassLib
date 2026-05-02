@@ -451,7 +451,7 @@ plt.show()
 ### Caution about many intervals
 
 If we form separate $(1-\alpha)$ confidence intervals for each $\beta_j$,
-the probability that \class{alert}{all} of them are simultaneously correct is generally less than $(1-\alpha)$
+the probability that [all]{.alert} of them are simultaneously correct is generally less than $(1-\alpha)$
 
 So:
 

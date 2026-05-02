@@ -55,7 +55,7 @@ r_i
 \frac{\hveps_i}{S\sqrt{1-h_{ii}}},
 $$
 
-where $h_{ii}$ is the $i$th diagonal entry of the projection (hat) matrix $\mP$ (using $h_{ii}$ rather than $p_{ii}$ since $p_i$ is common for probabilities))
+where $h_{ii}$ is the $i$th diagonal entry of the projection (hat) matrix $\mP$ (using $h_{ii}$ rather than $p_{ii}$ since $p_i$ is common for probabilities)
 
 Large values of $|r_i|$ indicate observations whose responses are unusual relative to the fitted model.
 
