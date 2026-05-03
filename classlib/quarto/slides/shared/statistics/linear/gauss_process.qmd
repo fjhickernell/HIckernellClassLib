@@ -1596,7 +1596,7 @@ $$
 👉 This is the **representer theorem** in action.
 :::
 
-## The parallel universe of repoducing kernel Hilbert spaces (RKHS)
+## The parallel universe of reproducing kernel Hilbert spaces (RKHS)
 
 Every symmetric, positive definite kernel $K$ defines a Hilbert space (complete vector space of functions with an inner product), $\ch_K$, called a *reproducing kernel Hilbert space*
 

@@ -9,7 +9,7 @@ But in practice, we may want to answer different questions:
 2. Where will the next observation fall? [prediction interval](#prediction_interval)
 3. Does most of the population lie within specifications? [tolerance interval](#tolerance_interval)
 
-These require different kinds of intervals, and different calculations
+These require different kinds of intervals and different calculations
 
 ## Large sample *confidence* interval (review) {#ci_review}
 

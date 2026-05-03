@@ -28,7 +28,7 @@ Building on the established framework
 | “Has the process changed?” | $\theta = \theta_0$ | $\theta \ne \theta_0$ |
 | "Our average time between failures is greater than 200 hours" | $\mu = 200$ | $\mu > 200$ |
 | "Your average time between failures is less than 200 hours" | $\mu = 200$ | $\mu < 200$ |
-| “Our job placement rate is 90%, not 70%” (two simple) | $p = 0.7$ | $p = 0.9$ |
+| “Our job placement rate is 90%, not 70%” (both simple) | $p = 0.7$ | $p = 0.9$ |
 
 ## Definition of the $p$-value
 
