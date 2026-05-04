@@ -199,7 +199,7 @@ def fmt_ci(lo, hi, digits=2):
     return f"$[{lo:.{digits}f},\\,{hi:.{digits}f}]$"
 
 print(
-    f"_Example_: You observe $\\barX_n = {xbar}$ minutes for taxis to arrive."
+    f"_Example_: You observe $\\barX_n = {xbar}$ minutes for taxis to arrive. "
     f"You construct a {100*(1-alpha):.0f}% confidence interval for the mean arrival time, $\\mu$, assuming that the arrival times are distributed  $\\Exp(1/\\mu)$.  Recall that $\\mu = \\sigma = 1/\\lambda$.\n"
 )
 
