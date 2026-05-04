@@ -29,8 +29,8 @@ More about confidence intervals:
 
 This process often proceeds by
 
-- Identifying a [estimator]{.alert} $\Theta$ for $\theta$ that depends only on the data
-- Finding the the [sampling distribution]{.alert} of the estimator $\Theta$
+- Identifying an [estimator]{.alert} $\Theta$ for $\theta$ that depends only on the data
+- Finding the [sampling distribution]{.alert} of the estimator $\Theta$
 - Using the sampling distribution to find [quantiles]{.alert} that give the desired coverage probability
 
 ---
@@ -350,7 +350,7 @@ plt.show()
 
 [({{< meta texts.cb.initials >}} §9.2; {{< meta texts.wms.initials >}} §8.8–8.9)]{.small}
 
-- If the sample sizem $n$, is [not large enough]{.alert} for the [Central Limit Theorem](../slides/01-intro.html#clt) to apply, 
+- If the sample size, $n$, is [not large enough]{.alert} for the [Central Limit Theorem](../slides/01-intro.html#clt) to apply, 
 
 - But the sample mean has a [known distribution]{.alert}, then exact confidence intervals can sometimes be constructed
 
