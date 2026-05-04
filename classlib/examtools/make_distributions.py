@@ -42,7 +42,7 @@ DISTRIBUTIONS = {
         "var": r"\sigma^2",
     },
     "poisson": {
-        "name": r"Poisson --- $\Pois(\lambda)$",
+        "name": r"Poisson --- $\Poisson(\lambda)$",
         "space": r"\{0,1,2,\ldots\}",
         "rho": r"\frac{\lambda^x e^{-\lambda}}{x!}",
         "mu": r"\lambda",

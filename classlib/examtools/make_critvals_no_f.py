@@ -58,14 +58,10 @@ def main():
 
     p.add_argument("--t-df", default="")
     p.add_argument("--chi-df", default="")
-    p.add_argument("--f-dfn", default="")
-    p.add_argument("--f-dfd", default="")
     p.add_argument("--n", type=int, default=0)
 
     p.add_argument("--t-bait", default="0")
     p.add_argument("--chi-bait", default="0")
-    p.add_argument("--f-dfn-bait", default="0")
-    p.add_argument("--f-dfd-bait", default="0")
     p.add_argument("--bait-include-target", action="store_true")
 
     p.add_argument("--shuffle", action="store_true")
@@ -89,24 +85,16 @@ def main():
 
     t_dfs = parse_csv_ints(args.t_df) if args.t_df.strip() else []
     chi_dfs = parse_csv_ints(args.chi_df) if args.chi_df.strip() else []
-    f_dfns = parse_csv_ints(args.f_dfn) if args.f_dfn.strip() else []
-    f_dfds = parse_csv_ints(args.f_dfd) if args.f_dfd.strip() else []
 
     if args.n > 0:
         t_target = args.n - 1
         chi_target = 2 * args.n
-        f_dfn_target = 1
-        f_dfd_target = args.n - 1
 
         t_offsets = parse_csv_ints(args.t_bait) if args.t_bait.strip() else [0]
         chi_offsets = parse_csv_ints(args.chi_bait) if args.chi_bait.strip() else [0]
-        f_dfn_offsets = parse_csv_ints(args.f_dfn_bait) if args.f_dfn_bait.strip() else [0]
-        f_dfd_offsets = parse_csv_ints(args.f_dfd_bait) if args.f_dfd_bait.strip() else [0]
 
         t_from_n = [t_target + k for k in t_offsets if (t_target + k) >= 1]
         chi_from_n = [chi_target + k for k in chi_offsets if (chi_target + k) >= 1]
-        f_dfn_from_n = [f_dfn_target + k for k in f_dfn_offsets if (f_dfn_target + k) >= 1]
-        f_dfd_from_n = [f_dfd_target + k for k in f_dfd_offsets if (f_dfd_target + k) >= 1]
 
         if not t_dfs:
             t_dfs = t_from_n
@@ -118,27 +106,13 @@ def main():
         elif args.bait_include_target and chi_target not in chi_dfs:
             chi_dfs.append(chi_target)
 
-        if not f_dfns:
-            f_dfns = f_dfn_from_n
-        elif args.bait_include_target and f_dfn_target not in f_dfns:
-            f_dfns.append(f_dfn_target)
-
-        if not f_dfds:
-            f_dfds = f_dfd_from_n
-        elif args.bait_include_target and f_dfd_target not in f_dfds:
-            f_dfds.append(f_dfd_target)
-
     t_dfs = sorted(unique_preserve(t_dfs))
     chi_dfs = sorted(unique_preserve(chi_dfs))
-    f_dfns = sorted(unique_preserve(f_dfns))
-    f_dfds = sorted(unique_preserve(f_dfds))
 
     if args.shuffle:
         rng = random.Random(None if args.seed == 0 else args.seed)
         rng.shuffle(t_dfs)
         rng.shuffle(chi_dfs)
-        rng.shuffle(f_dfns)
-        rng.shuffle(f_dfds)
 
     colspec = (
         "rl"
@@ -179,7 +153,7 @@ def main():
     zL, zR = row_vals(lambda a: st.norm.isf(a))
     lines.append(row_line(r"$\mathrm{Norm}(0,1)$", r"$z_\alpha$", zL, zR))
 
-    if t_dfs or chi_dfs or (f_dfns and f_dfds):
+    if t_dfs or chi_dfs:
         lines.append(r"\midrule")
 
     for i, nu in enumerate(t_dfs):
@@ -187,24 +161,13 @@ def main():
         dist = r"$t_\nu$" if i == 0 else r"{}"
         lines.append(row_line(dist, rf"$t_{{{nu},\alpha}}$", tL, tR))
 
-    if t_dfs and (chi_dfs or (f_dfns and f_dfds)):
+    if t_dfs and chi_dfs:
         lines.append(r"\midrule")
 
     for i, nu in enumerate(chi_dfs):
         cL, cR = row_vals(lambda a, nu=nu: st.chi2.isf(a, nu))
         dist = r"$\chi^2_\nu$" if i == 0 else r"{}"
         lines.append(row_line(dist, rf"$\chi^2_{{{nu},\alpha}}$", cL, cR))
-
-    if chi_dfs and f_dfns and f_dfds:
-        lines.append(r"\midrule")
-
-    f_first = True
-    for dfn in f_dfns:
-        for dfd in f_dfds:
-            fL, fR = row_vals(lambda a, dfn=dfn, dfd=dfd: st.f.isf(a, dfn, dfd))
-            dist = r"$F_{d_1,d_2}$" if f_first else r"{}"
-            lines.append(row_line(dist, rf"$F_{{{dfn},{dfd};\alpha}}$", fL, fR))
-            f_first = False
 
     lines.append(r"\bottomrule")
     lines.append(r"\end{tabular}")
@@ -217,3 +180,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
