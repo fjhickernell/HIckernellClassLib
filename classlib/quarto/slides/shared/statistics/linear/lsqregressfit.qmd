@@ -35,7 +35,7 @@ Let $\hvbeta$ be defined as above, and let $\vb$ be any other vector in $\reals^
 
 ---
 
-Furthermore
+Furthermore,
 
 - $\hmu(\vx) := \vx^\top \hvbeta$ is an estimator of $\mu(\vx) := \Ex(Y \mid \vx) = \vx^\top \vbeta$
 
