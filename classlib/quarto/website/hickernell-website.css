@@ -123,3 +123,58 @@ main.content h4 {
     margin: 0 auto 1rem auto;
   }
 }
+
+/* QMC software table tweaks */
+.software-desc {
+  font-size: 0.9em;
+  color: #555;
+}
+
+table td:nth-child(4) {
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+table td:nth-child(1) {
+  vertical-align: top;
+}
+
+/* --- QMC software table styling --- */
+
+/* Header row */
+table thead th {
+  background-color: #2c3e50;   /* dark blue/gray */
+  color: white;
+  text-align: left;
+}
+
+/* Stronger alternating row contrast */
+table tbody tr:nth-child(odd) {
+  background-color: #e9eef4;   /* slightly darker gray-blue */
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+table tbody tr:hover {
+  background-color: #cfe0f5;
+  outline: 3px solid #b6cbe3;
+}
+
+/* Keep columns balanced */
+table td, table th {
+  vertical-align: top;
+  padding: 6px 10px;
+}
+
+/* Description under name */
+.software-desc {
+  font-size: 0.9em;
+  color: #555;
+}
+
+/* Prevent contact column from getting too wide */
+table td:nth-child(4) {
+  white-space: nowrap;
+}
