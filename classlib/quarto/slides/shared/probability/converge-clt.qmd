@@ -114,7 +114,7 @@ $\square$
 
 [({{< meta texts.cb.initials >}} §3.6, §3.8)]{.small}
 $$
-\Prob\bigl( f(X) \ge r \bigr) \le \frac{\Ex[f(X)]}{r} \qquad f \text{ is }\class{alert}{\text{non-negative}}
+\Prob\bigl( f(X) \ge r \bigr) \le \frac{\Ex[f(X)]}{r} \qquad \text{for } f \class{alert}{\text{ non-negative}}, \ r > 0
 $$
 
 
@@ -126,8 +126,7 @@ $$
 \qquad \text{(total expectation)} \\
 &\le \Ex\Bigl[\Ex\bigl[f(X)/r \mid X\bigr]\Bigr]
 \qquad \text{since } \indic\bigl(f(X)\ge r\bigr)\le f(X)/r \text{ a.s.} \\
-&= \Ex\bigl[f(X)/r\bigr] \\
-&= \Ex[f(X)]/r
+&= \Ex\bigl[f(X)/r\bigr] = \Ex[f(X)]/r
 \end{align*}
 
 ### Important special cases

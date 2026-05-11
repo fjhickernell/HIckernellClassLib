@@ -61,7 +61,7 @@ T &:= Y_1 + \cdots + Y_n \sim \Bin(n,\mu), \; \Prob(T = t) = \binom{n}{t} \mu^t 
 
 If $Y_1, \ldots, Y_n \IIDsim \Bern(\mu)$, then we can construct a [confidence interval]{.alert} that [captures]{.alert} the true approval rating with high probability:
 \begin{align*}
-T &:= Y_1 + \cdots + Y_n \sim \Bin(n,\mu), \quad \Prob(T = y) = \binom{n}{t} \mu^t (1-\mu)^{n-t}\\
+T &:= Y_1 + \cdots + Y_n \sim \Bin(n,\mu), \quad \Prob(T = t) = \binom{n}{t} \mu^t (1-\mu)^{n-t}\\
 \barY &:= \frac 1n (Y_1 + \cdots + Y_n) \appxsim  \Norm\bigl(\mu,\mu(1-\mu)/n\bigr) \quad \text{by the }\class{alert}{\text{Central Limit Theorem}}
 \end{align*}
 

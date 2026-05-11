@@ -119,28 +119,21 @@ By a similar argument  $\int_0 ^1 f(x)\, \dif x \mid \vf = \vy \sim \Norm\Bigl(\
 	
 [({{< meta texts.cb.initials >}} §7.2.3)]{.small}
 
-### Bayes’ rule for densities
-$$
+\begin{align*}
+\text{Recall that}&&
 \varrho_{X\mid Y}(x\mid y)
-=
-\frac{\varrho_{Y\mid X}(y\mid x)\,\varrho_X(x)}{\varrho_Y(y)}
-$$
-
-Let
-\begin{align*}
-X & = \text{random unknown parameter} \\
-Y & = \text{random observed data} \\
-\varrho_X & = \text{prior density or belief about the parameter} \\
-\varrho_{Y\mid X} & = \text{likelihood} \\
-\varrho_{X\mid Y} & = \text{posterior density}
-\end{align*}
-Then
-\begin{align*}
- \varrho_{X\mid Y}( \text{parameter} \mid \text{data})
+&=
+\frac{\varrho_{Y\mid X}(y\mid x)\,\varrho_X(x)}{\varrho_Y(y)} \\
+\text{Let} && X & = \text{random unknown parameter} \\
+&& Y & = \text{random observed data} \\
+&& \varrho_X & = \text{prior density or belief about the parameter} \\
+&&\varrho_{Y\mid X} & = \text{likelihood} \\
+&& \varrho_{X\mid Y} & = \text{posterior density} \\
+\text{Then} && \varrho_{X\mid Y}( \text{parameter} \mid \text{data})
 & =
 \frac{\varrho_{Y\mid X}(\text{data}\mid \text{parameter} ) \,\varrho_X(\text{parameter})}{\varrho_Y(\text{data})}
 \\
-\text{posterior density } &
+&& \text{posterior density } &
 \propto
 \text{likelihood} \times \text{prior density}
 \end{align*}
