@@ -689,6 +689,8 @@ The linear predictor stays; the distribution and link change
 
 - $g$ maps the [mean space $\mathcal{M}$ to $\mathbb{R}$]{.alert} so a linear model applies to $g(\mu)$ instead of $\mu$ directly
 
+[GLM is _not_]{.alert} $g(Y) = \vx^\top \vbeta + \varepsilon$, <br>which is transformation of the response
+
 :::
 
 :::
